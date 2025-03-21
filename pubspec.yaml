@@ -20,6 +20,8 @@ dependencies:
   url_launcher: ^6.3.1
   connectivity_plus: ^6.1.3
   cached_network_image: ^3.4.1
+  package_info_plus: ^8.3.0
+  logger: ^2.5.0
 
   # Web Specific Packages
   url_strategy: ^0.3.0
@@ -33,8 +35,6 @@ dependencies:
   #Icons
   cupertino_icons: ^1.0.8
   iconsax: ^0.0.8
-  logger: ^2.5.0
-  package_info_plus: ^8.3.0
 
 
 dev_dependencies:

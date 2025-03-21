@@ -13,7 +13,6 @@ class App extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "Doc Sync",
       themeMode: ThemeMode.light,
-
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       getPages: AppRoutePages.pages,
