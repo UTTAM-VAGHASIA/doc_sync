@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.doc_sync.app-mergeDebugResources-24:/values-night-v8/values-night-v8.xml",
+            "outputFile": "com.example.doc_sync.app-mergeDebugResources-25:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
                     "source": "C:\\Users\\uttam\\Flutter\\projects\\doc_sync\\android\\app\\src\\main\\res\\values-night\\styles.xml",

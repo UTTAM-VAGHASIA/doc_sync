@@ -3,8 +3,8 @@
 /// This class contains all the App Images in String formats.
 class AppImages {
   // -- App Logos
-  static const String darkAppLogo = "ssets/logos/docsync_logo.png";
-  static const String lightAppLogo = "assets/logos/docsync_logo.png";
+  static const String darkAppLogo = "assets/logos/app_logo.png";
+  static const String lightAppLogo = "assets/logos/app_logo.png";
 
   // -- Default Images
   static const String defaultImage = "assets/images/content/default_image.png";

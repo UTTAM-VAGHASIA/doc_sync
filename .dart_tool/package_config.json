@@ -350,6 +350,18 @@
       "languageVersion": "3.0"
     },
     {
+      "name": "package_info_plus",
+      "rootUri": "file:///C:/Users/uttam/AppData/Local/Pub/Cache/hosted/pub.dev/package_info_plus-8.3.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "package_info_plus_platform_interface",
+      "rootUri": "file:///C:/Users/uttam/AppData/Local/Pub/Cache/hosted/pub.dev/package_info_plus_platform_interface-3.2.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
       "name": "path",
       "rootUri": "file:///C:/Users/uttam/AppData/Local/Pub/Cache/hosted/pub.dev/path-1.9.1",
       "packageUri": "lib/",
@@ -596,6 +608,12 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "win32",
+      "rootUri": "file:///C:/Users/uttam/AppData/Local/Pub/Cache/hosted/pub.dev/win32-5.12.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.7"
+    },
+    {
       "name": "xdg_directories",
       "rootUri": "file:///C:/Users/uttam/AppData/Local/Pub/Cache/hosted/pub.dev/xdg_directories-1.1.0",
       "packageUri": "lib/",
@@ -614,7 +632,7 @@
       "languageVersion": "3.7"
     }
   ],
-  "generated": "2025-03-21T05:51:47.049103Z",
+  "generated": "2025-03-21T07:24:15.036447Z",
   "generator": "pub",
   "generatorVersion": "3.7.2",
   "flutterRoot": "file:///C:/Users/uttam/fvm/versions/3.29.2",

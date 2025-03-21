@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.doc_sync"
     android:versionCode="1"
-    android:versionName="1.0.0" >
+    android:versionName="0.1.0" >
 
     <uses-sdk
         android:minSdkVersion="21"
@@ -76,6 +76,33 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <provider
+            android:name="io.flutter.plugins.imagepicker.ImagePickerFileProvider"
+            android:authorities="com.example.doc_sync.flutter.image_provider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/flutter_image_picker_file_paths" />
+        </provider> <!-- Trigger Google Play services to install the backported photo picker module. -->
+        <service
+            android:name="com.google.android.gms.metadata.ModuleDependencies"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
+            </intent-filter>
+
+            <meta-data
+                android:name="photopicker_activity:0:required"
+                android:value="" />
+        </service>
+
+        <activity
+            android:name="io.flutter.plugins.urllauncher.WebViewActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
 
         <uses-library
             android:name="androidx.window.extensions"

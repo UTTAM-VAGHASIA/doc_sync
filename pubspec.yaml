@@ -1,7 +1,7 @@
 name: doc_sync
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.0+1
+version: 0.1.1+1
 
 environment:
   sdk: ^3.7.2
@@ -34,6 +34,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   iconsax: ^0.0.8
   logger: ^2.5.0
+  package_info_plus: ^8.3.0
 
 
 dev_dependencies:
