@@ -105,11 +105,11 @@ class AppDeviceUtils {
   }
 
   static bool isIOS() {
-    return Platform.isIOS;
+    return GetPlatform.isIOS;
   }
 
   static bool isAndroid() {
-    return Platform.isAndroid;
+    return GetPlatform.isAndroid;
   }
 
   static bool isDesktopScreen(BuildContext context) {

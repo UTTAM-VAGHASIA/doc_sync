@@ -1,5 +1,4 @@
 import 'package:doc_sync/app.dart';
-import 'package:doc_sync/utils/device/device_utility.dart';
 import 'package:doc_sync/utils/helpers/network_manager.dart';
 import 'package:doc_sync/utils/versioning/android_update_checker.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,7 +21,7 @@ Future<void> main() async {
 
   // Check for new version for Android Apps
   if (await NetworkManager.instance.isConnected()) {
-    if (AppDeviceUtils.isAndroid()) {
+    if (GetPlatform.isAndroid) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         CheckUpdate.checkForUpdate();
       });
