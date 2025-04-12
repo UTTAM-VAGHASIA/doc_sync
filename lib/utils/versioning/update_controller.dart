@@ -6,6 +6,9 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import '../constants/colors.dart';
 
 class UpdateDialogController extends GetxController {
   // --- State Variables ---
@@ -78,8 +81,8 @@ class UpdateDialogController extends GetxController {
         'Installation Error',
         'Could not find the downloaded file.',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        backgroundColor: AppColors.error,
+        colorText: AppColors.white,
       );
     }
   }
@@ -332,6 +335,7 @@ class UpdateDialogController extends GetxController {
   ) async {
     print("CheckUpdate: Attempting to open APK for installation: $filePath");
 
+    // Check if the file exists first
     final file = File(filePath);
     if (!await file.exists()) {
       print("CheckUpdate: Error - APK file not found at path: $filePath");
@@ -339,10 +343,43 @@ class UpdateDialogController extends GetxController {
         'Installation Error',
         'Downloaded file not found.',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        backgroundColor: AppColors.error,
+        colorText: AppColors.white,
       );
       return;
+    }
+
+    // Request installation permissions
+    final status = await Permission.requestInstallPackages.status;
+    if (!status.isGranted) {
+      // If not granted, request permission
+      final result = await Permission.requestInstallPackages.request();
+      if (!result.isGranted) {
+        // If still not granted after request, show settings dialog
+        Get.dialog(
+          AlertDialog(
+            title: const Text('Permission Required'),
+            content: const Text(
+              'To install updates, you need to allow installation from this source. Would you like to open settings to grant permission?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Get.back();
+                  await openAppSettings();
+                },
+                child: const Text('Open Settings'),
+              ),
+            ],
+          ),
+          barrierDismissible: false,
+        );
+        return;
+      }
     }
 
     final result = await OpenFile.open(
