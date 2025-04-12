@@ -30,7 +30,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.29.2' # Specific version requested
-          channel: 'stable'        # Assuming 3.27.4 is stable
+          channel: 'stable'        # Assuming 3.29.2 is stable
           cache: true
 
       - name: Get Flutter dependencies
