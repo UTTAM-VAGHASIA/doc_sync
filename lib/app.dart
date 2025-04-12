@@ -4,7 +4,7 @@ import 'package:doc_sync/routes/app_route_pages.dart';
 import 'package:doc_sync/routes/routes.dart';
 import 'package:doc_sync/utils/helpers/network_manager.dart';
 import 'package:doc_sync/utils/theme/theme.dart';
-import 'package:doc_sync/utils/versioning/android_update_checker.dart';
+import 'package:doc_sync/utils/versioning/check_update.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

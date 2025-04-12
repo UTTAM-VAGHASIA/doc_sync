@@ -1,0 +1,139 @@
+name: Release APK via GitHub Releases
+
+# Trigger workflow only when a tag starting with 'v' is pushed
+on:
+  push:
+    tags:
+      - 'v*' # Matches tags like v1.0, v2.3.4, v1.2.1-force etc.
+
+# Grant permissions for the GITHUB_TOKEN to create releases and upload assets
+permissions:
+  contents: write # Required to write releases
+
+jobs:
+  build_and_release:
+    runs-on: ubuntu-latest
+    steps:
+      # --- Checkout, Setup Java, Setup Flutter, Get Deps ---
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetches all history for changelog tools if needed
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Set up Flutter 3.29.2
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.2' # Specific version requested
+          channel: 'stable'        # Assuming 3.27.4 is stable
+          cache: true
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      # --- Version Extraction ---
+      - name: Extract version from tag (remove -force suffix if present)
+        run: |
+          RAW_VERSION=${GITHUB_REF_NAME#v}
+          APP_VERSION=${RAW_VERSION%-force} # Removes '-force' suffix if it exists
+          echo "APP_VERSION=${APP_VERSION}" >> $GITHUB_ENV
+        shell: bash
+
+      # --- Define Paths ---
+      - name: Define Artifact Names and Paths
+        run: |
+          echo "APK_NAME=app-release-v${{ env.APP_VERSION }}.apk" >> $GITHUB_ENV
+          echo "APK_PATH=build/app/outputs/flutter-apk/app-release.apk" >> $GITHUB_ENV
+          echo "VERSION_JSON_NAME=version.json" >> $GITHUB_ENV
+          echo "VERSION_JSON_PATH=version.json" >> $GITHUB_ENV # Temp file name in runner
+          echo "NOTES_PATH=release_notes.md" >> $GITHUB_ENV # Path for extracted notes
+        shell: bash
+
+      # --- Setup Signing ---
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+          # Verify the keystore file was created
+          ls -la android/app/upload-keystore.jks
+          # Set permissions
+          chmod 644 android/app/upload-keystore.jks
+        shell: bash
+        
+      # --- Build APK ---
+      - name: Build Release APK
+        env:
+          KEYSTORE_FILE: upload-keystore.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: flutter build apk --release --dart-define=GITHUB_PAT=${{ secrets.GH_PAT_FOR_RELEASES }}
+
+      # --- Prepare version.json (with Dynamic Force Update) ---
+      - name: Construct APK Download URL
+        run: |
+          echo "APK_URL=https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/${{ env.APK_NAME }}" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Create version.json content (with dynamic force_update)
+        run: |
+          FORCE_UPDATE_FLAG="false" # Default value
+          # Check if the original tag name ends with '-force'
+          if [[ "${{ github.ref_name }}" == *"-force" ]]; then
+            echo "Tag ends with -force, setting force_update to true"
+            FORCE_UPDATE_FLAG="true"
+          else
+            echo "Tag does not end with -force, setting force_update to false"
+          fi
+
+          echo '{
+            "version": "${{ env.APP_VERSION }}",
+            "apk_url": "${{ env.APK_URL }}",
+            "force_update": ${FORCE_UPDATE_FLAG}
+          }' > ${{ env.VERSION_JSON_PATH }}
+        shell: bash # Important for the [[ ]] syntax and variable expansion
+
+      - name: Show version.json content
+        run: cat ${{ env.VERSION_JSON_PATH }}
+
+      # --- Extract Release Notes from CHANGELOG.md ---
+      - name: Extract Release Notes
+        # This uses awk to find the line starting with '## [<version>]'
+        # and print everything until the next '## [' line or end of file.
+        # It skips the header line itself. Requires a consistent CHANGELOG format.
+        run: |
+          awk '/^## \['${{ env.APP_VERSION }}'\]/{f=1;next} /^## \[/{f=0} f' CHANGELOG.md > ${{ env.NOTES_PATH }}
+        shell: bash
+
+      # --- NEW DEBUG STEP ---
+      - name: Verify Build Output Exists
+        run: |
+          echo "--- Checking for APK file ---"
+          ls -l ${{ env.APK_PATH }} || echo "APK NOT FOUND at ${{ env.APK_PATH }}"
+          echo "--- Checking for version.json ---"
+          ls -l ${{ env.VERSION_JSON_PATH }} || echo "version.json NOT FOUND at ${{ env.VERSION_JSON_PATH }} (in root)"
+          echo "--- Current Directory Contents ---" # See where files actually are
+          ls -la
+        shell: bash
+
+      # --- Create Release and Upload Assets ---
+      - name: Create GitHub Release and Upload Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ env.APP_VERSION }}
+          body_path: ${{ env.NOTES_PATH }}
+          draft: false
+          prerelease: false
+          # --- TEMPORARY TEST: Simplify files input ---
+          files: |
+            ${{ env.APK_PATH }}
+            ${{ env.VERSION_JSON_PATH }}
+          # --- END TEMPORARY TEST ---
+          # files: | # Original version
+          #  ${{ env.APK_PATH }} => ${{ env.APK_NAME }}
+          #  ${{ env.VERSION_JSON_PATH }} => ${{ env.VERSION_JSON_NAME }}

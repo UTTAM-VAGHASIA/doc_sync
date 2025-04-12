@@ -92,7 +92,7 @@ BEGIN
             VALUE "CompanyName", "com.example" "\0"
             VALUE "FileDescription", "doc_sync" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "doc_sync" "\0"
+            VALUE "InternalName", "com.pragma.doc_sync" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
             VALUE "OriginalFilename", "doc_sync.exe" "\0"
             VALUE "ProductName", "doc_sync" "\0"

@@ -1,4 +1,4 @@
-package com.example.doc_sync
+package com.pragma.doc_sync
 
 import io.flutter.embedding.android.FlutterActivity
 
