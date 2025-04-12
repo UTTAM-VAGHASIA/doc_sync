@@ -24,7 +24,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '18'
 
       - name: Set up Flutter 3.29.2
         uses: subosito/flutter-action@v2
