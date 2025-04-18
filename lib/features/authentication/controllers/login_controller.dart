@@ -28,43 +28,44 @@ class LoginController extends GetxController {
 
   // Handles email and login sign-in process
   Future<void> emailAndPasswordSignIn() async {
-    try {
+    // try {
       // Start Loading
-      AppFullScreenLoader.openLoadingDialog(
-        'Logging you in...',
-        AppImages.docerAnimation,
-      );
+    //   AppFullScreenLoader.openLoadingDialog(
+    //     'Logging you in...',
+    //     AppImages.docerAnimation,
+    //   );
 
-      // Check Internet Connectivity
-      final isConnected = await NetworkManager.instance.isConnected();
-      if (!isConnected) {
-        AppFullScreenLoader.stopLoading();
-        return;
-      }
+    //   // Check Internet Connectivity
+    //   final isConnected = await NetworkManager.instance.isConnected();
+    //   if (!isConnected) {
+    //     AppFullScreenLoader.stopLoading();
+    //     return;
+    //   }
 
-      // Form Validation
-      if (!loginFormKey.currentState!.validate()) {
-        AppFullScreenLoader.stopLoading();
-        return;
-      }
+    //   // Form Validation
+    //   if (!loginFormKey.currentState!.validate()) {
+    //     AppFullScreenLoader.stopLoading();
+    //     return;
+    //   }
 
-      // Save Data if remember me is selected
-      if (rememberMe.value) {
-        localStorage.write('REMEMBER_ME_EMAIL', email.text.trim());
-        localStorage.write('REMEMBER_ME_PASSWORD', password.text.trim());
-      }
+    //   // Save Data if remember me is selected
+    //   if (rememberMe.value) {
+    //     localStorage.write('REMEMBER_ME_EMAIL', email.text.trim());
+    //     localStorage.write('REMEMBER_ME_PASSWORD', password.text.trim());
+    //   }
 
-      // login using Email & Password Authentication
-      // Fetch User Details and assign it to User Controller
-      Future.delayed(Duration(seconds: 4));
+    //   // login using Email & Password Authentication
+    //   // Fetch User Details and assign it to User Controller
+    //   Future.delayed(Duration(seconds: 4));
+    //   Get.offAllNamed(AppRoutes.dashboard);
+
+    //   // Remove Loader
+    //   AppFullScreenLoader.stopLoading();
+    // } catch (e) {
+    //   AppFullScreenLoader.stopLoading();
+    //   AppLoaders.errorSnackBar(title: 'Oh Snap', message: e.toString());
+    // }
       Get.offAllNamed(AppRoutes.dashboard);
-
-      // Remove Loader
-      AppFullScreenLoader.stopLoading();
-    } catch (e) {
-      AppFullScreenLoader.stopLoading();
-      AppLoaders.errorSnackBar(title: 'Oh Snap', message: e.toString());
-    }
   }
 
   Future<void> registerAdmin() async {

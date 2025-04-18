@@ -48,9 +48,13 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            manifestPlaceholders["appName"] = "Doc Sync"
         }
         debug {
             signingConfig = signingConfigs.getByName("debug")
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-DEBUG"
+            manifestPlaceholders["appName"] = "Debug"
         }
     }
 }

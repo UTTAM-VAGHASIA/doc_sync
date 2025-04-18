@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class AppHttpHelper {
-  static const String _baseUrl = ''; // Replace with your API base URL
+  static const String _baseUrl = 'https://pragmanxt.com/doc_sync/services/admin/v1/index.php/';
   static const Duration _timeoutDuration = Duration(
     seconds: 15,
   ); // Timeout setting
