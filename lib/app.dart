@@ -43,7 +43,7 @@ class _AppState extends State<App> {
       darkTheme: AppTheme.darkTheme,
       getPages: AppRoutePages.pages,
       initialBinding: GeneralBindings(),
-      initialRoute: AppRoutes.login,
+      initialRoute: AppRoutes.loading,
       unknownRoute: GetPage(
         name: "/page-not-found",
         page:

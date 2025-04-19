@@ -1,4 +1,5 @@
 class AppRoutes {
+  static const loading = "/loading";
   static const login = "/login";
   static const forgotPassword = "/forgot-password";
   static const resetPassword = "/reset-password";

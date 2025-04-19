@@ -40,6 +40,7 @@ dependencies:
   #Icons
   cupertino_icons: ^1.0.8
   iconsax: ^0.0.8
+  google_fonts: ^6.2.1
 
 
 dev_dependencies:

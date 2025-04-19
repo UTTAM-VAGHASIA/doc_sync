@@ -3,6 +3,7 @@ import 'package:doc_sync/app.dart';
 import 'package:dynamic_path_url_strategy/dynamic_path_url_strategy.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get/get_utils/get_utils.dart';
 import 'package:get_storage/get_storage.dart';
 
 Future<void> main() async {
@@ -16,5 +17,6 @@ Future<void> main() async {
   setPathUrlStrategy();
 
   // Main App Starts Here
-  runApp(DevicePreview(enabled: !kReleaseMode, builder: (context) => App()));
+  runApp(DevicePreview(enabled: !kReleaseMode && 
+  !(GetPlatform.isAndroid || GetPlatform.isIOS), builder: (context) => App()));
 }
