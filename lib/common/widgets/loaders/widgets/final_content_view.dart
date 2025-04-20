@@ -9,9 +9,6 @@ class FinalContentView extends StatelessWidget {
   Widget build(BuildContext context) {
     // You can add more widgets here if needed (e.g., buttons)
     // using Column, Stack, etc.
-    return Align(
-      alignment: Alignment(0.0, 0.4),
-      child: AnimatedLoadingText(), // Display the animated text
-    );
+    return AnimatedLoadingText();
   }
 }

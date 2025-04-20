@@ -3,7 +3,7 @@ import 'package:doc_sync/common/widgets/layout/sidebars/sidebar.dart';
 import 'package:flutter/material.dart';
 
 class DesktopLayout extends StatelessWidget {
-  DesktopLayout({super.key, this.body});
+  const DesktopLayout({super.key, this.body});
 
   final Widget? body;
 

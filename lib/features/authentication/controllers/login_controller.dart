@@ -2,7 +2,6 @@ import 'package:doc_sync/routes/routes.dart';
 import 'package:doc_sync/utils/constants/image_strings.dart';
 import 'package:doc_sync/utils/helpers/network_manager.dart';
 import 'package:doc_sync/utils/popups/full_screen_loader.dart';
-import 'package:doc_sync/utils/popups/loaders.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';

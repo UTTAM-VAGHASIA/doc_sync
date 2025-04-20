@@ -1,6 +1,9 @@
 // lib/loading/widgets/animated_visual_element.dart
-import 'package:doc_sync/common/widgets/loaders/widgets/final_content_view.dart';
+import 'dart:developer';
+
+import 'package:doc_sync/features/authentication/controllers/loading_screen_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class AnimatedVisualElement extends StatelessWidget {
   final double width;
@@ -20,11 +23,16 @@ class AnimatedVisualElement extends StatelessWidget {
     required this.shape,
     this.borderRadius,
     required this.logoDiameter,
-    required this.logoAssetPath, required this.isRectangle,
+    required this.logoAssetPath,
+    required this.isRectangle,
   });
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<LoadingScreenController>();
+    log("Initial Controller Status: ${controller.initialAnimationController.status.isCompleted}");
+    log("Initial Logo Alignment: ${controller.logoAlignmentAnimation.value}");
+
     return Container(
       width: width,
       height: height,
@@ -33,7 +41,9 @@ class AnimatedVisualElement extends StatelessWidget {
         shape: shape,
         borderRadius: (shape == BoxShape.rectangle) ? borderRadius : null,
       ),
-      child: Center(
+      child: Align(
+        alignment: controller.logoAlignmentAnimation.value,
+        // controller.logoAlignmentAnimation.value,
         child: Image.asset(
           logoAssetPath,
           width: logoDiameter,
