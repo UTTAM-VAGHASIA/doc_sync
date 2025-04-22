@@ -6,6 +6,7 @@ class RouteMiddleWare extends GetMiddleware {
   @override
   RouteSettings? redirect(String? route) {
     final isAuthenticated = true;
-    return isAuthenticated ? null : RouteSettings(name: AppRoutes.login);
+    return null;
+    // return isAuthenticated ? null : RouteSettings(name: AppRoutes.login);
   }
 }

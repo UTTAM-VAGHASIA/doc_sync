@@ -1,86 +1,125 @@
+import 'dart:convert';
+
+import 'package:doc_sync/features/authentication/controllers/user_controller.dart';
+import 'package:doc_sync/features/authentication/models/user_model.dart';
 import 'package:doc_sync/routes/routes.dart';
+import 'package:doc_sync/utils/constants/enums.dart';
 import 'package:doc_sync/utils/constants/image_strings.dart';
 import 'package:doc_sync/utils/helpers/network_manager.dart';
+import 'package:doc_sync/utils/helpers/retry_queue_manager.dart';
+import 'package:doc_sync/utils/http/http_client.dart';
+import 'package:doc_sync/utils/local_storage/storage_utility.dart';
 import 'package:doc_sync/utils/popups/full_screen_loader.dart';
+import 'package:doc_sync/utils/popups/loaders.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 
 // Controller for handling Login Page functionalities
 class LoginController extends GetxController {
   static LoginController get instance => Get.find();
 
+  final userController = Get.find<UserController>();
+
   final hidePassword = true.obs;
   final rememberMe = true.obs;
-  final localStorage = GetStorage();
 
   final email = TextEditingController();
   final password = TextEditingController();
   final loginFormKey = GlobalKey<FormState>();
 
+  RxBool isLoading = false.obs;
+  RxBool isLoggedIn = false.obs;
+
   @override
-  void onInit() {
-    email.text = localStorage.read('REMEMBER_ME_EMAIL') ?? '';
-    password.text = localStorage.read('REMEMBER_ME_PASSWORD') ?? '';
+  Future<void> onInit() async {
+    isLoggedIn.value = false;
+    email.text =
+        (await StorageUtility.instance().readData("REMEMBER_ME_EMAIL")) ?? '';
+    password.text =
+        (await StorageUtility.instance().readData(
+          "REMEMBER_ME_PASSWORD",
+          type: StorageType.secure,
+        )) ??
+        '';
     super.onInit();
   }
 
   // Handles email and login sign-in process
   Future<void> emailAndPasswordSignIn() async {
-    // try {
+    try {
+      isLoading.value = true;
+
       // Start Loading
-    //   AppFullScreenLoader.openLoadingDialog(
-    //     'Logging you in...',
-    //     AppImages.docerAnimation,
-    //   );
+      AppFullScreenLoader.openLoadingDialog(
+        'Logging you in...',
+        AppImages.docerAnimation,
+      );
 
-    //   // Check Internet Connectivity
-    //   final isConnected = await NetworkManager.instance.isConnected();
-    //   if (!isConnected) {
-    //     AppFullScreenLoader.stopLoading();
-    //     return;
-    //   }
+      // Check Internet Connectivity
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) {
+        RetryQueueManager.instance.addJob(emailAndPasswordSignIn);
+        return;
+      }
 
-    //   // Form Validation
-    //   if (!loginFormKey.currentState!.validate()) {
-    //     AppFullScreenLoader.stopLoading();
-    //     return;
-    //   }
+      // Form Validation
+      if (!loginFormKey.currentState!.validate()) {
+        AppFullScreenLoader.stopLoading();
+        isLoading.value = false;
+        return;
+      }
 
-    //   // Save Data if remember me is selected
-    //   if (rememberMe.value) {
-    //     localStorage.write('REMEMBER_ME_EMAIL', email.text.trim());
-    //     localStorage.write('REMEMBER_ME_PASSWORD', password.text.trim());
-    //   }
+      // Save Data if remember me is selected
+      if (rememberMe.value) {
+        StorageUtility.instance().writeData(
+          "REMEMBER_ME_EMAIL",
+          email.text.trim(),
+        );
+        StorageUtility.instance().writeData(
+          "REMEMBER_ME_PASSWORD",
+          password.text.trim(),
+          type: StorageType.secure,
+        );
+      }
 
-    //   // login using Email & Password Authentication
-    //   // Fetch User Details and assign it to User Controller
-    //   Future.delayed(Duration(seconds: 4));
-    //   Get.offAllNamed(AppRoutes.dashboard);
+      final requestData = {
+        'data': jsonEncode({
+          "user_id": email.text.trim(),
+          "password": password.text.trim(),
+        }),
+      };
 
-    //   // Remove Loader
-    //   AppFullScreenLoader.stopLoading();
-    // } catch (e) {
-    //   AppFullScreenLoader.stopLoading();
-    //   AppLoaders.errorSnackBar(title: 'Oh Snap', message: e.toString());
-    // }
-      Get.offAllNamed(AppRoutes.dashboard);
-  }
+      final data = await AppHttpHelper.sendMultipartRequest(
+        "login",
+        method: "POST",
+        fields: requestData,
+      );
 
-  Future<void> registerAdmin() async {
-    // Start Loading
-    AppFullScreenLoader.openLoadingDialog(
-      'Registering Admin Account...',
-      AppImages.docerAnimation,
-    );
+      if (data['success']) {
+        User user = User.fromJson(data['data'][0]);
+        userController.saveUserDetails(user);
 
-    // Check Internet Connectivity
-    final isConnected = await NetworkManager.instance.isConnected();
-    if (!isConnected) {
+        isLoggedIn.value = true;
+      } else {
+        // print("Login Unsuccessful because...");
+        // print(data['message']);
+        AppLoaders.errorSnackBar(
+          title: "Login Error",
+          message: data['message'],
+        );
+      }
+
+      // Remove Loader
+      isLoading.value = false;
       AppFullScreenLoader.stopLoading();
-      return;
+    } catch (e) {
+      isLoading.value = false;
+      AppFullScreenLoader.stopLoading();
+      AppLoaders.errorSnackBar(title: 'Oh Snap', message: e.toString());
     }
 
-    // Register user using Email & Password Authentication
+    if (isLoggedIn.value) {
+      Get.offAllNamed(AppRoutes.dashboard);
+    }
   }
 }

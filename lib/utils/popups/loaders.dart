@@ -9,13 +9,13 @@ class AppLoaders {
   static hideSnackBar() =>
       ScaffoldMessenger.of(Get.context!).hideCurrentSnackBar();
 
-  static customToast({required message}) {
+  static customToast({required message, duration = 3}) {
     ScaffoldMessenger.of(Get.context!).showSnackBar(
       SnackBar(
         width: 500,
         elevation: 0,
         behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 3),
+        duration: Duration(seconds: duration),
         backgroundColor: Colors.transparent,
         content: Container(
           padding: const EdgeInsets.all(12.0),

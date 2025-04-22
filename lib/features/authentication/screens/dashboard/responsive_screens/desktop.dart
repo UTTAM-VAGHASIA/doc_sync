@@ -8,7 +8,6 @@ class DashboardDesktopScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Using a primary color similar to the image, adjust as needed
-    final Color primaryColor = AppColors.primary;
     final Color cardBackgroundColor = AppColors.white;
     final Color textColor = AppColors.textPrimary;
     final Color subtleTextColor = AppColors.textSecondary;

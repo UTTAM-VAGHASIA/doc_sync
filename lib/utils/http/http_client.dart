@@ -2,109 +2,70 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:doc_sync/utils/constants/api_constants.dart';
 import 'package:http/http.dart' as http;
 
 class AppHttpHelper {
-  static const String _baseUrl = 'https://pragmanxt.com/doc_sync/services/admin/v1/index.php/';
-  static const Duration _timeoutDuration = Duration(
-    seconds: 15,
-  ); // Timeout setting
+  static const _baseUrl = ApiConstants.baseUrl;
+  static const _timeoutDuration = ApiConstants.timeoutDuration;
 
-  // Generic method to handle GET requests
-  static Future<Map<String, dynamic>> get(
+  /*
+
+    Sample Usage: 
+
+    final result = await MultipartHttpHelper.sendMultipartRequest(
+    'multi-file-upload',
+    method: 'POST',
+    fields: {
+      'userId': '123',
+      'description': 'Some files being uploaded',
+    },
+    fileMap: {
+      'images': [
+        File('/path/to/image1.jpg'),
+        File('/path/to/image2.jpg'),
+      ],
+      'documents': [
+        File('/path/to/doc1.pdf'),
+      ],
+    },
+  );
+
+
+  */
+
+  /// Sends a multipart request with optional files and fields
+  static Future<Map<String, dynamic>> sendMultipartRequest(
     String endpoint, {
+    required String method, // 'POST', 'PUT', etc.
+    Map<String, List<File>>?
+    fileMap, // NEW: key = fieldName, value = list of files
+    Map<String, String>? fields,
     Map<String, String>? headers,
   }) async {
     try {
-      final response = await http
-          .get(Uri.parse('$_baseUrl/$endpoint'), headers: headers)
-          .timeout(_timeoutDuration);
-      return _handleResponse(response);
-    } on SocketException {
-      throw Exception('No Internet connection');
-    } on HttpException {
-      throw Exception('Couldn\'t connect to server');
-    } on FormatException {
-      throw Exception('Bad response format');
-    } on TimeoutException {
-      throw Exception('Request timeout');
-    }
-  }
+      final uri = Uri.parse('$_baseUrl/$endpoint');
+      final request = http.MultipartRequest(method, uri);
 
-  // Generic method to handle POST requests
-  static Future<Map<String, dynamic>> post(
-    String endpoint,
-    dynamic data, {
-    Map<String, String>? headers,
-  }) async {
-    try {
-      final response = await http
-          .post(
-            Uri.parse('$_baseUrl/$endpoint'),
-            headers: headers ?? {'Content-Type': 'application/json'},
-            body: json.encode(data),
-          )
-          .timeout(_timeoutDuration);
-      return _handleResponse(response);
-    } catch (e) {
-      return _handleException(e);
-    }
-  }
+      if (headers != null) request.headers.addAll(headers);
+      if (fields != null) request.fields.addAll(fields);
 
-  // Generic method to handle PUT requests
-  static Future<Map<String, dynamic>> put(
-    String endpoint,
-    dynamic data, {
-    Map<String, String>? headers,
-  }) async {
-    try {
-      final response = await http
-          .put(
-            Uri.parse('$_baseUrl/$endpoint'),
-            headers: headers ?? {'Content-Type': 'application/json'},
-            body: json.encode(data),
-          )
-          .timeout(_timeoutDuration);
-      return _handleResponse(response);
-    } catch (e) {
-      return _handleException(e);
-    }
-  }
+      // Add multiple file fields
+      if (fileMap != null && fileMap.isNotEmpty) {
+        for (var entry in fileMap.entries) {
+          final fieldName = entry.key;
+          final fileList = entry.value;
 
-  // Generic method to handle DELETE requests
-  static Future<Map<String, dynamic>> delete(
-    String endpoint, {
-    Map<String, String>? headers,
-  }) async {
-    try {
-      final response = await http
-          .delete(Uri.parse('$_baseUrl/$endpoint'), headers: headers)
-          .timeout(_timeoutDuration);
-      return _handleResponse(response);
-    } catch (e) {
-      return _handleException(e);
-    }
-  }
+          for (File file in fileList) {
+            request.files.add(
+              await http.MultipartFile.fromPath(fieldName, file.path),
+            );
+          }
+        }
+      }
 
-  // Multipart request for file upload
-  static Future<Map<String, dynamic>> uploadFile(
-    String endpoint, {
-    required File file,
-    required String fieldName,
-    Map<String, String>? headers,
-  }) async {
-    try {
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse('$_baseUrl/$endpoint'),
-      );
-      request.headers.addAll(headers ?? {});
-      request.files.add(
-        await http.MultipartFile.fromPath(fieldName, file.path),
-      );
-
-      var streamedResponse = await request.send();
-      var response = await http.Response.fromStream(streamedResponse);
+      final streamedResponse = await request.send().timeout(_timeoutDuration);
+      final response = await http.Response.fromStream(streamedResponse);
 
       return _handleResponse(response);
     } catch (e) {
@@ -112,10 +73,11 @@ class AppHttpHelper {
     }
   }
 
-  // Handle API response
   static Map<String, dynamic> _handleResponse(http.Response response) {
     try {
+      print(response.statusCode);
       final data = json.decode(response.body);
+      print(data.toString());
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return data;
       } else {
@@ -126,7 +88,6 @@ class AppHttpHelper {
     }
   }
 
-  // Handle different types of exceptions
   static Map<String, dynamic> _handleException(dynamic e) {
     if (e is SocketException) {
       throw Exception('No Internet connection');

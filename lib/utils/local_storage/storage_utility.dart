@@ -1,44 +1,58 @@
-import 'package:get_storage/get_storage.dart';
+import 'package:doc_sync/utils/constants/enums.dart' show StorageType;
+import 'package:doc_sync/utils/local_storage/app_local_storage.dart';
+import 'package:doc_sync/utils/local_storage/app_secure_storage.dart';
 
-class AppLocalStorage {
-  late final GetStorage _storage;
+class StorageUtility {
+  static StorageUtility? _instance;
+  final AppSecureStorage _secure;
 
-  // Singleton instance
-  static AppLocalStorage? _instance;
+  StorageUtility._internal() : _secure = AppSecureStorage.instance();
 
-  AppLocalStorage._internal();
-
-  /// Create a named constructor to obtain an instance with a specific bucket name
-  factory AppLocalStorage.instance() {
-    _instance ??= AppLocalStorage._internal();
+  factory StorageUtility.instance() {
+    _instance ??= StorageUtility._internal();
     return _instance!;
   }
 
-  /// Asynchronous initialization method
-  static Future<void> init(String bucketName) async {
-    // Very Important when you want to use Bucket's
-    await GetStorage.init(bucketName);
-    _instance = AppLocalStorage._internal();
-    _instance!._storage = GetStorage(bucketName);
+  Future<void> writeData(String key, String value,
+      {StorageType type = StorageType.local, String bucket = 'userData'}) async {
+    if (type == StorageType.secure) {
+      await _secure.writeData(key, value);
+    } else {
+      final local = await AppLocalStorage.getInstance(bucket);
+      await local.writeData<String>(key, value);
+    }
   }
 
-  /// Generic method to save data
-  Future<void> writeData<T>(String key, T value) async {
-    await _storage.write(key, value);
+  Future<String?> readData(String key,
+      {StorageType type = StorageType.local, String bucket = 'userData'}) async {
+    if (type == StorageType.secure) {
+      return await _secure.readData(key);
+    } else {
+      final local = await AppLocalStorage.getInstance(bucket);
+      return local.readData<String>(key);
+    }
   }
 
-  /// Generic method to read data
-  T? readData<T>(String key) {
-    return _storage.read<T>(key);
+  Future<void> removeData(String key,
+      {StorageType type = StorageType.local, String bucket = 'userData'}) async {
+    if (type == StorageType.secure) {
+      await _secure.removeData(key);
+    } else {
+      final local = await AppLocalStorage.getInstance(bucket);
+      await local.removeData(key);
+    }
   }
 
-  /// Generic method to remove data
-  Future<void> removeData(String key) async {
-    await _storage.remove(key);
-  }
-
-  /// Clear all data in storage
-  Future<void> clearAll() async {
-    await _storage.erase();
+  Future<void> clearAll(
+      {bool clearLocal = true,
+      bool clearSecure = true,
+      List<String> localBuckets = const ['userData']}) async {
+    if (clearLocal) {
+      for (final bucket in localBuckets) {
+        final local = await AppLocalStorage.getInstance(bucket);
+        await local.clearAll();
+      }
+    }
+    if (clearSecure) await _secure.clearAll();
   }
 }

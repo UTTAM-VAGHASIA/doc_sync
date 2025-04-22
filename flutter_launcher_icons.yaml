@@ -1,0 +1,38 @@
+# flutter pub run flutter_launcher_icons
+#
+# To prevent stretching and ensure centering, use logo images with transparent padding ("safe zone") so the icon does not touch the edges. Recommended: at least 20% padding on all sides for adaptive icons.
+# For best results, create separate padded versions of your logo (e.g., app-logo-blue-padded.png) for use as adaptive_icon_foreground and monochrome.
+# Update assets/logos/ with padded versions if not already present.
+flutter_launcher_icons:
+  android: true
+  ios: true
+  web:
+    generate: true
+    image_path: "assets/logos/app-logo-blue-padded.png"
+    background_color: "#ffffff"
+    theme_color: "#1976d2"
+    image_path_dark: "assets/logos/app-logo-white-padded.png"
+    background_color_dark: "#000000"
+    theme_color_dark: "#121212"
+  windows:
+    generate: true
+    image_path: "assets/logos/app-logo-blue-padded.png"
+    icon_size: 256
+    image_path_dark: "assets/logos/app-logo-white-padded.png"
+    background_color: "#ffffff"
+    background_color_dark: "#000000"
+  macos:
+    generate: true
+    image_path: "assets/logos/app-logo-blue-padded.png"
+    image_path_dark: "assets/logos/app-logo-white-padded.png"
+    background_color: "#ffffff"
+    background_color_dark: "#000000"
+  image_path: "assets/logos/app-logo-blue-paddedd.png"
+  image_path_android: "assets/logos/app-logo-blue-padded.png"
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/logos/app-logo-blue-padded.png"
+  adaptive_icon_monochrome: "assets/logos/app-logo-black-padded.png"
+  min_sdk_android: 21
+  image_path_ios: "assets/logos/app-logo-blue-padded.png"
+  image_path_ios_dark_transparent: "assets/logos/app-logo-white-padded.png"
+  remove_alpha_channel_ios: true

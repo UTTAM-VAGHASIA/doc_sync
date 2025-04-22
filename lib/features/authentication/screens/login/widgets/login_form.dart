@@ -1,5 +1,6 @@
 import 'package:doc_sync/features/authentication/controllers/login_controller.dart';
 import 'package:doc_sync/routes/routes.dart';
+import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:doc_sync/utils/constants/sizes.dart';
 import 'package:doc_sync/utils/constants/text_strings.dart';
 import 'package:doc_sync/utils/validators/validation.dart';
@@ -90,14 +91,31 @@ class LoginForm extends StatelessWidget {
             SizedBox(height: AppSizes.spaceBtwSections),
 
             // SignIn Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => controller.emailAndPasswordSignIn(),
-                // onPressed: () => controller.registerAdmin(),
-                child: Text(AppTexts.signIn),
-              ),
-            ),
+            Obx(() {
+              return SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed:
+                      () =>
+                          (controller.isLoading.value)
+                              ? null
+                              : controller.emailAndPasswordSignIn(),
+                  child:
+                      (controller.isLoading.value)
+                          ? CircularProgressIndicator(
+                            color: AppColors.buttonDisabled,
+                            strokeWidth: 4,
+                            constraints: BoxConstraints(
+                              minWidth: AppSizes.buttonHeight + 4.2,
+                              maxWidth: AppSizes.buttonHeight + 4.2,
+                              minHeight: AppSizes.buttonHeight + 4.2,
+                              maxHeight: AppSizes.buttonHeight + 4.2,
+                            ),
+                          )
+                          : Text(AppTexts.signIn),
+                ),
+              );
+            }),
           ],
         ),
       ),

@@ -1,0 +1,1 @@
+typedef RetryJob = Future<void> Function();
