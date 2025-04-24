@@ -270,37 +270,43 @@ class DashboardMobileScreen extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: iconColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    icon,
-                    size: 28,
-                    color: iconColor,
+                Flexible(
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: iconColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      icon,
+                      size: 28,
+                      color: iconColor,
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            Text(
-              value,
-              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: iconColor,
+            Flexible(child: const SizedBox(height: 16)),
+            Flexible(
+              child: Text(
+                value,
+                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: iconColor,
+                ),
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              subtitle,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: subtleTextColor,
-                fontWeight: FontWeight.w400,
+            Flexible(child: const SizedBox(height: 8)),
+            Flexible(
+              child: Text(
+                subtitle,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: subtleTextColor,
+                  fontWeight: FontWeight.w400,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
