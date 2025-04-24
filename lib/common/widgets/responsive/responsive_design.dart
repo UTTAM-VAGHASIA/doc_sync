@@ -1,4 +1,4 @@
-import 'package:doc_sync/utils/constants/sizes.dart';
+import 'package:doc_sync/utils/device/device_utility.dart';
 import 'package:flutter/material.dart';
 
 class AppResponsiveWidget extends StatelessWidget {
@@ -22,10 +22,9 @@ class AppResponsiveWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (_, constraints) {
-        if (constraints.maxWidth >= AppSizes.desktopScreenSize) {
+        if (AppDeviceUtils.isDesktopScreen(context)) {
           return desktop;
-        } else if (constraints.maxWidth < AppSizes.desktopScreenSize &&
-            constraints.maxWidth >= AppSizes.tabletScreenSize) {
+        } else if (AppDeviceUtils.isTabletScreen(context)) {
           return tablet;
         } else {
           return mobile;

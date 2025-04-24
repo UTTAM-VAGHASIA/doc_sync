@@ -4,7 +4,10 @@
 # For best results, create separate padded versions of your logo (e.g., app-logo-blue-padded.png) for use as adaptive_icon_foreground and monochrome.
 # Update assets/logos/ with padded versions if not already present.
 flutter_launcher_icons:
-  android: true
+  android: "launcher_icon" # Specify the icon name
+  adaptive_icon_background: "#FFFFFF" # Or use "assets/logos/adaptive-background.png"
+  adaptive_icon_foreground: "assets/logos/adaptive-foreground-blue.png"
+  monochrome: "assets/logos/adaptive-monochrome-white.png"
   ios: true
   web:
     generate: true
@@ -27,11 +30,8 @@ flutter_launcher_icons:
     image_path_dark: "assets/logos/app-logo-white-padded.png"
     background_color: "#ffffff"
     background_color_dark: "#000000"
-  image_path: "assets/logos/app-logo-blue-paddedd.png"
-  image_path_android: "assets/logos/app-logo-blue-padded.png"
-  adaptive_icon_background: "#ffffff"
-  adaptive_icon_foreground: "assets/logos/app-logo-blue-padded.png"
-  adaptive_icon_monochrome: "assets/logos/app-logo-black-padded.png"
+  image_path: "assets/logos/app-logo-blue-padded.png"
+
   min_sdk_android: 21
   image_path_ios: "assets/logos/app-logo-blue-padded.png"
   image_path_ios_dark_transparent: "assets/logos/app-logo-white-padded.png"

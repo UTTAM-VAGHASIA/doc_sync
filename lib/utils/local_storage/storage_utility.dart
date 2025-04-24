@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:doc_sync/features/authentication/models/user_model.dart';
 import 'package:doc_sync/utils/constants/enums.dart' show StorageType;
 import 'package:doc_sync/utils/local_storage/app_local_storage.dart';
 import 'package:doc_sync/utils/local_storage/app_secure_storage.dart';
@@ -13,8 +16,12 @@ class StorageUtility {
     return _instance!;
   }
 
-  Future<void> writeData(String key, String value,
-      {StorageType type = StorageType.local, String bucket = 'userData'}) async {
+  Future<void> writeData(
+    String key,
+    String value, {
+    StorageType type = StorageType.local,
+    String bucket = 'userData',
+  }) async {
     if (type == StorageType.secure) {
       await _secure.writeData(key, value);
     } else {
@@ -23,8 +30,11 @@ class StorageUtility {
     }
   }
 
-  Future<String?> readData(String key,
-      {StorageType type = StorageType.local, String bucket = 'userData'}) async {
+  Future<String?> readData(
+    String key, {
+    StorageType type = StorageType.local,
+    String bucket = 'userData',
+  }) async {
     if (type == StorageType.secure) {
       return await _secure.readData(key);
     } else {
@@ -33,8 +43,11 @@ class StorageUtility {
     }
   }
 
-  Future<void> removeData(String key,
-      {StorageType type = StorageType.local, String bucket = 'userData'}) async {
+  Future<void> removeData(
+    String key, {
+    StorageType type = StorageType.local,
+    String bucket = 'userData',
+  }) async {
     if (type == StorageType.secure) {
       await _secure.removeData(key);
     } else {
@@ -43,10 +56,11 @@ class StorageUtility {
     }
   }
 
-  Future<void> clearAll(
-      {bool clearLocal = true,
-      bool clearSecure = true,
-      List<String> localBuckets = const ['userData']}) async {
+  Future<void> clearAll({
+    bool clearLocal = true,
+    bool clearSecure = true,
+    List<String> localBuckets = const ['userData'],
+  }) async {
     if (clearLocal) {
       for (final bucket in localBuckets) {
         final local = await AppLocalStorage.getInstance(bucket);
@@ -54,5 +68,14 @@ class StorageUtility {
       }
     }
     if (clearSecure) await _secure.clearAll();
+  }
+
+  Future<void> clearUser() async {
+    await _secure.removeData(
+      User.fromJson(jsonDecode(await readData("user", type: StorageType.local) ?? '{}')).id ?? '',
+    );
+
+    final local = await AppLocalStorage.getInstance('userData');
+    await local.clearAll();
   }
 }

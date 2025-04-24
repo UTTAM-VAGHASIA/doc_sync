@@ -6,6 +6,17 @@ import 'package:doc_sync/utils/local_storage/storage_utility.dart';
 import 'package:get/get.dart';
 
 class UserController extends GetxController {
+  static UserController get instance => Get.find();
+
+  RxBool isLoading = false.obs;
+  Rx<User> user = User.fromJson({}).obs;
+
+  @override
+  Future<void> onInit() async {
+    super.onInit();
+    user.value = await getUserDetails();
+  }
+
   Future<void> saveUserDetails(User user) async {
     final userData = jsonEncode(user.toJsonWithoutPassword());
 
@@ -24,11 +35,13 @@ class UserController extends GetxController {
   }
 
   Future<User> getUserDetails() async {
+    isLoading.value = true;
     String? token = await StorageUtility.instance().readData(
       "user",
       type: StorageType.local,
     );
 
+    isLoading.value = false;
     if (token == null || token == '') {
       return User.fromJson({});
     } else {
@@ -60,6 +73,6 @@ class UserController extends GetxController {
   }
 
   Future<void> clearUser({List<String> buckets = const ["userData"]}) async {
-    await StorageUtility.instance().clearAll(localBuckets: buckets); // clears both local and secure
+    await StorageUtility.instance().clearUser();
   }
 }

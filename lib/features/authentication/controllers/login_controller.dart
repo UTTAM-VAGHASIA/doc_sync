@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:doc_sync/features/authentication/controllers/dashboard_controller.dart';
 import 'package:doc_sync/features/authentication/controllers/user_controller.dart';
 import 'package:doc_sync/features/authentication/models/user_model.dart';
 import 'package:doc_sync/routes/routes.dart';
@@ -18,7 +19,8 @@ import 'package:get/get.dart';
 class LoginController extends GetxController {
   static LoginController get instance => Get.find();
 
-  final userController = Get.find<UserController>();
+  final userController = UserController.instance;
+  final dashboardController = DashboardController.instance;
 
   final hidePassword = true.obs;
   final rememberMe = true.obs;
@@ -34,7 +36,11 @@ class LoginController extends GetxController {
   Future<void> onInit() async {
     isLoggedIn.value = false;
     email.text =
-        (await StorageUtility.instance().readData("REMEMBER_ME_EMAIL")) ?? '';
+        (await StorageUtility.instance().readData(
+          "REMEMBER_ME_EMAIL",
+          bucket: "loginData",
+        )) ??
+        '';
     password.text =
         (await StorageUtility.instance().readData(
           "REMEMBER_ME_PASSWORD",
@@ -74,10 +80,20 @@ class LoginController extends GetxController {
         StorageUtility.instance().writeData(
           "REMEMBER_ME_EMAIL",
           email.text.trim(),
+          bucket: "loginData",
         );
         StorageUtility.instance().writeData(
           "REMEMBER_ME_PASSWORD",
           password.text.trim(),
+          type: StorageType.secure,
+        );
+      } else {
+        StorageUtility.instance().removeData(
+          "REMEMBER_ME_EMAIL",
+          bucket: "loginData",
+        );
+        StorageUtility.instance().removeData(
+          "REMEMBER_ME_PASSWORD",
           type: StorageType.secure,
         );
       }

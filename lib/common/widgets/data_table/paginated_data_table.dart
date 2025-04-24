@@ -13,7 +13,8 @@ class AppPaginatedDataTable extends StatelessWidget {
     super.key,
     required this.columns,
     required this.source,
-    this.rowsPerPage = 10,
+    this.rowsPerPage = 25,
+    this.availableRowsPerPage = const [5, 10, 15, 20, 25],
     this.tableHeight = 760,
     this.onPageChanged,
     this.sortColumnIndex,
@@ -30,6 +31,9 @@ class AppPaginatedDataTable extends StatelessWidget {
 
   /// Number of rows to display per page.
   final int rowsPerPage;
+
+  /// List of available rows per page options.
+  final List<int> availableRowsPerPage;
 
   /// Data source for the DataTable.
   final DataTableSource source;
@@ -67,6 +71,7 @@ class AppPaginatedDataTable extends StatelessWidget {
           dividerThickness: 0,
           horizontalMargin: 12,
           rowsPerPage: rowsPerPage,
+          availableRowsPerPage: availableRowsPerPage,
           showFirstLastButtons: true,
           showCheckboxColumn: true,
           sortAscending: sortAscending,
@@ -75,9 +80,11 @@ class AppPaginatedDataTable extends StatelessWidget {
           renderEmptyRowsInTheEnd: false,
           onRowsPerPageChanged: (noOfRows) {},
           sortColumnIndex: sortColumnIndex,
-          headingTextStyle: Theme.of(context).textTheme.titleMedium,
+          headingTextStyle: Theme.of(
+            context,
+          ).textTheme.titleMedium!.copyWith(color: AppColors.textWhite),
           headingRowColor: WidgetStateProperty.resolveWith(
-            (states) => AppColors.primaryBackground,
+            (states) => AppColors.primary,
           ),
           empty: AppAnimationLoaderWidget(
             animation: AppImages.packageAnimation,

@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'dart:math' as math;
+import 'package:doc_sync/features/authentication/controllers/dashboard_controller.dart';
 import 'package:doc_sync/features/authentication/controllers/user_controller.dart';
 import 'package:doc_sync/features/authentication/models/user_model.dart';
-import 'package:doc_sync/features/authentication/screens/dashboard/dashboard.dart';
-import 'package:doc_sync/features/authentication/screens/login/login.dart';
 import 'package:doc_sync/routes/routes.dart';
 import 'package:doc_sync/utils/helpers/network_manager.dart';
 import 'package:doc_sync/utils/helpers/retry_queue_manager.dart';
@@ -16,7 +15,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class SplashController extends GetxController with GetTickerProviderStateMixin {
-  final userController = Get.find<UserController>();
+  final userController = UserController.instance;
+  final dashboardController = DashboardController.instance;
   String finalDestination = AppRoutes.login;
 
   // Observable properties for UI
@@ -259,6 +259,7 @@ class SplashController extends GetxController with GetTickerProviderStateMixin {
         userController.saveUserDetails(user);
 
         finalDestination = AppRoutes.dashboard;
+        await dashboardController.fetchDashboardData();
       }
     } else {
       print("Login Not Successful, Navigating to Login Screen.");
@@ -280,6 +281,7 @@ class SplashController extends GetxController with GetTickerProviderStateMixin {
     await Future.delayed(Duration(milliseconds: 300));
 
     // Navigate to the appropriate screen
+    print("Navigating to $finalDestination");
     Get.offAllNamed(finalDestination);
   }
 

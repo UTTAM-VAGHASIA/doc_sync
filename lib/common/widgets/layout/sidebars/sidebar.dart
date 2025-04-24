@@ -1,7 +1,8 @@
-import 'package:doc_sync/common/widgets/images/app_circular_image.dart';
+import 'package:doc_sync/common/widgets/images/app_rounded_image.dart';
 import 'package:doc_sync/common/widgets/layout/sidebars/menu/menu_item.dart';
 import 'package:doc_sync/routes/routes.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
+import 'package:doc_sync/utils/constants/enums.dart';
 import 'package:doc_sync/utils/constants/image_strings.dart';
 import 'package:doc_sync/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
@@ -22,12 +23,15 @@ class AppSidebar extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              SizedBox(height: AppSizes.defaultSpace),
               // Image
-              AppCircularImage(
+              AppRoundedImage(
                 width: 100,
                 height: 100,
-                image: AppImages.darkAppLogo,
-                backgroundColor: Colors.transparent,
+                image: AppImages.lightAppLogo,
+                backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
+                fit: BoxFit.contain,
+                imageType: ImageType.asset,
               ),
               SizedBox(height: AppSizes.defaultSpace),
               Padding(

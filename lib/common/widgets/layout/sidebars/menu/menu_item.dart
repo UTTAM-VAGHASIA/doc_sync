@@ -18,7 +18,7 @@ class AppMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final menuController = Get.put(SidebarController());
+    final menuController = SidebarController.instance;
 
     return InkWell(
       onTap: () => menuController.menuOnTap(route),
@@ -43,24 +43,26 @@ class AppMenuItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Icon
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: AppSizes.md,
-                    top: AppSizes.md,
-                    bottom: AppSizes.md,
-                    right: AppSizes.md,
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: AppSizes.md,
+                      top: AppSizes.md,
+                      bottom: AppSizes.md,
+                      right: AppSizes.md,
+                    ),
+                    child:
+                        (menuController.isActive(route))
+                            ? Icon(icon, size: 22, color: AppColors.white)
+                            : Icon(
+                              icon,
+                              size: 22,
+                              color:
+                                  menuController.isHovering(route)
+                                      ? AppColors.white
+                                      : AppColors.darkGrey,
+                            ),
                   ),
-                  child:
-                      (menuController.isActive(route))
-                          ? Icon(icon, size: 22, color: AppColors.white)
-                          : Icon(
-                            icon,
-                            size: 22,
-                            color:
-                                menuController.isHovering(route)
-                                    ? AppColors.white
-                                    : AppColors.darkGrey,
-                          ),
                 ),
 
                 // Text

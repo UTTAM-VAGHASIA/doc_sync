@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.0.2] - 2025-04-11
+## [0.0.2] - 2025-04-24
 
 ### Added
 
@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
 - Login Screen now works.
 - Completed Flow from splash to dashboard with proper errors and exception handling.
 - Added Logo to the Application.
+- Dashboard now shows data.
+- User can now logout.
 
 ### Fixed
 

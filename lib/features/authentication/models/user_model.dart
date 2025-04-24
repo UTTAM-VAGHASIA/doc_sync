@@ -1,10 +1,12 @@
+import 'package:doc_sync/utils/constants/enums.dart';
+
 class User {
   final String? id;
   final String? name;
   final String? contact;
   final String? email;
   final String? password;
-  final String? type;
+  final AppRole? type;
   final String? status;
   final String? dateTime;
 
@@ -26,7 +28,12 @@ class User {
       contact: json['contact'],
       email: json['email'],
       password: json['password'],
-      type: json['type'],
+      type: switch (json['type'].toString()) {
+        'staff' => AppRole.staff,
+        'admin' => AppRole.admin,
+        "superadmin" => AppRole.superadmin,
+        (_) => null,
+      },
       status: json['status'],
       dateTime: json['date_time'],
     );
@@ -39,7 +46,12 @@ class User {
       'contact': contact,
       'email': email,
       'password': password,
-      'type': type,
+      'type': switch (type) {
+        AppRole.superadmin => "admin",
+        AppRole.admin => "admin",
+        AppRole.staff => "staff",
+        _ => "",
+      },
       'status': status,
       'date_time': dateTime,
     };
@@ -51,7 +63,12 @@ class User {
       'name': name,
       'contact': contact,
       'email': email,
-      'type': type,
+      'type': switch (type) {
+        AppRole.superadmin => "admin",
+        AppRole.admin => "admin",
+        AppRole.staff => "staff",
+        _ => "",
+      },
       'status': status,
       'date_time': dateTime,
     };
