@@ -96,10 +96,41 @@ extension DashboardTableDataExtension on DashboardTableData {
 
   // Helper method to get cell value at specific row and column
   dynamic getCell(int rowIndex, int columnIndex) {
-    // This assumes you have a way to access data at specific row and column
-    // Implement this according to your actual DashboardTableData implementation
-    // For example:
-    // return data[rowIndex][columnIndex];
-    return "";
+    if (rowIndex < 0 || rowIndex >= dashboardController.tableItems.length) {
+      return "";
+    }
+
+    final data = dashboardController.tableItems[rowIndex];
+
+    // Map column index to the corresponding property
+    switch (columnIndex) {
+      case 0: // Serial number (index + 1)
+        return rowIndex + 1;
+      case 1: // Employee name
+        return data.name;
+      case 2: // Pending tasks
+        return data.pending;
+      case 3: // Completed tasks
+        return data.completed;
+      case 4: // Allotted tasks
+        return data.alloted;
+      case 5: // Re-allotted tasks
+        return data.reAlloted;
+      case 6: // Awaiting client
+        return data.awaitingClient;
+      case 7: // Total remaining
+        return (data.pending ?? 0) +
+            (data.alloted ?? 0) +
+            (data.reAlloted ?? 0) +
+            (data.awaitingClient ?? 0);
+      case 8: // Total tasks
+        return (data.pending ?? 0) +
+            (data.completed ?? 0) +
+            (data.alloted ?? 0) +
+            (data.reAlloted ?? 0) +
+            (data.awaitingClient ?? 0);
+      default:
+        return "";
+    }
   }
 }

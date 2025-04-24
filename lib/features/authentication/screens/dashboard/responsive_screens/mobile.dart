@@ -296,7 +296,7 @@ class DashboardMobileScreen extends StatelessWidget {
                 ),
               ),
             ),
-            Flexible(child: const SizedBox(height: 8)),
+            // Flexible(child: const SizedBox(height: 8)),
             Flexible(
               child: Text(
                 subtitle,
