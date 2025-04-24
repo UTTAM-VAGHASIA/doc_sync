@@ -45,6 +45,7 @@ dependencies:
   flutter_svg: ^2.1.0
   flutter_launcher_icons: ^0.14.3
   liquid_pull_to_refresh: ^3.0.1
+  carousel_slider: ^5.0.0
 
 
 dev_dependencies:

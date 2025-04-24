@@ -27,7 +27,7 @@ class DashboardTabletScreen extends StatelessWidget {
       onRefresh: () => dashboardController.fetchDashboardData(),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        // hitTestBehavior: HitTestBehavior.opaque,
+        hitTestBehavior: HitTestBehavior.translucent,
         padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

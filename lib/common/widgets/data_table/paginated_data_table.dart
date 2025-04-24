@@ -20,7 +20,7 @@ class AppPaginatedDataTable extends StatelessWidget {
     this.sortColumnIndex,
     this.dataRowHeight = AppSizes.xl * 2,
     this.sortAscending = true,
-    this.minWidth = 1000,
+    this.minWidth = 900,
   });
 
   /// Whether to sort the DataTable in ascending or descending order.
@@ -68,7 +68,7 @@ class AppPaginatedDataTable extends StatelessWidget {
           columns: columns,
           columnSpacing: 12,
           minWidth: minWidth,
-          dividerThickness: 0,
+          dividerThickness: 1,
           horizontalMargin: 12,
           rowsPerPage: rowsPerPage,
           availableRowsPerPage: availableRowsPerPage,
@@ -78,6 +78,7 @@ class AppPaginatedDataTable extends StatelessWidget {
           onPageChanged: onPageChanged,
           dataRowHeight: dataRowHeight,
           renderEmptyRowsInTheEnd: false,
+          border: TableBorder.all(color: Colors.grey.shade300, width: 1),
           onRowsPerPageChanged: (noOfRows) {},
           sortColumnIndex: sortColumnIndex,
           headingTextStyle: Theme.of(

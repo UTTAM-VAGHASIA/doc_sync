@@ -4,6 +4,8 @@ import 'package:doc_sync/features/authentication/controllers/user_controller.dar
 import 'package:doc_sync/features/authentication/models/dashboard_table_item_model.dart';
 import 'package:doc_sync/features/authentication/models/user_model.dart';
 import 'package:doc_sync/utils/constants/enums.dart';
+import 'package:doc_sync/utils/helpers/network_manager.dart';
+import 'package:doc_sync/utils/helpers/retry_queue_manager.dart';
 import 'package:doc_sync/utils/http/http_client.dart';
 import 'package:get/get.dart';
 
@@ -11,6 +13,8 @@ class DashboardController extends GetxController {
   static DashboardController get instance => Get.find();
 
   final userController = UserController.instance;
+
+  final RxInt currentCarouselIndex = 0.obs;
 
   final RxInt todayCreated = 0.obs;
   final RxInt todayAllotedMe = 0.obs;
@@ -44,6 +48,12 @@ class DashboardController extends GetxController {
       }),
     };
 
+    final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) {
+        RetryQueueManager.instance.addJob(fetchDashboardData);
+        return;
+      }
+
     print(requestData);
 
     final data = await AppHttpHelper.sendMultipartRequest(
@@ -74,14 +84,13 @@ class DashboardController extends GetxController {
       print('Today Created: ${todayCreated.value}');
       print('Today Alloted Me: ${todayAllotedMe.value}');
       print('Today Completed: ${todayCompleted.value}');
-      print('Today Pending: ${todayPending.value}');  
+      print('Today Pending: ${todayPending.value}');
       print('Total Pending: ${totalPending.value}');
       print('Total Tasks: ${totalTasks.value}');
       print('Running Late: ${runningLate.value}');
       print('Total Completed: ${totalCompleted.value}');
       print('Table Items: ${tableItems.length}');
     }
-
     //
   }
 }
