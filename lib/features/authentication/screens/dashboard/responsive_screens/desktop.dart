@@ -1,5 +1,6 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:doc_sync/common/widgets/data_table/paginated_data_table.dart';
+import 'package:doc_sync/common/widgets/shimmers/shimmer.dart';
 import 'package:doc_sync/features/authentication/controllers/dashboard_controller.dart';
 import 'package:doc_sync/features/authentication/models/dashboard_table_data_source.dart';
 import 'package:doc_sync/features/authentication/screens/dashboard/widgets/greeting_with_route.dart';
@@ -10,12 +11,28 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
-class DashboardDesktopScreen extends StatelessWidget {
+class DashboardDesktopScreen extends StatefulWidget {
   const DashboardDesktopScreen({super.key});
 
   @override
+  State<DashboardDesktopScreen> createState() => _DashboardDesktopScreenState();
+}
+
+class _DashboardDesktopScreenState extends State<DashboardDesktopScreen> {
+  final dashboardController = Get.find<DashboardController>();
+  
+  @override
+  void initState() {
+    super.initState();
+    // Fetch dashboard data when the screen is first shown
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // This will only fetch if dataAlreadyFetched is false
+      dashboardController.fetchDashboardData();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final dashboardController = DashboardController.instance;
     // Using a primary color similar to the image, adjust as needed
     final Color cardBackgroundColor = AppColors.white;
     final Color textColor = AppColors.textPrimary;
@@ -27,7 +44,7 @@ class DashboardDesktopScreen extends StatelessWidget {
         color: AppColors.primary,
         backgroundColor: AppColors.light,
         showChildOpacityTransition: false,
-        onRefresh: () => dashboardController.fetchDashboardData(),
+        onRefresh: () => dashboardController.refreshDashboardData(),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           // hitTestBehavior: HitTestBehavior.opaque,
@@ -59,6 +76,7 @@ class DashboardDesktopScreen extends StatelessWidget {
                   cardBackgroundColor: cardBackgroundColor,
                   textColor: textColor,
                   subtleTextColor: subtleTextColor,
+                  isLoading: dashboardController.isLoading.value,
                 ),
               ),
 

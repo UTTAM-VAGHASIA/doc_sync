@@ -1,27 +1,45 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:doc_sync/features/authentication/controllers/dashboard_controller.dart';
-import 'package:doc_sync/features/authentication/models/dashboard_table_item_model.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
+import 'package:doc_sync/common/widgets/shimmers/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
-class DashboardMobileScreen extends StatelessWidget {
+class DashboardMobileScreen extends StatefulWidget {
   const DashboardMobileScreen({super.key});
 
   @override
+  State<DashboardMobileScreen> createState() => _DashboardMobileScreenState();
+}
+
+class _DashboardMobileScreenState extends State<DashboardMobileScreen> {
+  final dashboardController = Get.find<DashboardController>();
+  
+  @override
+  void initState() {
+    super.initState();
+    // Fetch dashboard data when the screen is first shown
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // This will only fetch if dataAlreadyFetched is false
+      dashboardController.fetchDashboardData();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final dashboardController = DashboardController.instance;
     final Color cardBackgroundColor = AppColors.white;
     final Color textColor = AppColors.textPrimary;
     final Color subtleTextColor = AppColors.textSecondary;
+
+    // Add this to track expansion state
+    final RxMap<int, bool> expansionStates = <int, bool>{}.obs;
 
     return LiquidPullToRefresh(
       animSpeedFactor: 2.3,
       color: AppColors.primary,
       backgroundColor: AppColors.light,
       showChildOpacityTransition: false,
-      onRefresh: () => dashboardController.fetchDashboardData(),
+      onRefresh: () => dashboardController.refreshDashboardData(),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         hitTestBehavior: HitTestBehavior.translucent,
@@ -30,7 +48,11 @@ class DashboardMobileScreen extends StatelessWidget {
           children: [
             // --- Greeting and route info ---
             Padding(
-              padding: const EdgeInsets.only(left: 16.0, top: 16.0, right: 16.0),
+              padding: const EdgeInsets.only(
+                left: 16.0,
+                top: 16.0,
+                right: 16.0,
+              ),
               child: Padding(
                 padding: const EdgeInsets.only(left: 4.0, bottom: 12.0),
                 child: Row(
@@ -42,7 +64,7 @@ class DashboardMobileScreen extends StatelessWidget {
                       children: [
                         Obx(
                           () => Text(
-                            'Welcome, ${dashboardController.userController.user.value.name}!',
+                            'Welcome, ${dashboardController.userController.user.value.name ?? 'User'}!',
                             style: Theme.of(
                               context,
                             ).textTheme.headlineLarge?.copyWith(
@@ -54,7 +76,9 @@ class DashboardMobileScreen extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           'home / dashboard',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.copyWith(
                             color: subtleTextColor,
                             fontWeight: FontWeight.w400,
                           ),
@@ -65,7 +89,7 @@ class DashboardMobileScreen extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             // --- Summary Cards Carousel ---
             const SizedBox(height: 16),
             Padding(
@@ -79,10 +103,10 @@ class DashboardMobileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            
+
             // Summary Cards as Carousel
             Obx(
-              () => _buildSummaryCardsCarousel(
+              () => _buildSummaryCards(
                 context: context,
                 dashboardController: dashboardController,
                 cardBackgroundColor: cardBackgroundColor,
@@ -90,32 +114,9 @@ class DashboardMobileScreen extends StatelessWidget {
                 subtleTextColor: subtleTextColor,
               ),
             ),
-            
-            // Progress indicator for carousel
-            Center(
-              child: Obx(
-                () => Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: List.generate(
-                    6, // Number of cards
-                    (index) => Container(
-                      width: 8,
-                      height: 8,
-                      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: dashboardController.currentCarouselIndex.value == index
-                            ? AppColors.primary
-                            : Colors.grey.shade300,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
 
             const SizedBox(height: 24),
-            
+
             // --- Work Flow Section (Employee Performance) ---
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -128,7 +129,7 @@ class DashboardMobileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            
+
             // Employee performance cards (replacing DataTable)
             _buildEmployeePerformanceList(
               context: context,
@@ -137,7 +138,7 @@ class DashboardMobileScreen extends StatelessWidget {
               textColor: textColor,
               subtleTextColor: subtleTextColor,
             ),
-            
+
             const SizedBox(height: 24),
           ],
         ),
@@ -146,7 +147,7 @@ class DashboardMobileScreen extends StatelessWidget {
   }
 
   // Build carousel for summary cards
-  Widget _buildSummaryCardsCarousel({
+  Widget _buildSummaryCards({
     required BuildContext context,
     required DashboardController dashboardController,
     required Color cardBackgroundColor,
@@ -199,32 +200,61 @@ class DashboardMobileScreen extends StatelessWidget {
       },
     ];
 
-    return CarouselSlider.builder(
-      itemCount: summaryCardsData.length,
-      options: CarouselOptions(
-        height: 180,
-        enlargeCenterPage: true,
-        viewportFraction: 0.9,
-        enableInfiniteScroll: true,
-        autoPlay: false,
-        onPageChanged: (index, reason) {
-          dashboardController.currentCarouselIndex.value = index;
-        },
-      ),
-      itemBuilder: (context, index, realIndex) {
-        final cardData = summaryCardsData[index];
-        return _buildEnhancedSummaryCard(
-          context: context,
-          title: cardData['title'],
-          value: cardData['value'],
-          icon: cardData['icon'],
-          iconColor: cardData['iconColor'],
-          subtitle: cardData['subtitle'],
-          cardBackgroundColor: cardBackgroundColor,
-          textColor: textColor,
-          subtleTextColor: subtleTextColor,
+    // Calculate the width of each card based on screen size
+    final screenWidth = MediaQuery.of(context).size.width;
+    final crossAxisCount = screenWidth > 600 ? 3 : 2; // 3 columns for wider screens, 2 for narrow
+    final cardWidth = (screenWidth - (32 + (crossAxisCount - 1) * 8)) / crossAxisCount;
+    final cardHeight = cardWidth * 0.8; // Maintain aspect ratio
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Obx(() {
+        print("Dashboard loading state: ${dashboardController.isLoading.value}");
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: cardWidth / cardHeight,
+          ),
+          itemCount: summaryCardsData.length,
+          itemBuilder: (context, index) {
+            final cardData = summaryCardsData[index];
+            
+            // Create the value widget based on loading state
+            Widget valueDisplay;
+            if (dashboardController.isLoading.value) {
+              valueDisplay = AppShimmerEffect(width: 64, height: 32);
+              print("Creating shimmer for card $index");
+            } else {
+              valueDisplay = Text(
+                cardData['value'],
+                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: cardData['iconColor'],
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              );
+            }
+            
+            return _buildEnhancedSummaryCard(
+              context: context,
+              title: cardData['title'],
+              valueWidget: valueDisplay,
+              icon: cardData['icon'],
+              iconColor: cardData['iconColor'],
+              subtitle: cardData['subtitle'],
+              cardBackgroundColor: cardBackgroundColor,
+              textColor: textColor,
+              subtleTextColor: subtleTextColor,
+              heroTag: index,
+            );
+          },
         );
-      },
+      }),
     );
   }
 
@@ -232,83 +262,87 @@ class DashboardMobileScreen extends StatelessWidget {
   Widget _buildEnhancedSummaryCard({
     required BuildContext context,
     required String title,
-    required String value,
+    required Widget valueWidget,
     required IconData icon,
     required Color iconColor,
     required String subtitle,
     required Color cardBackgroundColor,
     required Color textColor,
     required Color subtleTextColor,
+    required int heroTag,
   }) {
-    return Card(
-      elevation: 3,
-      shadowColor: Colors.grey.shade200,
-      color: cardBackgroundColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: iconColor.withOpacity(0.3),
-          width: 1.5,
+    void openExpandedCard() {
+      Navigator.of(context).push(
+        PageRouteBuilder(
+          opaque: false,
+          barrierColor: Colors.black54,
+          pageBuilder: (_, __, ___) => _ExpandedSummaryCard(
+            heroTag: heroTag,
+            title: title,
+            valueWidget: valueWidget,
+            icon: icon,
+            iconColor: iconColor,
+            subtitle: subtitle,
+            cardBackgroundColor: cardBackgroundColor,
+            textColor: textColor,
+            subtleTextColor: subtleTextColor,
+          ),
+          transitionDuration: const Duration(milliseconds: 350),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
+      );
+    }
+
+    return Hero(
+      tag: 'summary_card_$heroTag',
+      child: GestureDetector(
+        onLongPress: openExpandedCard,
+        child: Card(
+          elevation: 3,
+          shadowColor: Colors.grey.shade200,
+          color: cardBackgroundColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: iconColor.withOpacity(0.3), width: 1.5),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Flexible(
-                  child: Text(
-                    title,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: textColor,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: textColor,
+                            ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.start,
+                      ),
                     ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                    GestureDetector(
+                      onTap: openExpandedCard,
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: iconColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(icon, size: 28, color: iconColor),
+                      ),
+                    ),
+                  ],
                 ),
-                Flexible(
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: iconColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      icon,
-                      size: 28,
-                      color: iconColor,
-                    ),
-                  ),
-                ),
+                const SizedBox(height: 12),
+                valueWidget,
               ],
             ),
-            Flexible(child: const SizedBox(height: 16)),
-            Flexible(
-              child: Text(
-                value,
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: iconColor,
-                ),
-              ),
-            ),
-            // Flexible(child: const SizedBox(height: 8)),
-            Flexible(
-              child: Text(
-                subtitle,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: subtleTextColor,
-                  fontWeight: FontWeight.w400,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -322,56 +356,172 @@ class DashboardMobileScreen extends StatelessWidget {
     required Color textColor,
     required Color subtleTextColor,
   }) {
-    return ListView.builder(
+    // Controller for the search field
+    final TextEditingController searchController = TextEditingController(
+      text: dashboardController.searchQuery.value,
+    );
+
+    return Obx(() {
+      // Keep the controller in sync with the observable
+      if (searchController.text != dashboardController.searchQuery.value) {
+        searchController.text = dashboardController.searchQuery.value;
+        searchController.selection = TextSelection.fromPosition(
+          TextPosition(offset: searchController.text.length),
+        );
+      }
+
+      if (dashboardController.isLoading.value) {
+        return const 
+        Padding(padding: EdgeInsets.all(16.0),child: Center(
+          child: AppShimmerEffect(width: double.infinity, height: 400
+        ),),);
+      }
+
+      if (dashboardController.tableItems.isEmpty) {
+        return const Center(child: Text('No data available'));
+      }
+
+      return Column(
+        children: [
+          // Search and Filter Section
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Card(
+              elevation: 0,
+              color: cardBackgroundColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: Colors.grey.shade200),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Search Bar with clear button
+                    TextField(
+                      controller: searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Search employees...',
+                        prefixIcon: const Icon(Icons.search),
+                        suffixIcon:
+                            dashboardController.searchQuery.value.isNotEmpty
+                                ? IconButton(
+                                  icon: const Icon(Icons.close),
+                                  onPressed: () {
+                                    searchController.clear();
+                                    dashboardController.updateSearch('');
+                                  },
+                                )
+                                : null,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                      ),
+                      onChanged: dashboardController.updateSearch,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Sort Options
+                    Text(
+                      'Sort by:',
+                      style: TextStyle(
+                        color: textColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _buildSortChip(
+                            'Name',
+                            'name',
+                            dashboardController,
+                            textColor,
+                          ),
+                          const SizedBox(width: 8),
+                          _buildSortChip(
+                            'Pending',
+                            'pending',
+                            dashboardController,
+                            textColor,
+                          ),
+                          const SizedBox(width: 8),
+                          _buildSortChip(
+                            'Completed',
+                            'completed',
+                            dashboardController,
+                            textColor,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // List Items
+          ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: dashboardController.tableItems.length,
+            itemCount: dashboardController.paginatedItems.length,
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       itemBuilder: (context, index) {
-        // Get employee data from data source
-        final item = dashboardController.tableItems[index];
-        
+              final item = dashboardController.paginatedItems[index];
+              final absoluteIndex =
+                  index +
+                  (dashboardController.currentPage.value *
+                      dashboardController.itemsPerPage.value);
+
         // Calculate totals
-        final int totalRemaining = (item.pending ?? 0) + 
-                                  (item.alloted ?? 0) + 
-                                  (item.reAlloted ?? 0) + 
-                                  (item.awaitingClient ?? 0);
-                                  
+        final int totalRemaining =
+            (item.pending ?? 0) +
+            (item.alloted ?? 0) +
+            (item.reAlloted ?? 0) +
+            (item.awaitingClient ?? 0);
+
         final int totalTasks = totalRemaining + (item.completed ?? 0);
-        
-        // Calculate completion percentage
-        final completionPercentage = totalTasks > 0 
-            ? ((item.completed ?? 0) / totalTasks * 100).toInt() 
-            : 0;
-        
-        // Determine status color
+        final completionPercentage =
+            totalTasks > 0
+                ? ((item.completed ?? 0) / totalTasks * 100).toInt()
+                : 0;
+
         Color statusColor = Colors.green;
-        if ((item.pending ?? 0) > 0) {
-          statusColor = Colors.orange;
-        }
-        if (totalRemaining > 5) {
-          statusColor = Colors.red;
-        }
-        
-        // Create expandable employee card
+              if ((item.pending ?? 0) > 0) statusColor = Colors.orange;
+              if (totalRemaining > 5) statusColor = Colors.red;
+
         return Card(
           elevation: 2,
+                color: cardBackgroundColor,
           margin: const EdgeInsets.only(bottom: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           child: Theme(
-            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-            child: ExpansionTile(
-              childrenPadding: const EdgeInsets.only(
-                left: 16, 
-                right: 16, 
-                bottom: 16,
-              ),
-              tilePadding: const EdgeInsets.symmetric(
-                horizontal: 16, 
-                vertical: 8,
-              ),
+            data: Theme.of(context).copyWith(
+              dividerColor: Colors.transparent,
+              scaffoldBackgroundColor: AppColors.light,
+            ),
+                  child: Obx(() {
+                    final isExpanded =
+                        dashboardController.expansionStates[absoluteIndex] ??
+                        false;
+                    return ExpansionTile(
+                      initiallyExpanded: isExpanded,
+                      onExpansionChanged: (expanded) {
+                        dashboardController.expansionStates[absoluteIndex] =
+                            expanded;
+                      },
               title: Row(
                 children: [
                   Container(
@@ -383,7 +533,7 @@ class DashboardMobileScreen extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        '${index + 1}',
+                                '${absoluteIndex + 1}',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: statusColor,
@@ -398,9 +548,9 @@ class DashboardMobileScreen extends StatelessWidget {
                       children: [
                         Text(
                           item.name ?? 'Unknown',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
@@ -416,8 +566,8 @@ class DashboardMobileScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     '$completionPercentage%',
@@ -426,15 +576,33 @@ class DashboardMobileScreen extends StatelessWidget {
                       color: statusColor,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Icon(
-                    Icons.keyboard_arrow_down,
-                    color: subtleTextColor,
-                  ),
+                          const SizedBox(width: 8),
+                          TweenAnimationBuilder<double>(
+                            duration: const Duration(milliseconds: 200),
+                            tween: Tween<double>(
+                              begin: 0,
+                              end: isExpanded ? 1 : 0,
+                            ),
+                            builder: (_, value, __) {
+                              return Transform.rotate(
+                                angle: value * 3.14159,
+                                child: Icon(
+                                  Icons.keyboard_arrow_down,
+                                  color: subtleTextColor,
+                                ),
+                              );
+                            },
+                          ),
                 ],
               ),
               children: [
-                const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24.0,
+                            vertical: 8.0,
+                          ),
+                          child: Column(
+                            children: [
                 // Progress bar
                 ClipRRect(
                   borderRadius: BorderRadius.circular(4),
@@ -510,12 +678,153 @@ class DashboardMobileScreen extends StatelessWidget {
                 ),
               ],
             ),
+                        ),
+                      ],
+                    );
+                  }),
           ),
         );
       },
-    );
+          ),
+
+          // Pagination Controls
+          Card(
+            elevation: 0,
+            color: cardBackgroundColor,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(color: Colors.grey.shade200),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  // Items per page selector
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Show', style: TextStyle(color: textColor)),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: DropdownButton<int>(
+                          value: dashboardController.itemsPerPage.value,
+                          underline: const SizedBox(),
+                          items:
+                              [5, 10, 15, 20].map((value) {
+                                return DropdownMenuItem<int>(
+                                  value: value,
+                                  child: Text('$value'),
+                                );
+                              }).toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              dashboardController.itemsPerPage.value = value;
+                              dashboardController.currentPage.value = 0;
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text('entries', style: TextStyle(color: textColor)),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  // Navigation buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.chevron_left),
+                        onPressed:
+                            dashboardController.currentPage.value > 0
+                                ? dashboardController.previousPage
+                                : null,
+                        style: IconButton.styleFrom(
+                          backgroundColor:
+                              dashboardController.currentPage.value > 0
+                                  ? AppColors.primary.withOpacity(0.1)
+                                  : Colors.grey.shade200,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Text(
+                        'Page ${dashboardController.currentPage.value + 1} of ${dashboardController.totalPages}',
+                        style: TextStyle(
+                          color: textColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      IconButton(
+                        icon: const Icon(Icons.chevron_right),
+                        onPressed:
+                            dashboardController.currentPage.value <
+                                    dashboardController.totalPages - 1
+                                ? dashboardController.nextPage
+                                : null,
+                        style: IconButton.styleFrom(
+                          backgroundColor:
+                              dashboardController.currentPage.value <
+                                      dashboardController.totalPages - 1
+                                  ? AppColors.primary.withOpacity(0.1)
+                                  : Colors.grey.shade200,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    });
   }
-  
+
+  // Helper method for sort chips
+  Widget _buildSortChip(
+    String label,
+    String field,
+    DashboardController controller,
+    Color textColor,
+  ) {
+    return Obx(() {
+      final isSelected = controller.sortBy.value == field;
+      return FilterChip(
+        label: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(label),
+            if (isSelected) ...[
+              const SizedBox(width: 4),
+              Icon(
+                controller.sortAscending.value
+                    ? Icons.arrow_upward
+                    : Icons.arrow_downward,
+                size: 16,
+              ),
+            ],
+          ],
+        ),
+        selected: isSelected,
+        onSelected: (_) => controller.updateSort(field),
+        backgroundColor: Colors.grey.shade200,
+        selectedColor: AppColors.primary.withOpacity(0.2),
+        labelStyle: TextStyle(
+          color: isSelected ? AppColors.primary : textColor,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      );
+    });
+  }
+
   // Helper to build stat row
   Widget _buildStatRow(
     BuildContext context,
@@ -532,17 +841,13 @@ class DashboardMobileScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Row(
             children: [
-              Icon(
-                icon,
-                size: 18,
-                color: iconColor,
-              ),
+              Icon(icon, size: 18, color: iconColor),
               const SizedBox(width: 12),
               Text(
                 label,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: textColor,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: textColor),
               ),
               const Spacer(),
               Text(
@@ -555,16 +860,118 @@ class DashboardMobileScreen extends StatelessWidget {
             ],
           ),
         ),
-        if (!isLast)
-          Divider(
-            color: Colors.grey.shade200,
-            height: 1,
-          ),
+        if (!isLast) Divider(color: Colors.grey.shade200, height: 1),
       ],
+    );
+  }
+
+  // Check that shimmer is working properly
+  AppShimmerEffect _buildTestShimmer() {
+    return AppShimmerEffect(
+      width: 100,
+      height: 50,
+      radius: 8,
+      color: Colors.grey.shade200,
     );
   }
 }
 
-// Add to your pubspec.yaml:
-// dependencies:
-//   carousel_slider: ^4.2.1
+// The expanded card page
+  class _ExpandedSummaryCard extends StatelessWidget {
+    final int heroTag;
+    final String title;
+    final Widget valueWidget;
+    final IconData icon;
+    final Color iconColor;
+    final String subtitle;
+    final Color cardBackgroundColor;
+    final Color textColor;
+    final Color subtleTextColor;
+
+    const _ExpandedSummaryCard({
+      required this.heroTag,
+      required this.title,
+      required this.valueWidget,
+      required this.icon,
+      required this.iconColor,
+      required this.subtitle,
+      required this.cardBackgroundColor,
+      required this.textColor,
+      required this.subtleTextColor,
+    });
+
+    @override
+    Widget build(BuildContext context) {
+      return GestureDetector(
+        onTap: () => Navigator.of(context).pop(),
+        child: Scaffold(
+          backgroundColor: Colors.black54,
+          body: Center(
+            child: Hero(
+              tag: 'summary_card_$heroTag',
+              child: Material(
+                color: Colors.transparent,
+                child: Card(
+                  elevation: 12,
+                  color: cardBackgroundColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    side: BorderSide(color: iconColor.withOpacity(0.3), width: 2),
+                  ),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.85,
+                    padding: const EdgeInsets.all(28.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Flexible(
+                          flex: 3,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  title,
+                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: textColor,
+                                      ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.start,
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: iconColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Icon(icon, size: 36, color: iconColor),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Flexible(child: SizedBox(height: 20)),
+                        Flexible(child: valueWidget),
+                        // const Flexible(child: SizedBox(height: 20)),
+                        Flexible(child: Text(
+                          subtitle,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                color: subtleTextColor,
+                                fontWeight: FontWeight.w400,
+                              ),
+                          textAlign: TextAlign.start,
+                        ),)
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+  }

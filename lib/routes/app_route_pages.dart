@@ -3,6 +3,7 @@ import 'package:doc_sync/features/authentication/screens/forgot_password/forgot_
 import 'package:doc_sync/features/authentication/screens/login/login.dart';
 import 'package:doc_sync/features/authentication/screens/reset_password/reset_password.dart';
 import 'package:doc_sync/features/authentication/screens/splash_screen/splash_screen.dart';
+import 'package:doc_sync/bindings/dashboard_bindings.dart';
 import 'package:doc_sync/routes/routes.dart';
 import 'package:doc_sync/routes/routes_middleware.dart';
 import 'package:get/get.dart';
@@ -19,6 +20,7 @@ class AppRoutePages {
     GetPage(
       name: AppRoutes.dashboard,
       page: () => DashboardScreen(),
+      binding: DashboardBindings(),
       middlewares: [RouteMiddleWare()],
     ),
   ];

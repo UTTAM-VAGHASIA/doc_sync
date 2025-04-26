@@ -1,4 +1,5 @@
 // Helper Widget for Summary Cards
+import 'package:doc_sync/common/widgets/shimmers/shimmer.dart';
 import 'package:doc_sync/features/authentication/screens/dashboard/widgets/summary_cards.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +11,7 @@ Widget buildResponsiveCardGrid({
   required Color textColor,
   required Color subtleTextColor,
   double cardSpacing = 16.0, // Spacing between cards
+  bool isLoading = false, // Add loading state parameter
 }) {
   List<Widget> rows = [];
   final List<Map<String, dynamic>> summaryCardsData = [
@@ -70,7 +72,15 @@ Widget buildResponsiveCardGrid({
             child: buildSummaryCard(
               context: context,
               title: summaryCardsData[cardIndex]['title'],
-              value: summaryCardsData[cardIndex]['value'],
+              valueWidget: isLoading
+                ? AppShimmerEffect(width: 80, height: 30)
+                : Text(
+                    summaryCardsData[cardIndex]['value'],
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                  ),
               icon: summaryCardsData[cardIndex]['icon'],
               iconColor: summaryCardsData[cardIndex]['iconColor'],
               subtitle: summaryCardsData[cardIndex]['subtitle'],

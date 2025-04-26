@@ -3,14 +3,15 @@ import 'package:doc_sync/common/widgets/layout/sidebars/sidebar_controller.dart'
 import 'package:doc_sync/common/widgets/shimmers/shimmer.dart';
 import 'package:doc_sync/features/authentication/controllers/user_controller.dart';
 import 'package:doc_sync/routes/routes.dart';
+import 'package:doc_sync/utils/constants/api_constants.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:doc_sync/utils/constants/enums.dart';
 import 'package:doc_sync/utils/constants/image_strings.dart';
 import 'package:doc_sync/utils/constants/sizes.dart';
 import 'package:doc_sync/utils/device/device_utility.dart';
+import 'package:doc_sync/utils/popups/organization_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/state_manager.dart';
 import 'package:iconsax/iconsax.dart';
 
 class AppHeader extends StatefulWidget implements PreferredSizeWidget {
@@ -76,7 +77,7 @@ class _AppHeaderState extends State<AppHeader> {
                   onPressed:
                       () => widget.scaffoldKey?.currentState?.openDrawer(),
                   icon: Icon(
-                    Iconsax.menu_15,
+                    Icons.segment,
                     size: 42,
                     color: AppColors.primary,
                   ),
@@ -110,16 +111,15 @@ class _AppHeaderState extends State<AppHeader> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               RichText(
-                                text: 
-                                    TextSpan(
-                                      text: 'Doc Sync',
-                                      style: TextStyle(
-                                        color: AppColors.primary,
-                                        fontSize:32,
-                                        fontWeight: FontWeight.w900,
-                                        height: 1.0, // Reduced line height
-                                      ),
-                                    ),
+                                text: TextSpan(
+                                  text: 'Doc Sync',
+                                  style: TextStyle(
+                                    color: AppColors.primary,
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w900,
+                                    height: 1.0, // Reduced line height
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -146,7 +146,7 @@ class _AppHeaderState extends State<AppHeader> {
                   _isMenuOpen = true;
                 });
               },
-              onSelected: (ProfileMenuAction result) {
+              onSelected: (ProfileMenuAction result) async {
                 // Set state when an item is selected (menu closes)
                 setState(() {
                   _isMenuOpen = false;
@@ -155,6 +155,14 @@ class _AppHeaderState extends State<AppHeader> {
                 switch (result) {
                   case ProfileMenuAction.changePassword:
                     print('Change Password Tapped');
+                    break;
+                  case ProfileMenuAction.changeOrganization:
+                    final currentOrganization = ApiConstants().organization;
+                    await OrganizationDialogService.showOrganizationDialog();
+                    if(currentOrganization != ApiConstants().organization){
+                      userController.clearUser();
+                      Get.offAllNamed(AppRoutes.login);
+                    }
                     break;
                   case ProfileMenuAction.logout:
                     print('Log Out Tapped');
@@ -172,6 +180,10 @@ class _AppHeaderState extends State<AppHeader> {
               // --- End of state callbacks ---
               itemBuilder:
                   (BuildContext context) => <PopupMenuEntry<ProfileMenuAction>>[
+                    PopupMenuItem<ProfileMenuAction>(
+                      value: ProfileMenuAction.changeOrganization,
+                      child: Text('Change Organization'),
+                    ),
                     PopupMenuItem<ProfileMenuAction>(
                       value: ProfileMenuAction.changePassword,
                       child: Text('Change Password'),

@@ -11,4 +11,4 @@ enum ImageType { asset, network, memory, file }
 
 enum StorageType { secure, local }
 
-enum ProfileMenuAction { changePassword, logout }
+enum ProfileMenuAction { changeOrganization, changePassword, logout }

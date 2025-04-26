@@ -6,7 +6,7 @@ import 'package:doc_sync/utils/constants/api_constants.dart';
 import 'package:http/http.dart' as http;
 
 class AppHttpHelper {
-  static const _baseUrl = ApiConstants.baseUrl;
+  final _baseUrl = ApiConstants().baseUrl;
   static const _timeoutDuration = ApiConstants.timeoutDuration;
 
   /*
@@ -35,7 +35,7 @@ class AppHttpHelper {
   */
 
   /// Sends a multipart request with optional files and fields
-  static Future<Map<String, dynamic>> sendMultipartRequest(
+  Future<Map<String, dynamic>> sendMultipartRequest(
     String endpoint, {
     required String method, // 'POST', 'PUT', etc.
     Map<String, List<File>>?

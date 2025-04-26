@@ -4,10 +4,13 @@ import 'package:doc_sync/features/authentication/controllers/dashboard_controlle
 import 'package:doc_sync/features/authentication/controllers/user_controller.dart';
 import 'package:doc_sync/features/authentication/models/user_model.dart';
 import 'package:doc_sync/routes/routes.dart';
+import 'package:doc_sync/utils/constants/api_constants.dart';
 import 'package:doc_sync/utils/helpers/network_manager.dart';
 import 'package:doc_sync/utils/helpers/retry_queue_manager.dart';
 import 'package:doc_sync/utils/http/http_client.dart';
+import 'package:doc_sync/utils/local_storage/storage_utility.dart';
 import 'package:doc_sync/utils/popups/loaders.dart';
+import 'package:doc_sync/utils/popups/organization_dialog.dart';
 import 'package:doc_sync/utils/versioning/check_update.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +19,7 @@ import 'package:get/get.dart';
 
 class SplashController extends GetxController with GetTickerProviderStateMixin {
   final userController = UserController.instance;
-  final dashboardController = DashboardController.instance;
+  late DashboardController dashboardController;
   String finalDestination = AppRoutes.login;
 
   // Observable properties for UI
@@ -64,6 +67,9 @@ class SplashController extends GetxController with GetTickerProviderStateMixin {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
+    // Initialize the dashboard controller
+    dashboardController = Get.put(DashboardController());
 
     super.onInit();
     _setupAnimations();
@@ -233,7 +239,12 @@ class SplashController extends GetxController with GetTickerProviderStateMixin {
       await CheckUpdate.checkForUpdate();
     }
 
-    // await userController.clearUser();
+    if(await StorageUtility.instance().readData('organization') == null) {
+      await OrganizationDialogService.showOrganizationDialog(isForced: true);
+    } else {
+      ApiConstants().changeOrganization(await StorageUtility.instance().readData('organization') ?? "");
+    }
+
 
     await logInExistingUser();
 
@@ -248,7 +259,7 @@ class SplashController extends GetxController with GetTickerProviderStateMixin {
         'data': jsonEncode({"user_id": user.email, "password": user.password}),
       };
 
-      final data = await AppHttpHelper.sendMultipartRequest(
+      final data = await AppHttpHelper().sendMultipartRequest(
         "login",
         method: "POST",
         fields: requestData,
@@ -259,7 +270,7 @@ class SplashController extends GetxController with GetTickerProviderStateMixin {
         userController.saveUserDetails(user);
 
         finalDestination = AppRoutes.dashboard;
-        await dashboardController.fetchDashboardData();
+        // The dashboard data will be fetched when the dashboard screen is loaded
       }
     } else {
       print("Login Not Successful, Navigating to Login Screen.");

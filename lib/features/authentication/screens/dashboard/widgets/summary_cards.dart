@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 Widget buildSummaryCard({
     required BuildContext context,
     required String title,
-    required String value,
+    required Widget valueWidget,
     required IconData icon,
     required Color iconColor,
     required String subtitle,
@@ -66,13 +66,7 @@ Widget buildSummaryCard({
               ],
             ),
             const SizedBox(height: 12),
-            Text(
-              value,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: textColor,
-              ),
-            ),
+            valueWidget,
           ],
         ),
       ),

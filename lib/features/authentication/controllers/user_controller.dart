@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:doc_sync/features/authentication/controllers/dashboard_controller.dart';
 import 'package:doc_sync/features/authentication/models/user_model.dart';
 import 'package:doc_sync/utils/constants/enums.dart' show StorageType;
 import 'package:doc_sync/utils/local_storage/storage_utility.dart';
@@ -17,21 +18,42 @@ class UserController extends GetxController {
     user.value = await getUserDetails();
   }
 
+  @override
+  void onReady() {
+    super.onReady();
+    refreshUserDetails();
+  }
+
+  Future<void> refreshUserDetails() async {
+    try {
+      isLoading.value = true;
+      user.value = await getUserDetails();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   Future<void> saveUserDetails(User user) async {
-    final userData = jsonEncode(user.toJsonWithoutPassword());
+    try {
+      isLoading.value = true;
+      final userData = jsonEncode(user.toJsonWithoutPassword());
 
-    await StorageUtility.instance().writeData(
-      "user",
-      userData,
-      type: StorageType.local,
-    );
-    await StorageUtility.instance().writeData(
-      user.id.toString(),
-      user.password.toString(),
-      type: StorageType.secure,
-    );
+      await StorageUtility.instance().writeData(
+        "user",
+        userData,
+        type: StorageType.local,
+      );
+      await StorageUtility.instance().writeData(
+        user.id.toString(),
+        user.password.toString(),
+        type: StorageType.secure,
+      );
 
-    // print("User Saved Successfully!");
+      // Update the current user object
+      this.user.value = user;
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   Future<User> getUserDetails() async {
@@ -72,7 +94,28 @@ class UserController extends GetxController {
     }
   }
 
-  Future<void> clearUser({List<String> buckets = const ["userData"]}) async {
-    await StorageUtility.instance().clearUser();
+  Future<void> clearUser() async {
+    try {
+      isLoading.value = true;
+
+      // Clear user data from storage
+      await StorageUtility.instance().removeData(
+        "user",
+        type: StorageType.local,
+      );
+
+      // Reset the user object
+      user.value = User.fromJson({});
+
+      // Delete the dashboard controller if it exists
+      if (Get.isRegistered<DashboardController>()) {
+        Get.delete<DashboardController>();
+      }
+
+      isLoading.value = false;
+    } catch (e) {
+      isLoading.value = false;
+      print("Error clearing user data: $e");
+    }
   }
 }

@@ -20,7 +20,7 @@ class LoginController extends GetxController {
   static LoginController get instance => Get.find();
 
   final userController = UserController.instance;
-  final dashboardController = DashboardController.instance;
+  late DashboardController dashboardController;
 
   final hidePassword = true.obs;
   final rememberMe = true.obs;
@@ -105,7 +105,7 @@ class LoginController extends GetxController {
         }),
       };
 
-      final data = await AppHttpHelper.sendMultipartRequest(
+      final data = await AppHttpHelper().sendMultipartRequest(
         "login",
         method: "POST",
         fields: requestData,
@@ -116,6 +116,10 @@ class LoginController extends GetxController {
         userController.saveUserDetails(user);
 
         isLoggedIn.value = true;
+        
+        // Initialize dashboard controller without fetching data
+        dashboardController = Get.put(DashboardController());
+        // The data will be fetched when the dashboard screen is loaded
       } else {
         // print("Login Unsuccessful because...");
         // print(data['message']);

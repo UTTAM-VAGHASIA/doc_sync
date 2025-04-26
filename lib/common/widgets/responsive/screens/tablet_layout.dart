@@ -14,6 +14,7 @@ class TabletLayout extends StatelessWidget {
     return Scaffold(
       key: scaffoldKey,
       drawer: AppSidebar(),
+      drawerEdgeDragWidth: 100,
       appBar: AppHeader(scaffoldKey: scaffoldKey),
       body: body ?? const SizedBox(),
     );
