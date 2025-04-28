@@ -1,8 +1,10 @@
 import 'package:doc_sync/features/authentication/controllers/login_controller.dart';
 import 'package:doc_sync/routes/routes.dart';
+import 'package:doc_sync/utils/constants/api_constants.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:doc_sync/utils/constants/sizes.dart';
 import 'package:doc_sync/utils/constants/text_strings.dart';
+import 'package:doc_sync/utils/popups/organization_dialog.dart';
 import 'package:doc_sync/utils/validators/validation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,6 +16,7 @@ class LoginForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(LoginController());
+    final currentOrganization = ApiConstants().organization.obs;
 
     return Form(
       key: controller.loginFormKey,
@@ -59,12 +62,52 @@ class LoginForm extends StatelessWidget {
             ),
             SizedBox(height: AppSizes.spaceBtwInputFields / 2),
 
+            // Organization Selector
+            Obx(() => Container(
+              padding: EdgeInsets.symmetric(horizontal: AppSizes.xs),
+              width: double.infinity,
+              child: Row(
+                children: [
+                  Icon(
+                    Iconsax.building_4,
+                    size: 18,
+                    color: AppColors.textSecondary,
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      "Organization: ${currentOrganization.value.isEmpty ? 'Not set' : currentOrganization.value}",
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      await OrganizationDialogService.showOrganizationDialog();
+                      // Update the displayed organization after dialog closes
+                      currentOrganization.value = ApiConstants().organization;
+                    },
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                      minimumSize: Size(10, 30),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Text("Change"),
+                  ),
+                ],
+              ),
+            )),
+            SizedBox(height: AppSizes.spaceBtwInputFields / 2),
+
             // Remember Me & Forgot Password
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Remember Me
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Obx(
@@ -74,16 +117,18 @@ class LoginForm extends StatelessWidget {
                             (value) =>
                                 controller.rememberMe.value =
                                     !controller.rememberMe.value,
+                        visualDensity: VisualDensity(horizontal: -4.0),
                       ),
                     ),
                     Text(AppTexts.rememberMe),
                   ],
                 ),
-
+            
                 // Forgot Password
                 TextButton(
+                  // style: TextButton.styleFrom(padding: EdgeInsets.zero),
                   onPressed: () => Get.toNamed(AppRoutes.forgotPassword),
-                  child: Text(AppTexts.forgotPassword),
+                  child: Text(AppTexts.forgotPassword, style: TextStyle(color: AppColors.primary),),
                 ),
               ],
             ),

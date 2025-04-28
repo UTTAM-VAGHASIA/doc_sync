@@ -1,9 +1,11 @@
+import 'package:doc_sync/bindings/new_task_bindings.dart';
 import 'package:doc_sync/features/authentication/screens/dashboard/dashboard.dart';
 import 'package:doc_sync/features/authentication/screens/forgot_password/forgot_password.dart';
 import 'package:doc_sync/features/authentication/screens/login/login.dart';
 import 'package:doc_sync/features/authentication/screens/reset_password/reset_password.dart';
 import 'package:doc_sync/features/authentication/screens/splash_screen/splash_screen.dart';
 import 'package:doc_sync/bindings/dashboard_bindings.dart';
+import 'package:doc_sync/features/operations/screens/new_task/new_task.dart';
 import 'package:doc_sync/routes/routes.dart';
 import 'package:doc_sync/routes/routes_middleware.dart';
 import 'package:get/get.dart';
@@ -22,6 +24,11 @@ class AppRoutePages {
       page: () => DashboardScreen(),
       binding: DashboardBindings(),
       middlewares: [RouteMiddleWare()],
+    ),
+    GetPage(
+      name: AppRoutes.addNewTask,
+      page: () => NewTaskScreen(),
+      binding: NewTaskBindings(),
     ),
   ];
 }

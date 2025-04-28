@@ -27,8 +27,9 @@ dependencies:
   flutter_markdown: ^0.7.7
   path_provider: ^2.1.5
   dynamic_path_url_strategy: ^1.0.0
-  permission_handler: ^11.3.0
+  permission_handler: ^12.0.0+1
   flutter_secure_storage: ^9.2.4
+  shared_preferences: ^2.2.2
 
   # Web Specific Packages
   http: ^1.3.0

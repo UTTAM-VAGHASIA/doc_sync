@@ -4,7 +4,6 @@ import 'package:doc_sync/features/authentication/controllers/dashboard_controlle
 import 'package:doc_sync/features/authentication/controllers/user_controller.dart';
 import 'package:doc_sync/features/authentication/models/user_model.dart';
 import 'package:doc_sync/routes/routes.dart';
-import 'package:doc_sync/utils/constants/api_constants.dart';
 import 'package:doc_sync/utils/helpers/network_manager.dart';
 import 'package:doc_sync/utils/helpers/retry_queue_manager.dart';
 import 'package:doc_sync/utils/http/http_client.dart';
@@ -241,10 +240,7 @@ class SplashController extends GetxController with GetTickerProviderStateMixin {
 
     if(await StorageUtility.instance().readData('organization') == null) {
       await OrganizationDialogService.showOrganizationDialog(isForced: true);
-    } else {
-      ApiConstants().changeOrganization(await StorageUtility.instance().readData('organization') ?? "");
     }
-
 
     await logInExistingUser();
 

@@ -29,15 +29,15 @@ class SiteLayoutTemplate extends StatelessWidget {
       backgroundColor: AppColors.primaryBackground,
       body: AppResponsiveWidget(
         desktop:
-            useLayout ? DesktopLayout(body: desktop) : desktop ?? Container(),
+            useLayout ? DesktopLayout(body: desktop) : desktop ?? tablet ?? mobile ?? Container(),
         tablet:
             useLayout
                 ? TabletLayout(body: tablet ?? desktop)
-                : tablet ?? desktop ?? Container(),
+                : tablet ?? mobile ?? Container(),
         mobile:
             useLayout
                 ? MobileLayout(body: mobile ?? desktop)
-                : mobile ?? desktop ?? Container(),
+                : mobile ?? Container(),
       ),
     );
   }

@@ -6,8 +6,13 @@ import 'package:doc_sync/utils/constants/api_constants.dart';
 import 'package:http/http.dart' as http;
 
 class AppHttpHelper {
-  final _baseUrl = ApiConstants().baseUrl;
+  late final String _baseUrl;
   static const _timeoutDuration = ApiConstants.timeoutDuration;
+  
+  // Constructor now initializes with the current baseUrl
+  AppHttpHelper() {
+    _baseUrl = ApiConstants().baseUrl;
+  }
 
   /*
 
@@ -44,7 +49,10 @@ class AppHttpHelper {
     Map<String, String>? headers,
   }) async {
     try {
-      final uri = Uri.parse('$_baseUrl/$endpoint');
+      // Always get the current baseUrl in case organization has changed
+      final currentBaseUrl = ApiConstants().baseUrl;
+      print('$currentBaseUrl/$endpoint');
+      final uri = Uri.parse('$currentBaseUrl/$endpoint');
       final request = http.MultipartRequest(method, uri);
 
       if (headers != null) request.headers.addAll(headers);
