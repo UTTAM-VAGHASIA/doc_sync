@@ -11,6 +11,11 @@ class DashboardMobileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Ensure DashboardController is initialized
+    if (!Get.isRegistered<DashboardController>()) {
+      Get.put(DashboardController());
+    }
+    
     final dashboardController = Get.find<DashboardController>();
     final Color cardBackgroundColor = AppColors.white;
     final Color textColor = AppColors.textPrimary;

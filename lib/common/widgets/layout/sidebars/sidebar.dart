@@ -154,7 +154,7 @@ class AppSidebar extends StatelessWidget {
                           ),
                           buildSubMenuItem(
                             icon: Iconsax.task_square,
-                            title: 'Created Tasks',
+                            title: 'Tasks List',
                             onTap:
                                 () => drawerOpenController.menuOnTap(
                                   AppRoutes.tasks,
@@ -168,10 +168,10 @@ class AppSidebar extends StatelessWidget {
                             title: 'Admin Verification',
                             onTap:
                                 () => drawerOpenController.menuOnTap(
-                                  AppRoutes.tasks,
+                                  AppRoutes.adminVerfication,
                                 ),
                             isSelected: drawerOpenController.isActive(
-                              AppRoutes.tasks,
+                              AppRoutes.adminVerfication,
                             ),
                           ),
                           buildSubMenuItem(
@@ -179,10 +179,10 @@ class AppSidebar extends StatelessWidget {
                             title: 'Task History',
                             onTap:
                                 () => drawerOpenController.menuOnTap(
-                                  AppRoutes.tasks,
+                                  AppRoutes.taskHistory,
                                 ),
                             isSelected: drawerOpenController.isActive(
-                              AppRoutes.tasks,
+                              AppRoutes.taskHistory,
                             ),
                           ),
                         ],

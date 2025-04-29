@@ -26,13 +26,14 @@ class SiteLayoutTemplate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       backgroundColor: AppColors.primaryBackground,
       body: AppResponsiveWidget(
         desktop:
-            useLayout ? DesktopLayout(body: desktop) : desktop ?? tablet ?? mobile ?? Container(),
+            useLayout ? DesktopLayout(body: desktop ?? tablet ?? mobile) : desktop ?? tablet ?? mobile ?? Container(),
         tablet:
             useLayout
-                ? TabletLayout(body: tablet ?? desktop)
+                ? TabletLayout(body: tablet ?? mobile)
                 : tablet ?? mobile ?? Container(),
         mobile:
             useLayout

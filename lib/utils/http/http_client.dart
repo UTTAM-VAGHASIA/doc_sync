@@ -85,7 +85,7 @@ class AppHttpHelper {
     try {
       print(response.statusCode);
       final data = json.decode(response.body);
-      print(data.toString());
+      // print(data.toString());
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return data;
       } else {
