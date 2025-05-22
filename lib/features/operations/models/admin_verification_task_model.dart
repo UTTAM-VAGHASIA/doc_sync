@@ -1,292 +1,182 @@
-// lib/modal/operations/admin_verification_task_modal.dart (Updated Path)
-// Or adjust to your actual model file path
-
 import 'package:flutter/material.dart'; // Needed for Color type
-import 'package:intl/intl.dart'; // For DateFormat
+import 'package:intl/intl.dart';
 
-// --- Define Enums ---
-// Added 'allotted' and 'verified' based on potential JSON values.
-// Review these against ALL possible statuses from your API.
-enum TaskStatus {
-  completed,
-  pending,
-  awaiting,
-  allotted,
-  alloted,
-  verified,
-  client_waiting,
-  re_alloted,
-  unknown,
-}
+enum AdminTaskStatus { allotted, completed, awaiting, reallotted }
 
-enum TaskPriority { high, medium, low, unknown }
-// --------------------
+enum AdminTaskPriority { high, medium, low }
 
-class VerificationTask {
-  // Existing & Renamed/Mapped Fields
-  final String id; // from json['id']
-  String srNo; // Not from JSON - likely assigned later for UI sequence
-  final String fileNo; // from json['file_no']
-  final String client; // from json['client_name']
-  final String taskSubTask; // Constructed from task_name and sub_task_name
-  final String allottedBy; // from json['alloted_by_name']
-  final String allottedTo; // from json['alloted_to_name']
-  final String instruction; // from json['instruction']
-  final String endDate; // from json['expected_end_date'] (formatted)
-  final TaskStatus status; // Parsed from json['status']
-  final TaskPriority priority; // Parsed from json['priority']
-  final bool approvalNeeded; // Parsed from json['verify_by_admin']
-  bool isSelected; // UI state, not from JSON
+class AdminVerificationTask {
+  final String id;
+  final String clientId;
+  final String taskId;
+  final String subTaskId;
+  final String allottedTo;
+  final String allottedBy;
+  final String financialYearId;
+  final String monthFrom;
+  final String monthTo;
+  final String instruction;
+  final String allottedDate;
+  final String expectedEndDate;
+  final String status;
+  final String priority;
+  final String verifyByAdmin;
+  final String dateTime;
+  final String taskName;
+  final String subTaskName;
+  final String allottedToName;
+  final String allottedByName;
+  final String adt;
+  final String clientName;
+  final String fileNo;
+  final String financialYear;
 
-  // --- New Fields from JSON ---
-  final String clientId; // from json['client_id']
-  final String taskId; // from json['task_id']
-  final String subTaskId; // from json['sub_task_id']
-  final String allottedToId; // from json['alloted_to']
-  final String allottedById; // from json['alloted_by']
-  final String financialYearId; // from json['financial_year_id']
-  final String? monthFrom; // from json['month_from'] (nullable)
-  final String? monthTo; // from json['month_to'] (nullable)
-  final String allottedDate; // from json['alloted_date'] (formatted)
-  final String? dateTime; // from json['date_time'] (nullable timestamp)
-  final String taskName; // from json['task_name']
-  final String subTaskName; // from json['sub_task_name']
-  final String financialYear; // from json['financial_year']
-  // final String adtDisplayDate; // from json['adt'] - Parsed 'alloted_date' is likely sufficient
-
-  // --- Original 'period' field - Decide if you still need it ---
-  // If 'period' was just derived from monthFrom/To/Year, you might not need it.
-  // If it represented something else, keep it and map it from JSON if available.
-  // final String period;
-
-  VerificationTask({
-    // Existing (some might be derived now)
+  AdminVerificationTask({
     required this.id,
-    this.srNo = '', // Default srNo, assign later if needed for UI sequence
-    required this.fileNo,
-    required this.client,
-    required this.taskSubTask, // Now constructed in fromJson
-    required this.allottedBy,
-    required this.allottedTo,
-    required this.instruction,
-    required this.endDate,
-    // Removed 'period' from constructor, derive if needed
-    required this.status,
-    required this.priority,
-    required this.approvalNeeded,
-    this.isSelected = false,
-    // New
     required this.clientId,
     required this.taskId,
     required this.subTaskId,
-    required this.allottedToId,
-    required this.allottedById,
+    required this.allottedTo,
+    required this.allottedBy,
     required this.financialYearId,
-    this.monthFrom,
-    this.monthTo,
+    required this.monthFrom,
+    required this.monthTo,
+    required this.instruction,
     required this.allottedDate,
-    this.dateTime,
+    required this.expectedEndDate,
+    required this.status,
+    required this.priority,
+    required this.verifyByAdmin,
+    required this.dateTime,
     required this.taskName,
     required this.subTaskName,
+    required this.allottedToName,
+    required this.allottedByName,
+    required this.adt,
+    required this.clientName,
+    required this.fileNo,
     required this.financialYear,
   });
 
-  // Factory constructor to create a VerificationTask from JSON
-  factory VerificationTask.fromJson(Map<String, dynamic> json) {
-    // Handle potential nulls from JSON gracefully
-    String taskNameFromJson = json['task_name']?.toString() ?? 'Unknown Task';
-    String subTaskNameFromJson = json['sub_task_name']?.toString() ?? '';
-    String combinedTaskSubTask =
-        subTaskNameFromJson.isNotEmpty
-            ? '$taskNameFromJson -- $subTaskNameFromJson'
-            : taskNameFromJson;
-
-    return VerificationTask(
-      // Existing/Mapped
-      id:
-          json['id']?.toString() ??
-          'N/A_${DateTime.now().millisecondsSinceEpoch}', // Generate temp ID if null
-      fileNo: json['file_no']?.toString() ?? '-',
-      client: json['client_name']?.toString() ?? 'Unknown Client',
-      taskSubTask: combinedTaskSubTask,
-      allottedBy: json['alloted_by_name']?.toString() ?? 'Unknown',
-      allottedTo: json['alloted_to_name']?.toString() ?? 'Unknown',
-      instruction: json['instruction']?.toString() ?? '',
-      endDate: _formatDate(json['expected_end_date']?.toString()) ?? '-',
-      status: _parseStatus(json['status']?.toString()),
-      priority: _parsePriority(json['priority']?.toString()),
-      approvalNeeded: json['verify_by_admin']?.toString() == '1',
-      isSelected: false, // Default state
-      // New Fields
-      clientId: json['client_id']?.toString() ?? '-',
-      taskId: json['task_id']?.toString() ?? '-',
-      subTaskId: json['sub_task_id']?.toString() ?? '-',
-      allottedToId: json['alloted_to']?.toString() ?? '-',
-      allottedById: json['alloted_by']?.toString() ?? '-',
-      financialYearId: json['financial_year_id']?.toString() ?? '-',
-      monthFrom:
-          json['month_from']?.toString(), // Keep as potentially null string
-      monthTo: json['month_to']?.toString(), // Keep as potentially null string
-      allottedDate: _formatDate(json['alloted_date']?.toString()) ?? '-',
-      dateTime: json['date_time']?.toString(), // Keep timestamp string as is
-      taskName: taskNameFromJson,
-      subTaskName: subTaskNameFromJson,
-      financialYear: json['financial_year']?.toString() ?? '-',
+  factory AdminVerificationTask.fromJson(Map<String, dynamic> json) {
+    return AdminVerificationTask(
+      id: json['id'] ?? '',
+      clientId: json['client_id'] ?? '',
+      taskId: json['task_id'] ?? '',
+      subTaskId: json['sub_task_id'] ?? '',
+      allottedTo: json['alloted_to'] ?? '',
+      allottedBy: json['alloted_by'] ?? '',
+      financialYearId: json['financial_year_id'] ?? '',
+      monthFrom: json['month_from'] ?? '',
+      monthTo: json['month_to'] ?? '',
+      instruction: json['instruction'] ?? '',
+      allottedDate: json['alloted_date'] ?? '',
+      expectedEndDate: json['expected_end_date'] ?? '',
+      status: json['status'] ?? '',
+      priority: json['priority'] ?? '',
+      verifyByAdmin: json['verify_by_admin'] ?? '',
+      dateTime: json['date_time'] ?? '',
+      taskName: json['task_name'] ?? '',
+      subTaskName: json['sub_task_name'] ?? '',
+      allottedToName: json['alloted_to_name'] ?? '',
+      allottedByName: json['alloted_by_name'] ?? '',
+      adt: json['adt'] ?? '',
+      clientName: json['client_name'] ?? '',
+      fileNo: json['file_no'] ?? '',
+      financialYear: json['financial_year'] ?? '',
     );
   }
 
-  // --- Helper Functions for Parsing (Static within the class) ---
-
-  // Parses the status string from JSON into the TaskStatus enum
-  static TaskStatus _parseStatus(String? statusString) {
-    switch (statusString?.toLowerCase()) {
-      case 'completed':
-        return TaskStatus.completed;
-      case 'pending':
-        return TaskStatus.pending;
-      case 'awaiting':
-        return TaskStatus.awaiting;
+  AdminTaskStatus get taskStatus {
+    switch (status.toLowerCase().trim()) {
       case 'allotted':
-        return TaskStatus.allotted;
       case 'alloted':
-        return TaskStatus.alloted;
-      case 'verified':
-        return TaskStatus.verified;
-      case 'client_waiting':
-        return TaskStatus.client_waiting;
-      case 're_alloted':
-        return TaskStatus.re_alloted;
+        return AdminTaskStatus.allotted;
+      case 'completed':
+      case 'complete':
+        return AdminTaskStatus.completed;
+      case 'awaiting':
+      case 'pending':
+        return AdminTaskStatus.awaiting;
+      case 're-allotted':
+      case 'reallotted':
+      case 're-alloted':
+      case 'realloted':
+        return AdminTaskStatus.reallotted;
       default:
-        print(
-          "Warning: Unknown TaskStatus string '$statusString', defaulting to unknown.",
-        );
-        return TaskStatus.unknown; // Use a specific unknown state
+        return AdminTaskStatus.awaiting;
     }
   }
 
-  // Parses the priority string from JSON into the TaskPriority enum
-  static TaskPriority _parsePriority(String? priorityString) {
-    switch (priorityString?.toLowerCase()) {
+  AdminTaskPriority get taskPriority {
+    switch (priority.toLowerCase().trim()) {
       case 'high':
-        return TaskPriority.high;
+        return AdminTaskPriority.high;
       case 'medium':
-        return TaskPriority.medium;
+        return AdminTaskPriority.medium;
       case 'low':
-        return TaskPriority.low;
+        return AdminTaskPriority.low;
       default:
-        print(
-          "Warning: Unknown TaskPriority string '$priorityString', defaulting to unknown.",
-        );
-        return TaskPriority.unknown; // Use a specific unknown state
+        return AdminTaskPriority.medium;
     }
   }
 
-  // Helper to format date strings (handles potential nulls and parsing errors)
-  // Assumes input format is 'yyyy-MM-dd' from JSON
-  static String? _formatDate(
-    String? dateString, {
-    String outputFormat = 'dd-MM-yyyy',
-  }) {
-    if (dateString == null || dateString.isEmpty) {
-      return null;
+  String get period {
+    if (monthFrom.isNotEmpty && monthTo.isNotEmpty) {
+      return '$monthFrom - $monthTo';
+    } else if (monthFrom.isNotEmpty) {
+      return monthFrom;
+    } else if (monthTo.isNotEmpty) {
+      return monthTo;
     }
-    try {
-      // Try parsing common date formats, be more robust if needed
-      DateTime dateTime;
-      if (dateString.contains(' ')) {
-        // Handle 'yyyy-MM-dd HH:mm:ss' if present
-        dateTime = DateFormat('yyyy-MM-dd HH:mm:ss').parseStrict(dateString);
-      } else {
-        dateTime = DateFormat('yyyy-MM-dd').parseStrict(dateString);
-      }
-      return DateFormat(outputFormat).format(dateTime);
-    } catch (e) {
-      print("Error formatting date '$dateString' with input 'yyyy-MM-dd': $e");
-      // Optionally, try other input formats if necessary
-      // try {
-      //   DateTime dateTime = DateFormat('dd-MM-yyyy').parseStrict(dateString);
-      //   return DateFormat(outputFormat).format(dateTime);
-      // } catch (e2) {
-      //    print("Error formatting date '$dateString' with input 'dd-MM-yyyy': $e2");
-      //    return dateString; // Return original string if all formatting fails
-      // }
-      return dateString; // Return original if parsing fails
-    }
+    return 'N/A';
   }
 }
 
-// --- Helper Functions for UI Display (Keep these outside the class) ---
-// --- Update these to handle the new 'unknown' enum values ---
-
-String statusVerificationToString(TaskStatus status) {
+String adminStatusToString(AdminTaskStatus status) {
   switch (status) {
-    case TaskStatus.completed:
-      return 'Completed';
-    case TaskStatus.pending:
-      return 'Pending';
-    case TaskStatus.awaiting:
-      return 'Awaiting';
-    case TaskStatus.allotted:
+    case AdminTaskStatus.allotted:
       return 'Allotted';
-    case TaskStatus.alloted:
-      return 'Alloted';
-    case TaskStatus.verified:
-      return 'Verified';
-    case TaskStatus.client_waiting:
-      return 'client_waiting';
-    case TaskStatus.re_alloted:
-      return 're_alloted';
-    case TaskStatus.unknown:
-      return 'Unknown'; // Handle unknown case
+    case AdminTaskStatus.completed:
+      return 'Completed';
+    case AdminTaskStatus.awaiting:
+      return 'Awaiting';
+    case AdminTaskStatus.reallotted:
+      return 'Re-allotted';
   }
 }
 
-String priorityVerificationToString(TaskPriority priority) {
-  switch (priority) {
-    case TaskPriority.high:
-      return 'High';
-    case TaskPriority.medium:
-      return 'Medium';
-    case TaskPriority.low:
-      return 'Low';
-    case TaskPriority.unknown:
-      return 'Unknown'; // Handle unknown case
-  }
-}
-
-// Example color functions - Add colors for new statuses
-Color statusVerificationColor(TaskStatus status) {
+Color adminStatusToColor(AdminTaskStatus status) {
   switch (status) {
-    case TaskStatus.completed:
-      return Colors.green.shade600;
-    case TaskStatus.pending:
+    case AdminTaskStatus.allotted:
+      return Colors.blue.shade700;
+    case AdminTaskStatus.completed:
+      return Colors.green.shade700;
+    case AdminTaskStatus.awaiting:
       return Colors.orange.shade700;
-    case TaskStatus.awaiting:
-      return Colors.blue.shade600;
-    case TaskStatus.allotted || TaskStatus.alloted:
-      return Colors.purple.shade400;
-    case TaskStatus.verified:
-      return Colors.cyan.shade600;
-    case TaskStatus.client_waiting:
-      return Colors.red;
-    case TaskStatus.re_alloted:
-      return Colors.red;
-    case TaskStatus.unknown:
-      return Colors.grey.shade500; // Color for unknown
+    case AdminTaskStatus.reallotted:
+      return Colors.red.shade700;
   }
 }
 
-Color priorityVerificationColor(TaskPriority priority) {
+String adminPriorityToString(AdminTaskPriority priority) {
   switch (priority) {
-    case TaskPriority.high:
-      return Colors.red.shade600;
-    case TaskPriority.medium:
-      return Colors.amber.shade800;
-    case TaskPriority.low:
-      return Colors.blueGrey.shade400;
-    case TaskPriority.unknown:
-      return Colors.grey.shade500; // Color for unknown
+    case AdminTaskPriority.high:
+      return 'High';
+    case AdminTaskPriority.medium:
+      return 'Medium';
+    case AdminTaskPriority.low:
+      return 'Low';
   }
 }
 
-// -------------------------------------------------------------------
+Color adminPriorityToColor(AdminTaskPriority priority) {
+  switch (priority) {
+    case AdminTaskPriority.high:
+      return Colors.red.shade600;
+    case AdminTaskPriority.medium:
+      return Colors.orange.shade600;
+    case AdminTaskPriority.low:
+      return Colors.green.shade600;
+  }
+}
