@@ -58,3 +58,10 @@ node_modules/
 # Task files
 tasks.json
 tasks/ 
+/.cursor
+/.roo
+.roomodes
+.taskmasterconfig
+/.trae
+.windsurfrules
+/scripts
