@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased [0.0.6] - Soon to be released
+
+### To be Added
+
+- To be added Admin Verification Page, Task list pages regarding personal allocation.
+- To be Added Task History Page and Future Tasks page.
+  
+### To be Fixed
+
+- Fix the Sidebar to make it scrollable.
+
+## [0.0.5] - 2025-05-27
+
+### Added
+
+- Added a page to create new tasks.
+- Added placeholder screen for all the undefined routes.
+
+### Fixed
+
+- Fixed the navigation throughout the app.
+- Fixed the Sidebar UI.
+- Fixed Storage Utility to work more securely by improving error handling.
+- Fixed App Logo.
+
 ## [0.0.4] - 2025-04-29
 
 ### Added
