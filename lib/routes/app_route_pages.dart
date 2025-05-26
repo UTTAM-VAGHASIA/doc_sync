@@ -8,6 +8,9 @@ import 'package:doc_sync/features/authentication/screens/splash_screen/splash_sc
 import 'package:doc_sync/bindings/dashboard_bindings.dart';
 import 'package:doc_sync/features/operations/screens/new_task/new_task.dart';
 import 'package:doc_sync/features/operations/screens/created_task_list/created_task_list.dart';
+import 'package:doc_sync/features/operations/screens/admin_verification/admin_verification.dart';
+import 'package:doc_sync/bindings/admin_verification_binding.dart';
+
 import 'package:doc_sync/routes/routes.dart';
 import 'package:doc_sync/routes/routes_middleware.dart';
 import 'package:get/get.dart';
@@ -36,6 +39,11 @@ class AppRoutePages {
       name: AppRoutes.tasks,
       page: () => TaskListScreen(),
       binding: TaskListBindings(),
+    ),
+    GetPage(
+      name: AppRoutes.adminVerfication,
+      page: () => AdminVerificationScreen(),
+      binding: AdminVerificationBinding(),
     ),
   ];
 }

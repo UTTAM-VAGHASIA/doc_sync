@@ -46,7 +46,6 @@ class Task {
     this.period,
     this.status,
     this.priority,
-
     this.clientId,
     this.subtaskId,
     this.allottedToId,
@@ -67,7 +66,6 @@ class Task {
       if (dateString == null || dateString.isEmpty) {
         return null;
       }
-
       return DateTime.tryParse(dateString);
     }
 
@@ -151,14 +149,15 @@ class Task {
 }
 
 TaskStatus _parseStatus(String? statusString) {
-  statusString = statusString?.toLowerCase().trim();
-  switch (statusString) {
+  switch (statusString?.toLowerCase().trim()) {
     case 'allotted':
     case 'alloted':
       return TaskStatus.allotted;
     case 'completed':
+    case 'complete':
       return TaskStatus.completed;
     case 'awaiting':
+    case 'pending':
       return TaskStatus.awaiting;
     case 're-allotted':
     case 'reallotted':
@@ -171,8 +170,7 @@ TaskStatus _parseStatus(String? statusString) {
 }
 
 TaskPriority _parsePriority(String? priorityString) {
-  priorityString = priorityString?.toLowerCase().trim();
-  switch (priorityString) {
+  switch (priorityString?.toLowerCase().trim()) {
     case 'high':
       return TaskPriority.high;
     case 'medium':
@@ -185,7 +183,6 @@ TaskPriority _parsePriority(String? priorityString) {
 }
 
 String statusToString(TaskStatus? status) {
-  if (status == null) return 'Unknown';
   switch (status) {
     case TaskStatus.allotted:
       return 'Allotted';
@@ -195,11 +192,12 @@ String statusToString(TaskStatus? status) {
       return 'Awaiting';
     case TaskStatus.reallotted:
       return 'Re-allotted';
+    default:
+      return 'Unknown';
   }
 }
 
 Color statusToColor(TaskStatus? status) {
-  if (status == null) return Colors.grey;
   switch (status) {
     case TaskStatus.allotted:
       return Colors.blue.shade700;
@@ -209,11 +207,12 @@ Color statusToColor(TaskStatus? status) {
       return Colors.orange.shade700;
     case TaskStatus.reallotted:
       return Colors.red.shade700;
+    default:
+      return Colors.grey;
   }
 }
 
 String priorityToString(TaskPriority? priority) {
-  if (priority == null) return 'Medium';
   switch (priority) {
     case TaskPriority.high:
       return 'High';
@@ -221,11 +220,12 @@ String priorityToString(TaskPriority? priority) {
       return 'Medium';
     case TaskPriority.low:
       return 'Low';
+    default:
+      return 'Medium';
   }
 }
 
 Color priorityToColor(TaskPriority? priority) {
-  if (priority == null) return Colors.orange.shade600;
   switch (priority) {
     case TaskPriority.high:
       return Colors.red.shade600;
@@ -233,18 +233,16 @@ Color priorityToColor(TaskPriority? priority) {
       return Colors.orange.shade600;
     case TaskPriority.low:
       return Colors.green.shade600;
+    default:
+      return Colors.orange.shade600;
   }
 }
 
 String formatTaskDate(DateTime? date, {String format = 'dd-MM-yyyy'}) {
-  if (date == null) {
-    return 'N/A';
-  }
-
+  if (date == null) return 'N/A';
   try {
     return DateFormat(format).format(date);
-  } catch (e) {
-    print("Error formatting date: $e");
+  } catch (_) {
     return date.toIso8601String().substring(0, 10);
   }
 }
