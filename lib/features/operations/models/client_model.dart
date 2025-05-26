@@ -1,40 +1,68 @@
 class Client {
-  final String client_id;
-  final String file_no;
-  final String firm_name;
-  final String contact_person;
-  final String contact_no;
-  final String accountant_id;
+  final String clientId;
+  final String fileNo;
+  final String firmName;
+  final String contactPerson;
+  final String gstn;
+  final String tan;
+  final String email;
+  final String contactNo;
+  final String accountantId;
   final String status;
   final String pan;
-  final String other_id;
+  final String otherId;
   final String operation;
 
-  Client({
-    required this.client_id,
-    required this.file_no,
-    required this.firm_name,
-    required this.contact_person,
-    required this.contact_no,
-    required this.accountant_id,
+  const Client({
+    required this.clientId,
+    required this.fileNo,
+    required this.firmName,
+    required this.contactPerson,
+    required this.gstn,
+    required this.tan,
+    required this.email,
+    required this.contactNo,
+    required this.accountantId,
     required this.status,
     required this.pan,
-    required this.other_id,
+    required this.otherId,
     required this.operation,
   });
 
+  // Add toJson method for serialization
+  Map<String, dynamic> toJson() {
+    return {
+      'id': clientId,
+      'file_no': fileNo,
+      'firm_name': firmName,
+      'contact_person': contactPerson,
+      'gstn': gstn,
+      'tan': tan,
+      'email_id': email,
+      'contact_no': contactNo,
+      'accountant_id': accountantId,
+      'status': status,
+      'pan': pan,
+      'other_id': otherId,
+      'operation': operation,
+    };
+  }
+
   factory Client.fromJson(Map<String, dynamic> json) {
     return Client(
-      client_id: json['id'] as String? ?? '',
-      file_no: json['file_no'] as String? ?? '',
-      firm_name: json['firm_name'] as String? ?? '',
-      contact_person: json['contact_person'] as String? ?? '',
-      contact_no: json['contact_no'] as String? ?? '',
-      accountant_id: json['accountant_id'] as String? ?? '',
-      status: json['status'] as String? ?? '',
-      pan: json['pan'] as String? ?? '',
-      other_id: json['other_id'] as String? ?? '',
-      operation: json['operation'] as String? ?? '',
+      clientId: json['id'] ?? '',
+      fileNo: json['file_no'] ?? '',
+      firmName: json['firm_name'] ?? '',
+      contactPerson: json['contact_person'] ?? '',
+      gstn: json['gstn'] ?? '',
+      tan: json['tan'] ?? '',
+      email: json['email_id'] ?? '',
+      contactNo: json['contact_no'] ?? '',
+      accountantId: json['accountant_id'] ?? '',
+      status: json['status'] ?? '',
+      pan: json['pan'] ?? '',
+      otherId: json['other_id'] ?? '',
+      operation: json['operation'] ?? '',
     );
   }
 
@@ -43,8 +71,8 @@ class Client {
       identical(this, other) ||
       other is Client &&
           runtimeType == other.runtimeType &&
-          client_id == other.client_id;
+          clientId == other.clientId;
 
   @override
-  int get hashCode => client_id.hashCode;
+  int get hashCode => clientId.hashCode;
 }

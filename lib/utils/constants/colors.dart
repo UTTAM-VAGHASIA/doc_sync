@@ -47,3 +47,15 @@ class AppColors {
   static const Color lightGrey = Color(0xFFF9F9F9);
   static const Color white = Color(0xFFFFFFFF);
 }
+
+// Extension for Color manipulation
+extension ColorExtension on Color {
+  Color withValues({double? red, double? green, double? blue, double? alpha}) {
+    return Color.fromRGBO(
+      red != null ? (red * 255).round() : this.red,
+      green != null ? (green * 255).round() : this.green,
+      blue != null ? (blue * 255).round() : this.blue,
+      alpha ?? this.opacity,
+    );
+  }
+}

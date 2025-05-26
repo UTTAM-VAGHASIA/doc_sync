@@ -2,47 +2,32 @@ import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 
 class RouteHeader extends StatelessWidget {
-  const RouteHeader({
-    super.key,
-    required this.title,
-    required this.subtitle,
-  });
-
   final String title;
   final String subtitle;
-  final Color subtleTextColor = AppColors.textSecondary;
+
+  const RouteHeader({super.key, required this.title, required this.subtitle});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 4.0, bottom: 12.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: subtleTextColor,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.primary,
           ),
-          // Optionally, add an avatar or icon here for extra polish
-        ],
-      ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          subtitle,
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+        ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 }

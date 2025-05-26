@@ -1,19 +1,26 @@
 class SubTask {
-  final String subtaskid;
+  final String id;
   final String subTaskName;
-  final String taskId;
+  final String? taskId;
 
-  SubTask({
-    required this.subtaskid,
+  const SubTask({
+    required this.id,
     required this.subTaskName,
-    required this.taskId,
+    this.taskId,
   });
 
-  factory SubTask.fromJson(Map<String, dynamic> json) {
+  // Add toJson method for serialization
+  Map<String, dynamic> toJson() {
+    return {
+      'subtaskid': id,
+      'subTaskName': subTaskName,
+    };
+  }
+
+  factory SubTask.fromJson(Map<String, dynamic> json, ) {
     return SubTask(
-      subtaskid: json['id'] as String? ?? '',
-      subTaskName: json['sub_task_name'] as String? ?? 'Unknown SubTask',
-      taskId: json['taskId'] as String? ?? '',
+      id: json['id'] ?? '',
+      subTaskName: json['sub_task_name'] ?? '',
     );
   }
 
@@ -22,8 +29,8 @@ class SubTask {
       identical(this, other) ||
       other is SubTask &&
           runtimeType == other.runtimeType &&
-          subtaskid == other.subtaskid;
+          id == other.id;
 
   @override
-  int get hashCode => subtaskid.hashCode;
+  int get hashCode => id.hashCode;
 }

@@ -2,15 +2,23 @@ class FinancialYear {
   final String financial_year_id;
   final String financial_year;
 
-  FinancialYear({
+  const FinancialYear({
     required this.financial_year_id,
     required this.financial_year,
   });
 
+  // Add toJson method for serialization
+  Map<String, dynamic> toJson() {
+    return {
+      'financial_year_id': financial_year_id,
+      'financial_year': financial_year,
+    };
+  }
+
   factory FinancialYear.fromJson(Map<String, dynamic> json) {
     return FinancialYear(
-      financial_year_id: json['f_id'] as String? ?? '',
-      financial_year: json['year'] as String? ?? 'Unknown FinancialYear',
+      financial_year_id: json['f_id'] ?? '',
+      financial_year: json['year'] ?? '',
     );
   }
 

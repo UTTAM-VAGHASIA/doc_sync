@@ -1,219 +1,193 @@
 import 'package:doc_sync/features/operations/controllers/created_task_list_controller.dart';
-import 'package:doc_sync/features/operations/models/task_model.dart';
-import 'package:doc_sync/features/operations/screens/created_task_list/widgets/date_selection_card.dart';
-import 'package:doc_sync/features/operations/screens/created_task_list/widgets/pagination_controls.dart';
-import 'package:doc_sync/features/operations/screens/created_task_list/widgets/search_filter_card.dart';
-import 'package:doc_sync/features/operations/screens/created_task_list/widgets/task_card.dart';
-import 'package:doc_sync/features/operations/screens/created_task_list/widgets/task_list.dart';
-import 'package:doc_sync/features/operations/screens/new_task/widgets/route_header.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
-import 'package:doc_sync/common/widgets/shimmers/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:intl/intl.dart';
 
-class TaskListMobileScreen extends StatelessWidget {
-  const TaskListMobileScreen({super.key});
+class SearchFilterCard extends StatelessWidget {
+  final TaskListController taskListController;
+  final TextEditingController searchController;
+
+  const SearchFilterCard({
+    Key? key,
+    required this.taskListController,
+    required this.searchController,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final taskListController = Get.find<TaskListController>();
     final Color cardBackgroundColor = AppColors.white;
     final Color textColor = AppColors.textPrimary;
-    final Color subtleTextColor = AppColors.textSecondary;
 
-    // Text controller for the search field
-    final TextEditingController searchController = TextEditingController(
-      text: taskListController.searchQuery.value,
-    );
-
-    return SafeArea(
-      child: LiquidPullToRefresh(
-        key: taskListController.refreshIndicatorKey,
-        animSpeedFactor: 2.3,
-        color: AppColors.primary,
-        backgroundColor: AppColors.light,
-        showChildOpacityTransition: false,
-        onRefresh: () => taskListController.fetchTasks(),
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
-                child: RouteHeader(
-                  title: 'Created Tasks List',
-                  subtitle: 'Home / Created Tasks List / Data',
-                ),
-              ),
-
-              // Date selection card
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 16.0,
-                  right: 16.0,
-                  bottom: 16.0,
-                ),
-                child: DateSelectionCard(
-                  taskListController: taskListController,
-                ),
-              ),
-
-              // Search and filter card
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: SearchFilterCard(
-                  taskListController: taskListController,
-                  searchController: searchController,
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Task list
-              GetX<TaskListController>(
-                builder: (controller) {
-                  if (controller.isLoading.value) {
-                    return const TaskListShimmer();
-                  }
-
-                  if (controller.filteredTasks.isEmpty) {
-                    return const EmptyTaskList();
-                  }
-
-                  return Column(
-                    children: [
-                      // Task list
-                      TaskList(
-                        taskListController: controller,
-                        cardBackgroundColor: cardBackgroundColor,
-                        textColor: textColor,
-                        subtleTextColor: subtleTextColor,
-                      ),
-
-                      // Pagination controls
-                      PaginationControls(
-                        controller: controller,
-                        cardBackgroundColor: cardBackgroundColor,
-                        textColor: textColor,
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
+    return Card(
+      elevation: 0,
+      color: cardBackgroundColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey.shade200),
       ),
-    );
-  }
-
-  Widget _buildRefreshButton(TaskListController controller) {
-    return OutlinedButton.icon(
-      onPressed: () async {
-        final GlobalKey<LiquidPullToRefreshState> refreshIndicatorKey =
-            controller.refreshIndicatorKey;
-
-        await controller.clearDate();
-
-        if (refreshIndicatorKey.currentState != null) {
-          await refreshIndicatorKey.currentState!.show();
-        }
-      },
-      icon: const Icon(Icons.list_alt, size: 16),
-      label: const Text('Show All'),
-      style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.primary,
-        side: const BorderSide(color: AppColors.primary),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      ),
-    );
-  }
-
-  Widget _buildLoadingShimmer() {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: 5,
-      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
-      itemBuilder: (context, index) {
-        return const Padding(
-          padding: EdgeInsets.only(bottom: 16.0),
-          child: AppShimmerEffect(width: double.infinity, height: 80),
-        );
-      },
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.assignment_outlined, size: 80, color: AppColors.grey),
+            // Search Bar with clear button
+            Obx(() {
+              // Keep the controller in sync with the observable
+              if (searchController.text !=
+                  taskListController.searchQuery.value) {
+                searchController.text = taskListController.searchQuery.value;
+                searchController.selection = TextSelection.fromPosition(
+                  TextPosition(offset: searchController.text.length),
+                );
+              }
+
+              return TextField(
+                controller: searchController,
+                onTapOutside:
+                    (event) => FocusManager.instance.primaryFocus?.unfocus(),
+                decoration: InputDecoration(
+                  hintText: 'Search tasks, clients, file no...',
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon:
+                      taskListController.searchQuery.value.isNotEmpty
+                          ? IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: () {
+                              searchController.clear();
+                              taskListController.updateSearch('');
+                            },
+                          )
+                          : null,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                ),
+                onChanged: taskListController.updateSearch,
+              );
+            }),
+
             const SizedBox(height: 16),
-            Text(
-              'No tasks found with current filters',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textSecondary,
+
+            // Filter options
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Filter by:',
+                  style: TextStyle(
+                    color: textColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Obx(
+                  () => _buildFilterChip(
+                    'All',
+                    'all',
+                    taskListController,
+                    Icons.list_alt,
+                    taskListController.totalTasksCount,
+                    AppColors.primary,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            // Grid of filter chips
+            Obx(
+              () => Row(
+                children: [
+                  Expanded(
+                    child: _buildStatusFilterCard(
+                      'Allotted',
+                      'allotted',
+                      taskListController,
+                      Icons.assignment_outlined,
+                      taskListController.totalAllotted.value,
+                      Colors.blue.shade700,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _buildStatusFilterCard(
+                      'Completed',
+                      'completed',
+                      taskListController,
+                      Icons.check_circle_outline,
+                      taskListController.totalCompleted.value,
+                      Colors.green.shade700,
+                    ),
+                  ),
+                ],
               ),
+            ),
+
+            const SizedBox(height: 8),
+
+            Obx(
+              () => Row(
+                children: [
+                  Expanded(
+                    child: _buildStatusFilterCard(
+                      'Awaiting',
+                      'awaiting',
+                      taskListController,
+                      Icons.hourglass_empty,
+                      taskListController.totalAwaiting.value,
+                      Colors.orange.shade700,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _buildStatusFilterCard(
+                      'Re-allotted',
+                      'reallotted',
+                      taskListController,
+                      Icons.replay_outlined,
+                      taskListController.totalReallotted.value,
+                      Colors.red.shade700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Sort options
+            Text(
+              'Sort by:',
+              style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 8),
-            Text(
-              'Try adjusting your search or filter settings',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textSecondary),
+
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _buildSortChip('Date', 'date', taskListController),
+                  const SizedBox(width: 8),
+                  _buildSortChip('Task Name', 'name', taskListController),
+                  const SizedBox(width: 8),
+                  _buildSortChip('Client', 'client', taskListController),
+                  const SizedBox(width: 8),
+                  _buildSortChip('Priority', 'priority', taskListController),
+                  const SizedBox(width: 8),
+                  _buildSortChip('Status', 'status', taskListController),
+                ],
+              ),
             ),
+
+            const SizedBox(height: 12),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildTaskList({
-    required BuildContext context,
-    required TaskListController taskListController,
-    required Color cardBackgroundColor,
-    required Color textColor,
-    required Color subtleTextColor,
-  }) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: taskListController.paginatedTasks.length,
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      itemBuilder: (context, index) {
-        final task = taskListController.paginatedTasks[index];
-        return _buildTaskCard(
-          context: context,
-          task: task,
-          cardBackgroundColor: cardBackgroundColor,
-          textColor: textColor,
-          subtleTextColor: subtleTextColor,
-        );
-      },
-    );
-  }
-
-  Widget _buildTaskCard({
-    required BuildContext context,
-    required Task task,
-    required Color cardBackgroundColor,
-    required Color textColor,
-    required Color subtleTextColor,
-  }) {
-    return TaskExpansionCard(
-      task: task,
-      cardBackgroundColor: cardBackgroundColor,
-      textColor: textColor,
-      subtleTextColor: subtleTextColor,
     );
   }
 

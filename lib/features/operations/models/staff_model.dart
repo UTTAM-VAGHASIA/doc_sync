@@ -1,13 +1,22 @@
 class Staff {
-  final String staff_id;
-  final String staff_name;
+  final String staffId;
+  final String staffName;
+  final String? email;
+  final String? phone;
 
-  Staff({required this.staff_id, required this.staff_name});
+  Staff({required this.staffId, required this.staffName, this.email, this.phone});
+
+  // Add toJson method for serialization
+  Map<String, dynamic> toJson() {
+    return {'staff_id': staffId, 'staff_name': staffName, 'email': email, 'phone': phone};
+  }
 
   factory Staff.fromJson(Map<String, dynamic> json) {
     return Staff(
-      staff_id: json['id'] as String? ?? '',
-      staff_name: json['name'] as String? ?? 'Unknown Staff',
+      staffId: json['id'] ?? '',
+      staffName: json['name'] ?? '',
+      email: json['email'],
+      phone: json['phone'],
     );
   }
 
@@ -16,8 +25,8 @@ class Staff {
       identical(this, other) ||
       other is Staff &&
           runtimeType == other.runtimeType &&
-          staff_id == other.staff_id;
+          staffId == other.staffId;
 
   @override
-  int get hashCode => staff_id.hashCode;
+  int get hashCode => staffId.hashCode;
 }

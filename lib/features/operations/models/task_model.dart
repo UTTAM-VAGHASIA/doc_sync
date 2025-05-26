@@ -62,7 +62,7 @@ class Task {
     this.financialYear,
   });
 
-  factory Task.fromJson(Map<String, dynamic> json) {
+  factory Task.fromJson(Map<String, dynamic> json, [bool isList = false]) {
     DateTime? tryParseDateTime(String? dateString) {
       if (dateString == null || dateString.isEmpty) {
         return null;
@@ -82,34 +82,71 @@ class Task {
       constructedPeriod = to;
     }
 
-    return Task(
-      srNo: json['id'] as String? ?? '',
-      taskId: json['task_id'] as String? ?? '',
-      taskName: json['task_name'] as String? ?? 'Unknown Task',
-      fileNo: json['file_no'] as String? ?? 'N/A',
-      client: json['client_name'] as String? ?? 'Unknown Client',
-      taskSubTask: json['sub_task_name'] as String? ?? 'N/A',
-      allottedBy: json['alloted_by_name'] as String? ?? 'Unknown',
-      allottedTo: json['alloted_to_name'] as String? ?? 'Unassigned',
-      instructions: json['instruction'] as String? ?? '',
-      period: constructedPeriod,
-      status: _parseStatus(json['status'] as String?),
-      priority: _parsePriority(json['priority'] as String?),
+    if (isList) {
+      return Task(
+        taskId: json['id'] as String? ?? '',
+        taskName: json['task_name'] as String? ?? 'Unknown Task',
+      );
+    } else {
+      return Task(
+        srNo: json['id'] as String? ?? '',
+        taskId: json['task_id'] as String? ?? '',
+        taskName: json['task_name'] as String? ?? 'Unknown Task',
+        fileNo: json['file_no'] as String? ?? 'N/A',
+        client: json['client_name'] as String? ?? 'Unknown Client',
+        taskSubTask: json['sub_task_name'] as String? ?? 'N/A',
+        allottedBy: json['alloted_by_name'] as String? ?? 'Unknown',
+        allottedTo: json['alloted_to_name'] as String? ?? 'Unassigned',
+        instructions: json['instruction'] as String? ?? '',
+        period: constructedPeriod,
+        status: _parseStatus(json['status'] as String?),
+        priority: _parsePriority(json['priority'] as String?),
 
-      clientId: json['client_id'] as String?,
-      subtaskId: json['sub_task_id'] as String?,
-      allottedToId: json['alloted_to'] as String?,
-      allottedById: json['alloted_by'] as String?,
-      financialYearId: json['financial_year_id'] as String?,
-      monthFrom: from,
-      monthTo: to,
-      allottedDate: tryParseDateTime(json['alloted_date'] as String?),
-      expectedEndDate: tryParseDateTime(json['expected_end_date'] as String?),
-      verifyByAdmin: json['verify_by_admin'] as String?,
-      dateTime: tryParseDateTime(json['date_time'] as String?),
-      adt: json['adt'] as String?,
-      financialYear: json['financial_year'] as String?,
-    );
+        clientId: json['client_id'] as String?,
+        subtaskId: json['sub_task_id'] as String?,
+        allottedToId: json['alloted_to'] as String?,
+        allottedById: json['alloted_by'] as String?,
+        financialYearId: json['financial_year_id'] as String?,
+        monthFrom: from,
+        monthTo: to,
+        allottedDate: tryParseDateTime(json['alloted_date'] as String?),
+        expectedEndDate: tryParseDateTime(json['expected_end_date'] as String?),
+        verifyByAdmin: json['verify_by_admin'] as String?,
+        dateTime: tryParseDateTime(json['date_time'] as String?),
+        adt: json['adt'] as String?,
+        financialYear: json['financial_year'] as String?,
+      );
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'srNo': srNo,
+      'task_id': taskId,
+      'task_name': taskName,
+      'file_no': fileNo,
+      'client_name': client,
+      'sub_task_name': taskSubTask,
+      'alloted_by_name': allottedBy,
+      'alloted_to_name': allottedTo,
+      'instruction': instructions,
+      'period': period,
+      'status': status != null ? statusToString(status) : null,
+      'priority': priority != null ? priorityToString(priority) : null,
+      'client_id': clientId,
+      'sub_task_id': subtaskId,
+      'alloted_to': allottedToId,
+      'alloted_by': allottedById,
+      'financial_year_id': financialYearId,
+      'month_from': monthFrom,
+      'month_to': monthTo,
+      'alloted_date': allottedDate?.toIso8601String(),
+      'expected_end_date': expectedEndDate?.toIso8601String(),
+      'verify_by_admin': verifyByAdmin,
+      'date_time': dateTime?.toIso8601String(),
+      'adt': adt,
+      'financial_year': financialYear,
+    };
   }
 }
 
