@@ -35,11 +35,24 @@ class StorageUtility {
     StorageType type = StorageType.local,
     String bucket = 'userData',
   }) async {
-    if (type == StorageType.secure) {
-      return await _secure.readData(key);
-    } else {
-      final local = await AppLocalStorage.getInstance(bucket);
-      return local.readData<String>(key);
+    try {
+      if (type == StorageType.secure) {
+        return await _secure.readData(key);
+      } else {
+        final local = await AppLocalStorage.getInstance(bucket);
+        return local.readData<String>(key);
+      }
+    } catch (e) {
+      // Log the error
+      print('Error reading data from ${type.name} storage: $e');
+      
+      // If secure storage fails, return null to trigger recovery logic
+      if (type == StorageType.secure) {
+        return null;
+      }
+      
+      // For local storage, we can rethrow as it's less likely to have encryption issues
+      rethrow;
     }
   }
 

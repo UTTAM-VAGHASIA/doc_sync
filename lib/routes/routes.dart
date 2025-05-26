@@ -5,8 +5,11 @@ class AppRoutes {
   static const resetPassword = "/reset-password";
   static const addNewTask = "/new-task";
   static const tasks = "/tasks";
+  static const tasksAllotedToMe = "/tasks-alloted-to-me";
+  static const tasksAllotedByMe = "/tasks-alloted-by-me";
   static const adminVerfication = "/admin-verification";
   static const taskHistory = "/task-history";
+  static const futureTasks = "/future-tasks";
   static const client = "/client";
   static const staff = "/staff";
   static const group = "/group";
@@ -21,8 +24,11 @@ class AppRoutes {
     dashboard,
     addNewTask,
     tasks,
+    tasksAllotedToMe,
+    tasksAllotedByMe,
     adminVerfication,
     taskHistory,
+    futureTasks,
     client,
     staff,
     group,

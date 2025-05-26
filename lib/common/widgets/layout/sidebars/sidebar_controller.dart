@@ -1,4 +1,5 @@
 import 'package:doc_sync/routes/routes.dart';
+import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:doc_sync/utils/device/device_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,23 +18,10 @@ class SidebarController extends GetxController
   late AnimationController drawerOpenController;
 
   // State to control expansion tiles - using RxBool for reactivity
-  RxBool _isOperationsExpanded = false.obs;
-  RxBool _isMastersExpanded = false.obs;
-  RxBool _isUserLogsExpanded = false.obs;
-  RxBool _isReportsExpanded = false.obs;
-
-  // Getters and setters for expansion state
-  bool get isOperationsExpanded => _isOperationsExpanded.value;
-  set isOperationsExpanded(bool value) => _isOperationsExpanded.value = value;
-
-  bool get isMastersExpanded => _isMastersExpanded.value;
-  set isMastersExpanded(bool value) => _isMastersExpanded.value = value;
-
-  bool get isUserLogsExpanded => _isUserLogsExpanded.value;
-  set isUserLogsExpanded(bool value) => _isUserLogsExpanded.value = value;
-
-  bool get isReportsExpanded => _isReportsExpanded.value;
-  set isReportsExpanded(bool value) => _isReportsExpanded.value = value;
+  RxBool isOperationsExpanded = false.obs;
+  RxBool isMastersExpanded = false.obs;
+  RxBool isUserLogsExpanded = false.obs;
+  RxBool isReportsExpanded = false.obs;
 
   // Define durations for staggering top-level items
   Duration initialDelay = Duration(milliseconds: 50);
@@ -41,13 +29,8 @@ class SidebarController extends GetxController
   Duration staggerDelay = Duration(milliseconds: 60);
   Duration drawerOpenDuration = Duration(milliseconds: 400);
 
-  // Define theme colors based on the image
-  Color drawerBackgroundColor = Color(0xFFF0F4F8); // Light grayish blue
-  Color iconTextColor = Color(0xFF0D47A1); // Dark Blue (adjust as needed)
-  Color selectedBackgroundColor = Color(
-    0xFFE3F2FD,
-  ); // Light Blue for selection/hover (used for sub-items now)
-  Color arrowColor = Color(0xFF64B5F6); // Lighter blue for arrows
+  // Background color
+  Color drawerBackgroundColor = AppColors.primary;
 
   @override
   void onInit() {
@@ -90,7 +73,14 @@ class SidebarController extends GetxController
 
       if (AppDeviceUtils.isMobileScreen(Get.context!)) Get.back();
 
-      Get.toNamed(route);
+      // Handle dashboard navigation specially to clear the stack
+      if (route == AppRoutes.dashboard) {
+        Get.offAllNamed(route);
+      } 
+      // For other routes, use offNamed to replace the current screen instead of stacking
+      else {
+        Get.offNamed(route);
+      }
     }
   }
 }

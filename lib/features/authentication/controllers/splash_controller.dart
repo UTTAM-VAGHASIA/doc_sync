@@ -248,28 +248,43 @@ class SplashController extends GetxController with GetTickerProviderStateMixin {
   }
 
   Future<void> logInExistingUser() async {
-    final user = await userController.getLoginCredentials();
+    try {
+      final user = await userController.getLoginCredentials();
 
-    if (user.email != null && user.password != null) {
-      final requestData = {
-        'data': jsonEncode({"user_id": user.email, "password": user.password}),
-      };
+      // If we have both email and password, try to log in
+      if (user.email != null && user.password != null) {
+        final requestData = {
+          'data': jsonEncode({"user_id": user.email, "password": user.password}),
+        };
 
-      final data = await AppHttpHelper().sendMultipartRequest(
-        "login",
-        method: "POST",
-        fields: requestData,
-      );
+        try {
+          final data = await AppHttpHelper().sendMultipartRequest(
+            "login",
+            method: "POST",
+            fields: requestData,
+          );
 
-      if (data['success']) {
-        User user = User.fromJson(data['data'][0]);
-        userController.saveUserDetails(user);
+          if (data['success']) {
+            User user = User.fromJson(data['data'][0]);
+            userController.saveUserDetails(user);
 
-        finalDestination = AppRoutes.dashboard;
-        // The dashboard data will be fetched when the dashboard screen is loaded
+            finalDestination = AppRoutes.dashboard;
+            // The dashboard data will be fetched when the dashboard screen is loaded
+            return; // Exit early on successful login
+          }
+        } catch (e) {
+          print("Login request error: $e");
+          // Continue to login screen on request error
+        }
       }
-    } else {
+      
+      // If we reach here, login was not successful
       print("Login Not Successful, Navigating to Login Screen.");
+      finalDestination = AppRoutes.login;
+    } catch (e) {
+      print("Error during login process: $e");
+      // Ensure we don't get stuck on splash screen if anything fails
+      finalDestination = AppRoutes.login;
     }
   }
 

@@ -96,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     ),
                     width: splashController.logoSize.value,
                     height: splashController.logoSize.value,
-                    child: const LogoWidget(imgPath: AppImages.darkAppLogo),
+                    child: const LogoWidget(imgPath: AppImages.whiteAppLogo),
                   ),
                 ),
               ),

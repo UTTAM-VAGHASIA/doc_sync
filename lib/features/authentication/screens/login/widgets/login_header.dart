@@ -21,7 +21,7 @@ class LoginHeader extends StatelessWidget {
                 Image(
                   width: 90,
                   height: 100,
-                  image: AssetImage(AppImages.lightAppLogo),
+                  image: AssetImage(AppImages.blueAppLogo),
                 ),
                 // Expanded(
                 //   child: Column(

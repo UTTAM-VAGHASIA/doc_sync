@@ -35,4 +35,4 @@ flutter_launcher_icons:
   min_sdk_android: 21
   image_path_ios: "assets/logos/app-logo-blue-padded.png"
   image_path_ios_dark_transparent: "assets/logos/app-logo-white-padded.png"
-  remove_alpha_channel_ios: true
+  remove_alpha_ios: true

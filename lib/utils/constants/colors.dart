@@ -4,6 +4,7 @@ class AppColors {
   // App theme colors
   static const Color primary = Color(0xFF2A5781);
   static const Color secondary = Color(0xFFF4772E);
+  static const Color tertiary = Color(0xFF388E3C);
   static const Color accent = Color(0xFFe5f9dc);
 
   // Icon colors
