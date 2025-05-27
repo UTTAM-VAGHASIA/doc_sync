@@ -1,16 +1,16 @@
-import 'package:doc_sync/features/operations/controllers/created_task_list_controller.dart';
+import 'package:doc_sync/features/operations/controllers/admin_verification_controller.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
 class SearchFilterCard extends StatelessWidget {
-  final TaskListController taskListController;
+  final AdminVerificationController adminVerificationController;
   final TextEditingController searchController;
 
   const SearchFilterCard({
     Key? key,
-    required this.taskListController,
+    required this.adminVerificationController,
     required this.searchController,
   }) : super(key: key);
 
@@ -35,8 +35,8 @@ class SearchFilterCard extends StatelessWidget {
             Obx(() {
               // Keep the controller in sync with the observable
               if (searchController.text !=
-                  taskListController.searchQuery.value) {
-                searchController.text = taskListController.searchQuery.value;
+                  adminVerificationController.searchQuery.value) {
+                searchController.text = adminVerificationController.searchQuery.value;
                 searchController.selection = TextSelection.fromPosition(
                   TextPosition(offset: searchController.text.length),
                 );
@@ -50,12 +50,12 @@ class SearchFilterCard extends StatelessWidget {
                   hintText: 'Search tasks, clients, file no...',
                   prefixIcon: const Icon(Icons.search),
                   suffixIcon:
-                      taskListController.searchQuery.value.isNotEmpty
+                      adminVerificationController.searchQuery.value.isNotEmpty
                           ? IconButton(
                             icon: const Icon(Icons.close),
                             onPressed: () {
                               searchController.clear();
-                              taskListController.updateSearch('');
+                              adminVerificationController.updateSearch('');
                             },
                           )
                           : null,
@@ -68,7 +68,7 @@ class SearchFilterCard extends StatelessWidget {
                     vertical: 12,
                   ),
                 ),
-                onChanged: taskListController.updateSearch,
+                onChanged: adminVerificationController.updateSearch,
               );
             }),
 
@@ -90,9 +90,9 @@ class SearchFilterCard extends StatelessWidget {
               () => _buildFullWidthFilterCard(
                 'All Tasks',
                 'all',
-                taskListController,
+                adminVerificationController,
                 Icons.list_alt,
-                taskListController.totalTasksCount,
+                adminVerificationController.totalTasksCount,
                 AppColors.primary,
               ),
             ),
@@ -107,9 +107,9 @@ class SearchFilterCard extends StatelessWidget {
                     child: _buildStatusFilterCard(
                       'Allotted',
                       'allotted',
-                      taskListController,
+                      adminVerificationController,
                       Icons.assignment_outlined,
-                      taskListController.totalAllotted.value,
+                      adminVerificationController.totalAllotted,
                       Colors.blue.shade700,
                     ),
                   ),
@@ -118,9 +118,9 @@ class SearchFilterCard extends StatelessWidget {
                     child: _buildStatusFilterCard(
                       'Completed',
                       'completed',
-                      taskListController,
+                      adminVerificationController,
                       Icons.check_circle_outline,
-                      taskListController.totalCompleted.value,
+                      adminVerificationController.totalCompleted,
                       Colors.green.shade700,
                     ),
                   ),
@@ -138,9 +138,9 @@ class SearchFilterCard extends StatelessWidget {
                     child: _buildStatusFilterCard(
                       'Client Waiting',
                       'client_waiting',
-                      taskListController,
+                      adminVerificationController,
                       Icons.hourglass_empty,
-                      taskListController.totalClientWaiting.value,
+                      adminVerificationController.totalClientWaiting,
                       Colors.orange.shade700,
                     ),
                   ),
@@ -149,9 +149,9 @@ class SearchFilterCard extends StatelessWidget {
                     child: _buildStatusFilterCard(
                       'Re-allotted',
                       're_alloted',
-                      taskListController,
+                      adminVerificationController,
                       Icons.replay_outlined,
-                      taskListController.totalReallotted.value,
+                      adminVerificationController.totalReallotted,
                       Colors.red.shade700,
                     ),
                   ),
@@ -161,60 +161,16 @@ class SearchFilterCard extends StatelessWidget {
 
             const SizedBox(height: 8),
             
-            // Status filter chips - third row with pending
+            // Status filter chips - third row with pending centered
             Obx(
               () => _buildStatusFilterCard(
                 'Pending',
                 'pending',
-                taskListController,
+                adminVerificationController,
                 Icons.pending_outlined,
-                taskListController.pendingCount.value,
+                adminVerificationController.pendingCount.value,
                 Colors.amber.shade700,
               ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Allocation filter options
-            Text(
-              'Filter by Allocation:',
-              style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
-            ),
-            
-            const SizedBox(height: 8),
-            
-            // Allotted by me filter
-            Row(
-              children: [
-                Obx(
-                  () => Expanded(
-                    child: _buildStatusFilterCard(
-                      'Allotted by me',
-                      'allotted_by_me',
-                      taskListController,
-                      Icons.outgoing_mail,
-                      taskListController.allottedByMeCount.value,
-                      Colors.indigo.shade600,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(width: 8),
-                
-                // Allotted to me filter
-                Obx(
-                  () => Expanded(
-                    child: _buildStatusFilterCard(
-                      'Allotted to me',
-                      'allotted_to_me',
-                      taskListController,
-                      Icons.inbox,
-                      taskListController.allottedToMeCount.value,
-                      Colors.teal.shade600,
-                    ),
-                  ),
-                ),
-              ],
             ),
 
             const SizedBox(height: 16),
@@ -233,8 +189,8 @@ class SearchFilterCard extends StatelessWidget {
                     child: _buildPriorityFilterCard(
                       'High',
                       'high',
-                      taskListController,
-                      taskListController.highPriorityCount.value,
+                      adminVerificationController,
+                      adminVerificationController.highPriorityCount.value,
                       Colors.red.shade600,
                     ),
                   ),
@@ -243,8 +199,8 @@ class SearchFilterCard extends StatelessWidget {
                     child: _buildPriorityFilterCard(
                       'Medium',
                       'medium',
-                      taskListController,
-                      taskListController.mediumPriorityCount.value,
+                      adminVerificationController,
+                      adminVerificationController.mediumPriorityCount.value,
                       Colors.orange.shade600,
                     ),
                   ),
@@ -253,8 +209,8 @@ class SearchFilterCard extends StatelessWidget {
                     child: _buildPriorityFilterCard(
                       'Low',
                       'low',
-                      taskListController,
-                      taskListController.lowPriorityCount.value,
+                      adminVerificationController,
+                      adminVerificationController.lowPriorityCount.value,
                       Colors.green.shade600,
                     ),
                   ),
@@ -275,15 +231,15 @@ class SearchFilterCard extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _buildSortChip('Date', 'date', taskListController),
+                  _buildSortChip('Date', 'date', adminVerificationController),
                   const SizedBox(width: 8),
-                  _buildSortChip('Task Name', 'name', taskListController),
+                  _buildSortChip('Task Name', 'name', adminVerificationController),
                   const SizedBox(width: 8),
-                  _buildSortChip('Client', 'client', taskListController),
+                  _buildSortChip('Client', 'client', adminVerificationController),
                   const SizedBox(width: 8),
-                  _buildSortChip('Priority', 'priority', taskListController),
+                  _buildSortChip('Priority', 'priority', adminVerificationController),
                   const SizedBox(width: 8),
-                  _buildSortChip('Status', 'status', taskListController),
+                  _buildSortChip('Status', 'status', adminVerificationController),
                 ],
               ),
             ),
@@ -295,23 +251,23 @@ class SearchFilterCard extends StatelessWidget {
     );
   }
   
-  // Full-width filter card for All
+  // New widget for full-width filter card
   Widget _buildFullWidthFilterCard(
     String label,
     String value,
-    TaskListController controller,
+    AdminVerificationController controller,
     IconData icon,
     int count,
     Color color,
   ) {
     return Obx(() {
-      final isSelected = controller.activeFilters.isEmpty;
+      final isSelected = controller.activeFilters.contains(value);
       return GestureDetector(
         onTap: () => controller.updateFilter(value),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           decoration: BoxDecoration(
-            color: isSelected ? color.withOpacity(0.1) : Colors.grey.shade50,
+            color: isSelected ? color.withValues(alpha:0.1) : Colors.grey.shade50,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected ? color : Colors.grey.shade300,
@@ -320,7 +276,7 @@ class SearchFilterCard extends StatelessWidget {
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: color.withOpacity(0.2),
+                      color: color.withValues(alpha:0.2),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -332,7 +288,7 @@ class SearchFilterCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(isSelected ? 0.2 : 0.1),
+                  color: color.withValues(alpha:isSelected ? 0.2 : 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -357,7 +313,7 @@ class SearchFilterCard extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.15),
+                  color: color.withValues(alpha:0.15),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
@@ -376,10 +332,81 @@ class SearchFilterCard extends StatelessWidget {
     });
   }
 
+  Widget _buildFilterChip(
+    String label,
+    String value,
+    AdminVerificationController controller,
+    IconData icon,
+    int count,
+    Color color,
+  ) {
+    return Obx(
+      () {
+        final isSelected = value == 'all' 
+            ? controller.activeFilters.contains('all')
+            : controller.activeFilters.contains(value);
+            
+        return FilterChip(
+          label: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: 16,
+                color: isSelected
+                    ? AppColors.primary
+                    : AppColors.textSecondary,
+              ),
+              const SizedBox(width: 4),
+              Text(label),
+              const SizedBox(width: 4),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha:0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  count.toString(),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          selected: isSelected,
+          onSelected: (_) => controller.updateFilter(value),
+          backgroundColor: Colors.transparent,
+          selectedColor: AppColors.primary.withValues(alpha:0.1),
+          labelStyle: TextStyle(
+            color: isSelected
+                ? AppColors.primary
+                : AppColors.textPrimary,
+            fontWeight: isSelected
+                ? FontWeight.bold
+                : FontWeight.normal,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(
+              color: isSelected
+                  ? AppColors.primary
+                  : Colors.grey.shade300,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildStatusFilterCard(
     String label,
     String value,
-    TaskListController controller,
+    AdminVerificationController controller,
     IconData icon,
     int count,
     Color color,
@@ -391,7 +418,7 @@ class SearchFilterCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           decoration: BoxDecoration(
-            color: isSelected ? color.withOpacity(0.1) : Colors.grey.shade50,
+            color: isSelected ? color.withValues(alpha:0.1) : Colors.grey.shade50,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected ? color : Colors.grey.shade300,
@@ -400,7 +427,7 @@ class SearchFilterCard extends StatelessWidget {
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: color.withOpacity(0.2),
+                      color: color.withValues(alpha:0.2),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -433,7 +460,7 @@ class SearchFilterCard extends StatelessWidget {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: color.withOpacity(0.15),
+                      color: color.withValues(alpha:0.15),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
@@ -452,7 +479,7 @@ class SearchFilterCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(isSelected ? 0.2 : 0.1),
+                  color: color.withValues(alpha:isSelected ? 0.2 : 0.1),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Icon(
@@ -471,7 +498,7 @@ class SearchFilterCard extends StatelessWidget {
   Widget _buildSortChip(
     String label,
     String value,
-    TaskListController controller,
+    AdminVerificationController controller,
   ) {
     return Obx(
       () {
@@ -493,7 +520,7 @@ class SearchFilterCard extends StatelessWidget {
             ],
           ),
           backgroundColor:
-              isSelected ? AppColors.primary.withOpacity(0.1) : Colors.grey.shade100,
+              isSelected ? AppColors.primary.withValues(alpha:0.1) : Colors.grey.shade100,
           side: BorderSide(
             color: isSelected ? AppColors.primary : Colors.grey.shade300,
           ),
@@ -510,7 +537,7 @@ class SearchFilterCard extends StatelessWidget {
   Widget _buildPriorityFilterCard(
     String label,
     String value,
-    TaskListController controller,
+    AdminVerificationController controller,
     int count,
     Color color,
   ) {
@@ -521,7 +548,7 @@ class SearchFilterCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           decoration: BoxDecoration(
-            color: isSelected ? color.withOpacity(0.1) : Colors.grey.shade50,
+            color: isSelected ? color.withValues(alpha:0.1) : Colors.grey.shade50,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected ? color : Colors.grey.shade300,
@@ -530,7 +557,7 @@ class SearchFilterCard extends StatelessWidget {
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: color.withOpacity(0.2),
+                      color: color.withValues(alpha:0.2),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -541,14 +568,14 @@ class SearchFilterCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Icon at top
+              // Icon at top - SWAPPED position with text
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: color.withOpacity(isSelected ? 0.2 : 0.1),
+                      color: color.withValues(alpha:isSelected ? 0.2 : 0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Icon(
@@ -557,28 +584,29 @@ class SearchFilterCard extends StatelessWidget {
                       color: isSelected ? color : AppColors.textSecondary,
                     ),
                   ),
+                  const SizedBox(height: 6),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: color.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      count.toString(),
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: color,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: color.withValues(alpha:0.15),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          count.toString(),
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: color,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
                 ],
               ),
-              const SizedBox(height: 6),
-              // Label
+              SizedBox(height: 6),
+              // Bottom row with label and count - SWAPPED position with icon
               Text(
                 label,
                 style: TextStyle(
@@ -593,4 +621,4 @@ class SearchFilterCard extends StatelessWidget {
       );
     });
   }
-}
+} 

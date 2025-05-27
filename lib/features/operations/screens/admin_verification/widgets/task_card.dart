@@ -1,56 +1,8 @@
+import 'package:doc_sync/features/operations/controllers/admin_verification_controller.dart';
 import 'package:doc_sync/features/operations/models/admin_verification_task_model.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
-
-// Helper functions for status
-String adminStatusToString(AdminTaskStatus status) {
-  switch (status) {
-    case AdminTaskStatus.allotted:
-      return 'Allotted';
-    case AdminTaskStatus.completed:
-      return 'Completed';
-    case AdminTaskStatus.awaiting:
-      return 'Awaiting';
-    case AdminTaskStatus.reallotted:
-      return 'Reallotted';
-  }
-}
-
-Color adminStatusToColor(AdminTaskStatus status) {
-  switch (status) {
-    case AdminTaskStatus.allotted:
-      return Colors.blue;
-    case AdminTaskStatus.completed:
-      return Colors.green;
-    case AdminTaskStatus.awaiting:
-      return Colors.orange;
-    case AdminTaskStatus.reallotted:
-      return Colors.purple;
-  }
-}
-
-// Helper functions for priority
-String adminPriorityToString(AdminTaskPriority priority) {
-  switch (priority) {
-    case AdminTaskPriority.high:
-      return 'High';
-    case AdminTaskPriority.medium:
-      return 'Medium';
-    case AdminTaskPriority.low:
-      return 'Low';
-  }
-}
-
-Color adminPriorityToColor(AdminTaskPriority priority) {
-  switch (priority) {
-    case AdminTaskPriority.high:
-      return Colors.red;
-    case AdminTaskPriority.medium:
-      return Colors.orange;
-    case AdminTaskPriority.low:
-      return Colors.green;
-  }
-}
+import 'package:get/get.dart';
 
 class TaskExpansionCard extends StatefulWidget {
   final AdminVerificationTask task;
@@ -134,7 +86,7 @@ class TaskExpansionCardState extends State<TaskExpansionCard>
                     decoration: BoxDecoration(
                       color: adminStatusToColor(
                         widget.task.taskStatus,
-                      ).withOpacity(0.1),
+                      ).withValues(alpha:0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Center(child: getStatusIcon(widget.task.taskStatus)),
@@ -168,7 +120,7 @@ class TaskExpansionCardState extends State<TaskExpansionCard>
                     decoration: BoxDecoration(
                       color: adminPriorityToColor(
                         widget.task.taskPriority,
-                      ).withOpacity(0.1),
+                      ).withValues(alpha:0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -229,20 +181,14 @@ class TaskExpansionCardState extends State<TaskExpansionCard>
                             // View functionality will be implemented later
                           },
                         ),
+                        const SizedBox(width: 8),
                         _buildActionButton(
-                          label: 'Edit',
-                          icon: Icons.edit_outlined,
+                          label: 'Approve',
+                          icon: Icons.check_circle_outline,
                           color: Colors.green,
                           onTap: () {
-                            // Edit functionality will be implemented later
-                          },
-                        ),
-                        _buildActionButton(
-                          label: 'Delete',
-                          icon: Icons.delete_outline,
-                          color: Colors.red,
-                          onTap: () {
-                            // Delete functionality will be implemented later
+                            final controller = Get.find<AdminVerificationController>();
+                            controller.approveTask(widget.task);
                           },
                         ),
                       ],
@@ -306,41 +252,50 @@ class TaskExpansionCardState extends State<TaskExpansionCard>
                           'Allotted To',
                           widget.task.allottedToName,
                           Icons.person_outline,
-                          Colors.purple,
-                          widget.textColor,
-                        ),
-                        buildDetailRow(
-                          context,
-                          'Period',
-                          widget.task.period,
-                          Icons.calendar_today_outlined,
-                          Colors.orange,
+                          Colors.indigo,
                           widget.textColor,
                         ),
                         buildDetailRow(
                           context,
                           'Allotted Date',
                           widget.task.allottedDate,
-                          Icons.event_outlined,
-                          Colors.green,
+                          Icons.calendar_today_outlined,
+                          Colors.orange,
                           widget.textColor,
                         ),
                         buildDetailRow(
                           context,
                           'Expected End Date',
                           widget.task.expectedEndDate,
-                          Icons.event_outlined,
+                          Icons.calendar_month_outlined,
                           Colors.red,
                           widget.textColor,
                         ),
                         buildDetailRow(
                           context,
-                          'Instructions',
-                          widget.task.instruction,
-                          Icons.description_outlined,
-                          Colors.blue,
+                          'Period',
+                          widget.task.period,
+                          Icons.date_range_outlined,
+                          Colors.green,
                           widget.textColor,
+                          isLast: widget.task.instruction.isEmpty && widget.task.verifyByAdmin.isEmpty,
                         ),
+                        if (widget.task.verifyByAdmin.isNotEmpty)
+                          buildDetailRow(
+                            context,
+                            'Verification Status',
+                            widget.task.verifyByAdmin == '1' ? 'Pending' : 'Verified',
+                            Icons.verified_outlined,
+                            widget.task.verifyByAdmin == '1' ? Colors.amber : Colors.teal,
+                            widget.textColor,
+                            isLast: widget.task.instruction.isEmpty,
+                          ),
+                        if (widget.task.instruction.isNotEmpty)
+                          buildInstructionsSection(
+                            context,
+                            widget.task.instruction,
+                            widget.textColor,
+                          ),
                       ],
                     ),
                   ),
@@ -359,25 +314,32 @@ class TaskExpansionCardState extends State<TaskExpansionCard>
     required Color color,
     required VoidCallback onTap,
   }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: color, size: 20),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                color: color,
-                fontWeight: FontWeight.w500,
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha:0.1),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: color.withValues(alpha:0.3)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 18, color: color),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  color: color,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -389,58 +351,105 @@ class TaskExpansionCardState extends State<TaskExpansionCard>
     String value,
     IconData icon,
     Color iconColor,
+    Color textColor, {
+    bool isLast = false,
+  }) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              Icon(icon, size: 18, color: iconColor),
+              const SizedBox(width: 12),
+              Text(
+                label,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: textColor,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                value,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: textColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (!isLast) Divider(color: Colors.grey.shade200, height: 1),
+      ],
+    );
+  }
+
+  Widget buildInstructionsSection(
+    BuildContext context,
+    String instructions,
     Color textColor,
   ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: iconColor, size: 18),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(fontSize: 12, color: widget.subtleTextColor),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Divider(color: Colors.grey.shade200, height: 1),
+        Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Row(
+            children: [
+              Icon(Icons.info_outline, size: 18, color: Colors.blue),
+              const SizedBox(width: 12),
+              Text(
+                'Instructions',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: textColor,
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: textColor,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            instructions,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: textColor,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget getStatusIcon(AdminTaskStatus status) {
+    Color color = adminStatusToColor(status);
+    IconData icon;
+
     switch (status) {
       case AdminTaskStatus.allotted:
-        return const Icon(Icons.assignment_outlined, color: Colors.blue);
+        icon = Icons.assignment_outlined;
+        break;
       case AdminTaskStatus.completed:
-        return const Icon(Icons.check_circle_outline, color: Colors.green);
-      case AdminTaskStatus.awaiting:
-        return const Icon(Icons.hourglass_empty, color: Colors.orange);
-      case AdminTaskStatus.reallotted:
-        return const Icon(Icons.replay_outlined, color: Colors.red);
+        icon = Icons.check_circle_outline;
+        break;
+      case AdminTaskStatus.client_waiting:
+        icon = Icons.hourglass_empty;
+        break;
+      case AdminTaskStatus.re_alloted:
+        icon = Icons.replay_outlined;
+        break;
+      case AdminTaskStatus.pending:
+        icon = Icons.pending_actions_outlined;
+        break;
     }
+
+    return Icon(icon, color: color, size: 20);
   }
 }

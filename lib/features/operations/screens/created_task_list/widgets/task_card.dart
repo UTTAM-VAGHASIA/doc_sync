@@ -342,11 +342,14 @@ class TaskExpansionCardState extends State<TaskExpansionCard> with SingleTickerP
       case TaskStatus.completed:
         icon = Icons.check_circle_outline;
         break;
-      case TaskStatus.awaiting:
+      case TaskStatus.client_waiting:
         icon = Icons.hourglass_empty;
         break;
-      case TaskStatus.reallotted:
+      case TaskStatus.re_alloted:
         icon = Icons.replay_outlined;
+        break;
+      case TaskStatus.pending:
+        icon = Icons.pending_actions_outlined;
         break;
       default:
         icon = Icons.help_outline;

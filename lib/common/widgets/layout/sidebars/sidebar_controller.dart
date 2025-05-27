@@ -68,19 +68,22 @@ class SidebarController extends GetxController
   bool isHovering(String route) => hoverItem.value == route;
 
   void menuOnTap(String route) {
-    if (!isActive(route)) {
-      changeActiveItem(route);
+    if (AppDeviceUtils.isMobileScreen(Get.context!) || AppDeviceUtils.isTabletScreen(Get.context!)) Get.back();
 
-      if (AppDeviceUtils.isMobileScreen(Get.context!)) Get.back();
+    // Set active item before navigation
+    changeActiveItem(route);
 
-      // Handle dashboard navigation specially to clear the stack
-      if (route == AppRoutes.dashboard) {
-        Get.offAllNamed(route);
-      } 
-      // For other routes, use offNamed to replace the current screen instead of stacking
-      else {
-        Get.offNamed(route);
-      }
+    // Use a consistent navigation approach for all routes
+    if (route == AppRoutes.dashboard) {
+      Get.offAllNamed(route);
+    } else {
+      // Use toNamed instead of offNamed to avoid state reset issues
+      Get.toNamed(route, preventDuplicates: true);
     }
+    
+    // Ensure route is properly set after navigation
+    Future.delayed(Duration(milliseconds: 100), () {
+      changeActiveItem(route);
+    });
   }
 }

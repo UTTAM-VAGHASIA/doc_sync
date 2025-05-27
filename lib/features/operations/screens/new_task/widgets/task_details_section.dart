@@ -70,9 +70,6 @@ class TaskDetailsSection extends StatelessWidget {
       text: controller.taskInstructions.value,
     );
 
-    // Store the current cursor position
-    final currentTextPosition = textController.selection;
-
     return Obx(() {
       // Only update the text if it differs from the controller's text
       if (textController.text != controller.taskInstructions.value) {

@@ -2,16 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased [0.0.6] - Soon to be released
+## [0.0.6] - 2025-05-27
 
-### To be Added
+### Added
 
-- To be added Admin Verification Page, Task list pages regarding personal allocation.
-- To be Added Task History Page and Future Tasks page.
+- Added Admin Verification Page.
+- Added Filter Options in the Task List Page to see all the task allocation to the Current User.
   
-### To be Fixed
+### Fixed
 
-- Fix the Sidebar to make it scrollable.
+- Made the Sidebar Scrollable.
+- Fixed the issue where User details were not getting fetched for the New Task Page.
+- Fixed the issue where active menu items were not sometimes getting highlighted in the sidebar.
+- Fixed all the status of the tasks. Now each task can have 5 status: Allotted, Re-Allotted, Client-waiting, Pending, Completed.
 
 ## [0.0.5] - 2025-05-27
 

@@ -22,8 +22,10 @@ class NewTaskController extends GetxController {
       GlobalKey<RefreshIndicatorState>();
 
   // Current User Info (this will be fetched from Auth service in later tasks)
-  String userName = UserController.instance.user.value.name ?? 'Admin User';
-
+  RxString userId = ''.obs;
+  RxString userName = ''.obs;
+  RxString userRole = ''.obs;
+  
   // Loading States
   final RxBool isLoadingTasks = false.obs;
   final RxBool isLoadingSubTasks = false.obs;
@@ -98,11 +100,6 @@ class NewTaskController extends GetxController {
     'Month To:',
   ];
 
-  // TODO: Replace with actual user/session values
-  final String allotedById = '1';
-  final String senderId = '1';
-  final String senderType = 'superadmin';
-
   // Special handling for loading draft or initial setup to ensure task instructions are updated
   void updateInstructionsAfterLoad() {
     // Wait briefly to ensure all values are loaded
@@ -113,6 +110,13 @@ class NewTaskController extends GetxController {
 
   @override
   Future<void> onInit() async {
+    print('onInit');
+    userId.value = UserController.instance.user.value.id ?? '';
+    userName.value = UserController.instance.user.value.name ?? 'Unable to load User';
+    userRole.value = UserController.instance.user.value.type!.name;
+    print(userId);
+    print(userName);
+    print(userRole);
     super.onInit();
     fetchTasks();
     fetchClients();
@@ -1000,7 +1004,7 @@ class NewTaskController extends GetxController {
       'task_id': selectedTask.value?.taskId,
       'sub_task_id': selectedSubTask.value?.id,
       'alloted_to': selectedStaff.value?.staffId,
-      'alloted_by': allotedById, // Set this from user/session
+      'alloted_by': userId.value, // Set this from user/session
       'financial_year_id': selectedFinancialYear.value?.financial_year_id,
       'month_from': selectedFromMonth.value,
       'month_to': selectedToMonth.value,
@@ -1009,8 +1013,8 @@ class NewTaskController extends GetxController {
       'expected_end_date': expectedEndDate.value.toIso8601String(),
       'priority': priority.value,
       'verify_by_admin': adminVerification.value ? 1 : 0,
-      'sender_id': senderId, // Set this from user/session
-      'sender_type': senderType, // Set this from user/session
+      'sender_id': userId.value, // Set this from user/session
+      'sender_type': userRole.value, // Set this from user/session
     };
   }
 

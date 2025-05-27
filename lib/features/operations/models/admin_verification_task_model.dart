@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart'; // Needed for Color type
-import 'package:intl/intl.dart';
-
-enum AdminTaskStatus { allotted, completed, awaiting, reallotted }
+import 'package:flutter/material.dart';
+// ignore: constant_identifier_names
+enum AdminTaskStatus { allotted, completed, pending, client_waiting, re_alloted }
 
 enum AdminTaskPriority { high, medium, low }
 
@@ -95,16 +94,17 @@ class AdminVerificationTask {
       case 'completed':
       case 'complete':
         return AdminTaskStatus.completed;
-      case 'awaiting':
-      case 'pending':
-        return AdminTaskStatus.awaiting;
+      case 'client_waiting':
+        return AdminTaskStatus.client_waiting;
       case 're-allotted':
       case 'reallotted':
       case 're-alloted':
       case 'realloted':
-        return AdminTaskStatus.reallotted;
+    case 're_alloted':
+    case 're_allotted':
+        return AdminTaskStatus.re_alloted;
       default:
-        return AdminTaskStatus.awaiting;
+        return AdminTaskStatus.pending;
     }
   }
 
@@ -139,10 +139,12 @@ String adminStatusToString(AdminTaskStatus status) {
       return 'Allotted';
     case AdminTaskStatus.completed:
       return 'Completed';
-    case AdminTaskStatus.awaiting:
-      return 'Awaiting';
-    case AdminTaskStatus.reallotted:
+    case AdminTaskStatus.client_waiting:
+      return 'Client Waiting';
+    case AdminTaskStatus.re_alloted:
       return 'Re-allotted';
+    case AdminTaskStatus.pending:
+      return 'Pending';
   }
 }
 
@@ -152,10 +154,12 @@ Color adminStatusToColor(AdminTaskStatus status) {
       return Colors.blue.shade700;
     case AdminTaskStatus.completed:
       return Colors.green.shade700;
-    case AdminTaskStatus.awaiting:
+    case AdminTaskStatus.client_waiting:
       return Colors.orange.shade700;
-    case AdminTaskStatus.reallotted:
+    case AdminTaskStatus.re_alloted:
       return Colors.red.shade700;
+    case AdminTaskStatus.pending:
+      return Colors.amber.shade700;
   }
 }
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-enum TaskStatus { allotted, completed, awaiting, reallotted }
+enum TaskStatus { allotted, completed, pending, client_waiting, re_alloted }
 
 enum TaskPriority { high, medium, low }
 
@@ -156,16 +156,20 @@ TaskStatus _parseStatus(String? statusString) {
     case 'completed':
     case 'complete':
       return TaskStatus.completed;
-    case 'awaiting':
-    case 'pending':
-      return TaskStatus.awaiting;
+    case 'client_waiting':
+    case 'client waiting':
+      return TaskStatus.client_waiting;
     case 're-allotted':
     case 'reallotted':
     case 're-alloted':
     case 'realloted':
-      return TaskStatus.reallotted;
+    case 're_alloted':
+    case 're_allotted':
+      return TaskStatus.re_alloted;
+    case 'pending':
+      return TaskStatus.pending;
     default:
-      return TaskStatus.awaiting;
+      return TaskStatus.pending;
   }
 }
 
@@ -188,10 +192,12 @@ String statusToString(TaskStatus? status) {
       return 'Allotted';
     case TaskStatus.completed:
       return 'Completed';
-    case TaskStatus.awaiting:
-      return 'Awaiting';
-    case TaskStatus.reallotted:
+    case TaskStatus.client_waiting:
+      return 'Client Waiting';
+    case TaskStatus.re_alloted:
       return 'Re-allotted';
+    case TaskStatus.pending:
+      return 'Pending';
     default:
       return 'Unknown';
   }
@@ -203,10 +209,12 @@ Color statusToColor(TaskStatus? status) {
       return Colors.blue.shade700;
     case TaskStatus.completed:
       return Colors.green.shade700;
-    case TaskStatus.awaiting:
+    case TaskStatus.client_waiting:
       return Colors.orange.shade700;
-    case TaskStatus.reallotted:
+    case TaskStatus.re_alloted:
       return Colors.red.shade700;
+    case TaskStatus.pending:
+      return Colors.amber.shade700;
     default:
       return Colors.grey;
   }

@@ -100,17 +100,19 @@ class StaffAllotmentSection extends StatelessWidget {
 
   Widget _buildAllottedByField(BuildContext context) {
     // This field shows the current user as the one who is allotting the task
-    return TextFormField(
-      readOnly: true,
-      initialValue: controller.userName,
-      ignorePointers: true,
-      decoration: InputDecoration(
-        labelText: 'Allotted By',
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        prefixIcon: const Icon(Iconsax.user_octagon),
-        filled: true,
-        fillColor: Colors.grey[50],
+    return Obx(
+      () => TextFormField(
+        readOnly: true,
+        initialValue: controller.userName.value,
+        ignorePointers: true,
+        decoration: InputDecoration(
+          labelText: 'Allotted By',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          prefixIcon: const Icon(Iconsax.user_octagon),
+          filled: true,
+          fillColor: Colors.grey[50],
+        ),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:doc_sync/features/authentication/controllers/user_controller.dart';
 import 'package:doc_sync/features/operations/models/task_model.dart';
 import 'package:doc_sync/utils/helpers/network_manager.dart';
 import 'package:doc_sync/utils/helpers/retry_queue_manager.dart';
@@ -45,14 +46,19 @@ class TaskListController extends GetxController {
   // Task status counts
   RxInt totalAllotted = 0.obs;
   RxInt totalCompleted = 0.obs;
-  RxInt totalAwaiting = 0.obs;
+  RxInt totalClientWaiting = 0.obs;
   RxInt totalReallotted = 0.obs;
+  RxInt pendingCount = 0.obs;
   int get totalTasksCount => filteredTasks.length;
 
   // Task priority counts
   RxInt highPriorityCount = 0.obs;
   RxInt mediumPriorityCount = 0.obs;
   RxInt lowPriorityCount = 0.obs;
+
+  // Add these counts for the new filters
+  RxInt allottedByMeCount = 0.obs;
+  RxInt allottedToMeCount = 0.obs;
 
   @override
   void onInit() {
@@ -182,15 +188,23 @@ class TaskListController extends GetxController {
     
     totalAllotted.value = tasksToCount.where((task) => task.status == TaskStatus.allotted).length;
     totalCompleted.value = tasksToCount.where((task) => task.status == TaskStatus.completed).length;
-    totalAwaiting.value = tasksToCount.where((task) => task.status == TaskStatus.awaiting).length;
-    totalReallotted.value = tasksToCount.where((task) => task.status == TaskStatus.reallotted).length;
+    totalClientWaiting.value = tasksToCount.where((task) => task.status == TaskStatus.client_waiting).length;
+    totalReallotted.value = tasksToCount.where((task) => task.status == TaskStatus.re_alloted).length;
+    pendingCount.value = tasksToCount.where((task) => task.status == TaskStatus.pending).length;
     
     // Calculate priority counts
     highPriorityCount.value = tasksToCount.where((task) => task.priority == TaskPriority.high).length;
     mediumPriorityCount.value = tasksToCount.where((task) => task.priority == TaskPriority.medium).length;
     lowPriorityCount.value = tasksToCount.where((task) => task.priority == TaskPriority.low).length;
     
-    print("Task counts updated: allotted=${totalAllotted.value}, completed=${totalCompleted.value}");
+    // Calculate allocation counts
+    String currentUserId = UserController.instance.user.value.id.toString();
+    allottedByMeCount.value = tasksToCount.where((task) => 
+        task.allottedById == currentUserId).length;
+    allottedToMeCount.value = tasksToCount.where((task) => 
+        task.allottedToId == currentUserId).length;
+    
+    print("Task counts updated: allotted=${totalAllotted.value}, completed=${totalCompleted.value}, allottedByMe=${allottedByMeCount.value}, allottedToMe=${allottedToMeCount.value}");
   }
   
   void _applyFiltersAndSort() {
@@ -221,18 +235,24 @@ class TaskListController extends GetxController {
               return task.status == TaskStatus.allotted;
             case 'completed':
               return task.status == TaskStatus.completed;
-            case 'awaiting':
-              return task.status == TaskStatus.awaiting;
-            case 'reallotted':
-              return task.status == TaskStatus.reallotted;
+            case 'client_waiting':
+              return task.status == TaskStatus.client_waiting;
+            case 're_alloted':
+              return task.status == TaskStatus.re_alloted;
+            case 'pending':
+              return task.status == TaskStatus.pending;
             case 'high':
               return task.priority == TaskPriority.high;
             case 'medium':
               return task.priority == TaskPriority.medium;
             case 'low':
               return task.priority == TaskPriority.low;
+            case 'allotted_by_me':
+              return task.allottedById == UserController.instance.user.value.id.toString();
+            case 'allotted_to_me':
+              return task.allottedToId == UserController.instance.user.value.id.toString();
             default:
-              return true;
+              return false;
           }
         });
       }).toList();

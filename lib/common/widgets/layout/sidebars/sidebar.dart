@@ -42,6 +42,7 @@ class AppSidebar extends StatelessWidget {
         ),
         child: Column(
           children: [
+            // Fixed section (non-scrollable)
             // Logo with more top margin and centered, larger size
             Padding(
               padding: const EdgeInsets.only(top: 64, bottom: 24),
@@ -170,208 +171,205 @@ class AppSidebar extends StatelessWidget {
               },
             ),
             const SizedBox(height: 18),
-            // Operations Section
-            Obx(
-              () => _buildSectionCard(
-                context: context,
-                headerIcon: Iconsax.task,
-                headerTitle: 'Operations',
-                isExpanded: drawerOpenController.isOperationsExpanded.value,
-                onExpansionChanged:
-                    (exp) =>
-                        drawerOpenController.isOperationsExpanded.value = exp,
-                iconColor: AppColors.secondary,
-                children: [
-                  buildSubMenuItem(
-                    context: context,
-                    icon: Iconsax.add_circle,
-                    title: 'Add New Task',
-                    onTap:
-                        () => drawerOpenController.menuOnTap(
-                          AppRoutes.addNewTask,
-                        ),
-                    isSelected: drawerOpenController.isActive(
-                      AppRoutes.addNewTask,
+            
+            // Scrollable section (Operations, Masters, and future sections)
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
                     ),
-                    iconColor: AppColors.tertiary,
-                  ),
-                  buildSubMenuItem(
-                    context: context,
-                    icon: Iconsax.task_square,
-                    title: 'Tasks List',
-                    onTap:
-                        () => drawerOpenController.menuOnTap(AppRoutes.tasks),
-                    isSelected: drawerOpenController.isActive(AppRoutes.tasks),
-                    iconColor: AppColors.tertiary,
-                  ),
-                  buildSubMenuItem(
-                    context: context,
-                    icon: Iconsax.task_square,
-                    title: 'Tasks Alloted to Me',
-                    onTap:
-                        () => drawerOpenController.menuOnTap(
-                          AppRoutes.tasksAllotedToMe,
-                        ),
-                    isSelected: drawerOpenController.isActive(
-                      AppRoutes.tasksAllotedToMe,
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: EdgeInsets.zero,
+                      child: Column(
+                        children: [
+                          // Operations Section
+                          Obx(
+                            () => _buildSectionCard(
+                              context: context,
+                              headerIcon: Iconsax.task,
+                              headerTitle: 'Operations',
+                              isExpanded: drawerOpenController.isOperationsExpanded.value,
+                              onExpansionChanged:
+                                  (exp) =>
+                                      drawerOpenController.isOperationsExpanded.value = exp,
+                              iconColor: AppColors.secondary,
+                              children: [
+                                buildSubMenuItem(
+                                  context: context,
+                                  icon: Iconsax.add_circle,
+                                  title: 'Add New Task',
+                                  onTap:
+                                      () => drawerOpenController.menuOnTap(
+                                        AppRoutes.addNewTask,
+                                      ),
+                                  isSelected: drawerOpenController.isActive(
+                                    AppRoutes.addNewTask,
+                                  ),
+                                  iconColor: AppColors.tertiary,
+                                ),
+                                buildSubMenuItem(
+                                  context: context,
+                                  icon: Iconsax.task_square,
+                                  title: 'Tasks List',
+                                  onTap:
+                                      () => drawerOpenController.menuOnTap(AppRoutes.tasks),
+                                  isSelected: drawerOpenController.isActive(AppRoutes.tasks),
+                                  iconColor: AppColors.tertiary,
+                                ),
+                                buildSubMenuItem(
+                                  context: context,
+                                  icon: Iconsax.verify,
+                                  title: 'Admin Verification',
+                                  onTap:
+                                      () => drawerOpenController.menuOnTap(
+                                        AppRoutes.adminVerfication,
+                                      ),
+                                  isSelected: drawerOpenController.isActive(
+                                    AppRoutes.adminVerfication,
+                                  ),
+                                  iconColor: AppColors.tertiary,
+                                ),
+                                buildSubMenuItem(
+                                  context: context,
+                                  icon: Icons.history_outlined,
+                                  title: 'Task History',
+                                  onTap:
+                                      () => drawerOpenController.menuOnTap(
+                                        AppRoutes.taskHistory,
+                                      ),
+                                  isSelected: drawerOpenController.isActive(
+                                    AppRoutes.taskHistory,
+                                  ),
+                                  iconColor: AppColors.tertiary,
+                                ),
+                                buildSubMenuItem(
+                                  context: context,
+                                  icon: Icons.update_outlined,
+                                  title: 'Future Tasks',
+                                  onTap:
+                                      () => drawerOpenController.menuOnTap(
+                                        AppRoutes.futureTasks,
+                                      ),
+                                  isSelected: drawerOpenController.isActive(
+                                    AppRoutes.futureTasks,
+                                  ),
+                                  iconColor: AppColors.tertiary,
+                                ),
+                              ],
+                              showArrow: true,
+                              isActive: false,
+                            ),
+                          ),
+                          // Subtle shadow at bottom of Operations card for separation
+                          Container(
+                            height: 16,
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.08),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Masters Section
+                          Obx(
+                            () => _buildSectionCard(
+                              context: context,
+                              headerIcon: Icons.settings_suggest_outlined,
+                              headerTitle: 'Masters',
+                              isExpanded: drawerOpenController.isMastersExpanded.value,
+                              onExpansionChanged:
+                                  (exp) => drawerOpenController.isMastersExpanded.value = exp,
+                              iconColor: AppColors.secondary,
+                              children: [
+                                buildSubMenuItem(
+                                  context: context,
+                                  icon: Icons.person_outline,
+                                  title: 'Client',
+                                  onTap:
+                                      () => drawerOpenController.menuOnTap(AppRoutes.client),
+                                  isSelected: drawerOpenController.isActive(AppRoutes.client),
+                                  iconColor: AppColors.tertiary,
+                                ),
+                                buildSubMenuItem(
+                                  context: context,
+                                  icon: Icons.group_outlined,
+                                  title: 'Group',
+                                  onTap:
+                                      () => drawerOpenController.menuOnTap(AppRoutes.group),
+                                  isSelected: drawerOpenController.isActive(AppRoutes.group),
+                                  iconColor: AppColors.tertiary,
+                                ),
+                                buildSubMenuItem(
+                                  context: context,
+                                  icon: Icons.task_alt_outlined,
+                                  title: 'Task Master',
+                                  onTap:
+                                      () => drawerOpenController.menuOnTap(
+                                        AppRoutes.taskMaster,
+                                      ),
+                                  isSelected: drawerOpenController.isActive(
+                                    AppRoutes.taskMaster,
+                                  ),
+                                  iconColor: AppColors.tertiary,
+                                ),
+                                buildSubMenuItem(
+                                  context: context,
+                                  icon: Icons.dynamic_feed_outlined,
+                                  title: 'Sub Task',
+                                  onTap:
+                                      () => drawerOpenController.menuOnTap(AppRoutes.subTask),
+                                  isSelected: drawerOpenController.isActive(
+                                    AppRoutes.subTask,
+                                  ),
+                                  iconColor: AppColors.tertiary,
+                                ),
+                                buildSubMenuItem(
+                                  context: context,
+                                  icon: Icons.account_balance_wallet_outlined,
+                                  title: 'Accountant',
+                                  onTap:
+                                      () => drawerOpenController.menuOnTap(
+                                        AppRoutes.accountant,
+                                      ),
+                                  isSelected: drawerOpenController.isActive(
+                                    AppRoutes.accountant,
+                                  ),
+                                  iconColor: AppColors.tertiary,
+                                ),
+                                buildSubMenuItem(
+                                  context: context,
+                                  icon: Icons.calendar_today_outlined,
+                                  title: 'Financial year',
+                                  onTap:
+                                      () => drawerOpenController.menuOnTap(
+                                        AppRoutes.financialYear,
+                                      ),
+                                  isSelected: drawerOpenController.isActive(
+                                    AppRoutes.financialYear,
+                                  ),
+                                  iconColor: AppColors.tertiary,
+                                ),
+                              ],
+                              showArrow: true,
+                              isActive: false,
+                            ),
+                          ),
+                          const SizedBox(height: 12), // Increased bottom spacing
+                        ],
+                      ),
                     ),
-                    iconColor: AppColors.tertiary,
                   ),
-                  buildSubMenuItem(
-                    context: context,
-                    icon: Iconsax.task_square,
-                    title: 'Tasks Alloted by Me',
-                    onTap:
-                        () => drawerOpenController.menuOnTap(
-                          AppRoutes.tasksAllotedByMe,
-                        ),
-                    isSelected: drawerOpenController.isActive(
-                      AppRoutes.tasksAllotedByMe,
-                    ),
-                    iconColor: AppColors.tertiary,
-                  ),
-                  buildSubMenuItem(
-                    context: context,
-                    icon: Iconsax.verify,
-                    title: 'Admin Verification',
-                    onTap:
-                        () => drawerOpenController.menuOnTap(
-                          AppRoutes.adminVerfication,
-                        ),
-                    isSelected: drawerOpenController.isActive(
-                      AppRoutes.adminVerfication,
-                    ),
-                    iconColor: AppColors.tertiary,
-                  ),
-                  buildSubMenuItem(
-                    context: context,
-                    icon: Icons.history_outlined,
-                    title: 'Task History',
-                    onTap:
-                        () => drawerOpenController.menuOnTap(
-                          AppRoutes.taskHistory,
-                        ),
-                    isSelected: drawerOpenController.isActive(
-                      AppRoutes.taskHistory,
-                    ),
-                    iconColor: AppColors.tertiary,
-                  ),
-                  buildSubMenuItem(
-                    context: context,
-                    icon: Icons.update_outlined,
-                    title: 'Future Tasks',
-                    onTap:
-                        () => drawerOpenController.menuOnTap(
-                          AppRoutes.futureTasks,
-                        ),
-                    isSelected: drawerOpenController.isActive(
-                      AppRoutes.futureTasks,
-                    ),
-                    iconColor: AppColors.tertiary,
-                  ),
-                ],
-                showArrow: true,
-                isActive: false,
+                ),
               ),
             ),
-            // Subtle shadow at bottom of Operations card for separation
-            Container(
-              height: 16,
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 12,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-            ),
-            // Masters Section
-            Obx(
-              () => _buildSectionCard(
-                context: context,
-                headerIcon: Icons.settings_suggest_outlined,
-                headerTitle: 'Masters',
-                isExpanded: drawerOpenController.isMastersExpanded.value,
-                onExpansionChanged:
-                    (exp) => drawerOpenController.isMastersExpanded.value = exp,
-                iconColor: AppColors.secondary,
-                children: [
-                  buildSubMenuItem(
-                    context: context,
-                    icon: Icons.person_outline,
-                    title: 'Client',
-                    onTap:
-                        () => drawerOpenController.menuOnTap(AppRoutes.client),
-                    isSelected: drawerOpenController.isActive(AppRoutes.client),
-                    iconColor: AppColors.tertiary,
-                  ),
-                  buildSubMenuItem(
-                    context: context,
-                    icon: Icons.group_outlined,
-                    title: 'Group',
-                    onTap:
-                        () => drawerOpenController.menuOnTap(AppRoutes.group),
-                    isSelected: drawerOpenController.isActive(AppRoutes.group),
-                    iconColor: AppColors.tertiary,
-                  ),
-                  buildSubMenuItem(
-                    context: context,
-                    icon: Icons.task_alt_outlined,
-                    title: 'Task Master',
-                    onTap:
-                        () => drawerOpenController.menuOnTap(
-                          AppRoutes.taskMaster,
-                        ),
-                    isSelected: drawerOpenController.isActive(
-                      AppRoutes.taskMaster,
-                    ),
-                    iconColor: AppColors.tertiary,
-                  ),
-                  buildSubMenuItem(
-                    context: context,
-                    icon: Icons.dynamic_feed_outlined,
-                    title: 'Sub Task',
-                    onTap:
-                        () => drawerOpenController.menuOnTap(AppRoutes.subTask),
-                    isSelected: drawerOpenController.isActive(
-                      AppRoutes.subTask,
-                    ),
-                    iconColor: AppColors.tertiary,
-                  ),
-                  buildSubMenuItem(
-                    context: context,
-                    icon: Icons.account_balance_wallet_outlined,
-                    title: 'Accountant',
-                    onTap:
-                        () => drawerOpenController.menuOnTap(
-                          AppRoutes.accountant,
-                        ),
-                    isSelected: drawerOpenController.isActive(
-                      AppRoutes.accountant,
-                    ),
-                    iconColor: AppColors.tertiary,
-                  ),
-                  buildSubMenuItem(
-                    context: context,
-                    icon: Icons.calendar_today_outlined,
-                    title: 'Financial year',
-                    onTap:
-                        () => drawerOpenController.menuOnTap(
-                          AppRoutes.financialYear,
-                        ),
-                    isSelected: drawerOpenController.isActive(
-                      AppRoutes.financialYear,
-                    ),
-                    iconColor: AppColors.tertiary,
-                  ),
-                ],
-                showArrow: true,
-                isActive: false,
-              ),
-            ),
-            const SizedBox(height: 24),
           ],
         ),
       ),
@@ -400,118 +398,115 @@ class AppSidebar extends StatelessWidget {
     );
 
     // Create a unified widget structure for both Dashboard and expandable sections
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-          child: Container(
-            width: double.infinity, // Force full width for all cards
-            decoration: BoxDecoration(
-              color: cardColor,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: borderColor, width: 1.2),
-              boxShadow: [
-                BoxShadow(
-                  color: boxShadowColor,
-                  blurRadius: isActive ? 18 : 16,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            // Use Stack to ensure layout is identical for all cards
-            child:
-                showArrow
-                    ? ExpansionTile(
-                      leading: Icon(headerIcon, color: iconColor, size: 26),
-                      title: Text(
-                        headerTitle,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: Colors.white.withValues(alpha: 0.92),
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.2,
-                            ) ??
-                            TextStyle(
-                              color: Colors.white.withValues(alpha: 0.92),
-                              fontWeight: FontWeight.w700,
-                              fontSize: 18,
-                            ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          width: double.infinity, // Force full width for all cards
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: borderColor, width: 1.2),
+            boxShadow: [
+              BoxShadow(
+                color: boxShadowColor,
+                blurRadius: isActive ? 18 : 16,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          // Use Stack to ensure layout is identical for all cards
+          child:
+              showArrow
+                  ? ExpansionTile(
+                    leading: Icon(headerIcon, color: iconColor, size: 26),
+                    title: Text(
+                      headerTitle,
+                      style:
+                          Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: Colors.white.withValues(alpha: 0.92),
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.2,
+                          ) ??
+                          TextStyle(
+                            color: Colors.white.withValues(alpha: 0.92),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 18,
+                          ),
+                    ),
+                    trailing: AnimatedRotation(
+                      turns: isExpanded ? 0.25 : 0,
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeInOut,
+                      child: Icon(
+                        Icons.arrow_forward_ios,
+                        size: 18,
+                        color: Colors.white.withValues(alpha: 0.7),
                       ),
-                      trailing: AnimatedRotation(
-                        turns: isExpanded ? 0.25 : 0,
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeInOut,
-                        child: Icon(
-                          Icons.arrow_forward_ios,
-                          size: 18,
-                          color: Colors.white.withValues(alpha: 0.7),
+                    ),
+                    backgroundColor: Colors.transparent,
+                    collapsedBackgroundColor: Colors.transparent,
+                    initiallyExpanded: isExpanded,
+                    onExpansionChanged: onExpansionChanged,
+                    childrenPadding: const EdgeInsets.only(
+                      bottom: 8,
+                      left: 8,
+                      right: 8,
+                    ),
+                    expandedCrossAxisAlignment: CrossAxisAlignment.start,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    collapsedShape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    children: children,
+                  )
+                  : Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: onTap,
+                      borderRadius: BorderRadius.circular(24),
+                      hoverColor: AppColors.white.withValues(alpha: 0.10),
+                      splashColor: AppColors.white.withValues(alpha: 0.16),
+                      highlightColor: AppColors.white.withValues(alpha: 0.08),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                          horizontal: 16.0,
                         ),
-                      ),
-                      backgroundColor: Colors.transparent,
-                      collapsedBackgroundColor: Colors.transparent,
-                      initiallyExpanded: isExpanded,
-                      onExpansionChanged: onExpansionChanged,
-                      childrenPadding: const EdgeInsets.only(
-                        bottom: 8,
-                        left: 8,
-                        right: 8,
-                      ),
-                      expandedCrossAxisAlignment: CrossAxisAlignment.start,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      collapsedShape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      children: children,
-                    )
-                    : Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: onTap,
-                        borderRadius: BorderRadius.circular(24),
-                        hoverColor: AppColors.white.withValues(alpha: 0.10),
-                        splashColor: AppColors.white.withValues(alpha: 0.16),
-                        highlightColor: AppColors.white.withValues(alpha: 0.08),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 16.0,
-                            horizontal: 16.0,
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(headerIcon, color: iconColor, size: 26),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Text(
-                                  headerTitle,
-                                  style:
-                                      Theme.of(
-                                        context,
-                                      ).textTheme.titleMedium?.copyWith(
-                                        color: Colors.white.withValues(
-                                          alpha: 0.92,
-                                        ),
-                                        fontWeight: FontWeight.w700,
-                                        letterSpacing: 0.2,
-                                      ) ??
-                                      TextStyle(
-                                        color: Colors.white.withValues(
-                                          alpha: 0.92,
-                                        ),
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 18,
+                        child: Row(
+                          children: [
+                            Icon(headerIcon, color: iconColor, size: 26),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Text(
+                                headerTitle,
+                                style:
+                                    Theme.of(
+                                      context,
+                                    ).textTheme.titleMedium?.copyWith(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.92,
                                       ),
-                                ),
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.2,
+                                    ) ??
+                                    TextStyle(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.92,
+                                      ),
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 18,
+                                    ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-          ),
+                  ),
         ),
       ),
     );

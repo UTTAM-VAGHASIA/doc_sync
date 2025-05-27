@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:doc_sync/features/authentication/controllers/user_controller.dart';
 import 'package:doc_sync/features/operations/models/admin_verification_task_model.dart';
+import 'package:doc_sync/utils/constants/enums.dart';
 import 'package:doc_sync/utils/helpers/network_manager.dart';
 import 'package:doc_sync/utils/helpers/retry_queue_manager.dart';
 import 'package:doc_sync/utils/http/http_client.dart';
@@ -40,26 +42,39 @@ class AdminVerificationController extends GetxController {
 
   // Pagination
   final RxInt currentPage = 1.obs;
-  final int itemsPerPage = 10;
+  int _itemsPerPage = 10;
   final RxInt totalPages = 1.obs;
+
+  // Getter and setter for itemsPerPage
+  int get itemsPerPage => _itemsPerPage;
+  set itemsPerPage(int value) {
+    _itemsPerPage = value;
+    _applyFilters();
+  }
 
   // Task status counts
   final RxInt allottedCount = 0.obs;
   final RxInt completedCount = 0.obs;
-  final RxInt awaitingCount = 0.obs;
-  final RxInt reallottedCount = 0.obs;
+  final RxInt clientAwaitingCount = 0.obs;
+  final RxInt ReAllottedCount = 0.obs;
+  final RxInt pendingCount = 0.obs;
   int get totalTasksCount => filteredTasks.length;
 
   // Add getters for status counts
   int get totalAllotted => allottedCount.value;
   int get totalCompleted => completedCount.value;
-  int get totalAwaiting => awaitingCount.value;
-  int get totalReallotted => reallottedCount.value;
+  int get totalClientWaiting => clientAwaitingCount.value;
+  int get totalReallotted => ReAllottedCount.value;
 
   // Task priority counts
   final RxInt highPriorityCount = 0.obs;
   final RxInt mediumPriorityCount = 0.obs;
   final RxInt lowPriorityCount = 0.obs;
+
+  // Add getters for priority counts
+  int get totalHighPriority => highPriorityCount.value;
+  int get totalMediumPriority => mediumPriorityCount.value;
+  int get totalLowPriority => lowPriorityCount.value;
 
   // Add pagination methods
   void nextPage() {
@@ -74,6 +89,27 @@ class AdminVerificationController extends GetxController {
       currentPage.value--;
       print("Moving to previous page: ${currentPage.value}");
     }
+  }
+
+  // Add these methods for pagination controls
+  void goToFirstPage() {
+    currentPage.value = 1;
+  }
+
+  void goToPreviousPage() {
+    if (currentPage.value > 1) {
+      currentPage.value--;
+    }
+  }
+
+  void goToNextPage() {
+    if (currentPage.value < totalPages.value) {
+      currentPage.value++;
+    }
+  }
+
+  void goToLastPage() {
+    currentPage.value = totalPages.value;
   }
 
   @override
@@ -96,8 +132,14 @@ class AdminVerificationController extends GetxController {
       filteredTasks.clear();
       paginatedTasks.clear();
 
+      // Build request data based on API requirements
       final requestData = {
-        'data': jsonEncode({"filter_task_date": filterTaskDateStr.value}),
+        'data': jsonEncode({
+          "user_type": getRole(),
+          "user_id": UserController.instance.user.value.id.toString(),  // This would typically come from user authentication
+          // Include date filter only if it's set
+          if (filterTaskDateStr.value.isNotEmpty) "filter_task_date": filterTaskDateStr.value
+        }),
       };
 
       print("Request data: $requestData");
@@ -165,39 +207,28 @@ class AdminVerificationController extends GetxController {
   }
 
   void _updateTaskCounts() {
+    // Status counts
     allottedCount.value =
-        tasks
-            .where((task) => task.taskStatus == AdminTaskStatus.allotted)
-            .length;
+        tasks.where((task) => task.taskStatus == AdminTaskStatus.allotted).length;
     completedCount.value =
-        tasks
-            .where((task) => task.taskStatus == AdminTaskStatus.completed)
-            .length;
-    awaitingCount.value =
-        tasks
-            .where((task) => task.taskStatus == AdminTaskStatus.awaiting)
-            .length;
-    reallottedCount.value =
-        tasks
-            .where((task) => task.taskStatus == AdminTaskStatus.reallotted)
-            .length;
+        tasks.where((task) => task.taskStatus == AdminTaskStatus.completed).length;
+    clientAwaitingCount.value =
+        tasks.where((task) => task.taskStatus == AdminTaskStatus.client_waiting).length;
+    ReAllottedCount.value =
+        tasks.where((task) => task.taskStatus == AdminTaskStatus.re_alloted).length;
+    pendingCount.value =
+        tasks.where((task) => task.taskStatus == AdminTaskStatus.pending).length;
 
-    // Calculate priority counts
+    // Priority counts
     highPriorityCount.value =
-        tasks
-            .where((task) => task.taskPriority == AdminTaskPriority.high)
-            .length;
+        tasks.where((task) => task.taskPriority == AdminTaskPriority.high).length;
     mediumPriorityCount.value =
-        tasks
-            .where((task) => task.taskPriority == AdminTaskPriority.medium)
-            .length;
+        tasks.where((task) => task.taskPriority == AdminTaskPriority.medium).length;
     lowPriorityCount.value =
-        tasks
-            .where((task) => task.taskPriority == AdminTaskPriority.low)
-            .length;
+        tasks.where((task) => task.taskPriority == AdminTaskPriority.low).length;
 
     print(
-      "Task counts updated: allotted=${allottedCount.value}, completed=${completedCount.value}",
+      "Task counts updated: allotted=${allottedCount.value}, completed=${completedCount.value}, high=${highPriorityCount.value}, medium=${mediumPriorityCount.value}, low=${lowPriorityCount.value}",
     );
   }
 
@@ -223,6 +254,7 @@ class AdminVerificationController extends GetxController {
         activeFilters.add(filter);
       }
     }
+    currentPage.value = 1; // Reset to first page when filter changes
     _applyFilters();
   }
 
@@ -253,28 +285,86 @@ class AdminVerificationController extends GetxController {
     fetchTasks();
   }
 
+  // Approve task functionality
+  Future<void> approveTask(AdminVerificationTask task) async {
+    try {
+      // Show loading indicator
+      AppLoaders.customToast(message: "Approving task...");
+      
+      // For now, just show a success message since the API is not ready
+      await Future.delayed(const Duration(seconds: 1)); // Simulate network request
+      
+      // We'll implement the actual API call when it's ready
+      // final requestData = {
+      //   'data': jsonEncode({
+      //     "task_id": task.id,
+      //     // Add any other required parameters
+      //   }),
+      // };
+      
+      // final data = await AppHttpHelper().sendMultipartRequest(
+      //   "approve_admin_verification", // This endpoint will be implemented later
+      //   method: "POST",
+      //   fields: requestData,
+      // );
+      
+      // Show success message
+      AppLoaders.successSnackBar(
+        title: "Task Approved",
+        message: "Task '${task.taskName}' has been approved successfully.",
+      );
+      
+      // Refresh the task list
+      fetchTasks();
+    } catch (e) {
+      print("❗ Exception caught during approveTask: $e");
+      AppLoaders.errorSnackBar(
+        title: "Approval Error",
+        message: "Failed to approve the task: ${e.toString()}",
+      );
+    }
+  }
+
   void _applyFilters() {
     List<AdminVerificationTask> filteredTasksList = tasks.toList();
 
     // Apply search filter
     if (searchQuery.isNotEmpty) {
       final query = searchQuery.value.toLowerCase();
-      filteredTasksList =
-          filteredTasksList.where((task) {
-            return task.taskName.toLowerCase().contains(query) ||
-                task.clientName.toLowerCase().contains(query) ||
-                task.fileNo.toLowerCase().contains(query) ||
-                task.subTaskName.toLowerCase().contains(query);
-          }).toList();
+      filteredTasksList = filteredTasksList.where((task) {
+        return task.taskName.toLowerCase().contains(query) ||
+            task.clientName.toLowerCase().contains(query) ||
+            task.fileNo.toLowerCase().contains(query) ||
+            task.subTaskName.toLowerCase().contains(query);
+      }).toList();
     }
 
-    // Apply status filters
+    // Apply status and priority filters
     if (!activeFilters.contains('all')) {
-      filteredTasksList =
-          filteredTasksList.where((task) {
-            final status = task.taskStatus;
-            return activeFilters.contains(status.toString().split('.').last);
-          }).toList();
+      filteredTasksList = filteredTasksList.where((task) {
+        return activeFilters.any((filter) {
+          switch (filter) {
+            case 'allotted':
+              return task.taskStatus == AdminTaskStatus.allotted;
+            case 'completed':
+              return task.taskStatus == AdminTaskStatus.completed;
+            case 'client_waiting':
+              return task.taskStatus == AdminTaskStatus.client_waiting;
+            case 're_alloted':
+              return task.taskStatus == AdminTaskStatus.re_alloted;
+            case 'pending':
+              return task.taskStatus == AdminTaskStatus.pending;
+            case 'high':
+              return task.taskPriority == AdminTaskPriority.high;
+            case 'medium':
+              return task.taskPriority == AdminTaskPriority.medium;
+            case 'low':
+              return task.taskPriority == AdminTaskPriority.low;
+            default:
+              return false;
+          }
+        });
+      }).toList();
     }
 
     // Apply sorting
@@ -283,6 +373,12 @@ class AdminVerificationController extends GetxController {
       switch (sortBy.value) {
         case 'date':
           comparison = a.allottedDate.compareTo(b.allottedDate);
+          break;
+        case 'name':
+          comparison = a.taskName.compareTo(b.taskName);
+          break;
+        case 'client':
+          comparison = a.clientName.compareTo(b.clientName);
           break;
         case 'priority':
           comparison = a.taskPriority.index.compareTo(b.taskPriority.index);
@@ -298,29 +394,51 @@ class AdminVerificationController extends GetxController {
 
     // Update pagination
     totalPages.value = (filteredTasksList.length / itemsPerPage).ceil();
-    currentPage.value = 1;
+    if (totalPages.value == 0) totalPages.value = 1;
+    if (currentPage.value > totalPages.value) currentPage.value = totalPages.value;
     filteredTasks.assignAll(filteredTasksList);
     _paginate();
   }
 
   void _paginate() {
     final start = (currentPage.value - 1) * itemsPerPage;
-    final end = start + itemsPerPage;
-
-    if (start >= filteredTasks.length) {
+    
+    if (filteredTasks.isEmpty) {
       paginatedTasks.clear();
+      print("No tasks to paginate");
       return;
     }
-
-    paginatedTasks.assignAll(
-      filteredTasks.sublist(
-        start,
-        end > filteredTasks.length ? filteredTasks.length : end,
-      ),
-    );
-
-    print("Paginated tasks: ${paginatedTasks.length} items");
+    
+    // Make sure we don't go out of bounds
+    final end = (start + itemsPerPage <= filteredTasks.length) 
+        ? start + itemsPerPage 
+        : filteredTasks.length;
+        
+    if (start >= filteredTasks.length) {
+      // This can happen if we were on the last page and then filter reduced results
+      currentPage.value = 1;
+      _paginate();
+      return;
+    }
+    
+    paginatedTasks.assignAll(filteredTasks.sublist(start, end));
+    print("Paginated tasks updated: showing ${paginatedTasks.length} tasks from index $start to ${end-1}");
   }
 
   List<AdminVerificationTask> get paginatedTasksList => paginatedTasks;
+
+  // Public method to refresh filtering and pagination
+  void refreshFiltersAndPagination() {
+    _applyFilters();
+  }
+  
+  String getRole() {
+    if(UserController.instance.user.value.type == AppRole.admin) {
+      return "admin";
+    } else if(UserController.instance.user.value.type == AppRole.superadmin) {
+      return "superadmin";
+    } else {
+      return "staff";
+    }
+  }
 }

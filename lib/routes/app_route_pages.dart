@@ -42,21 +42,9 @@ class AppRoutePages {
       binding: TaskListBindings(),
     ),
     GetPage(
-      name: AppRoutes.tasksAllotedToMe,
-      page: () => PlaceholderScreen(title: 'Tasks Alloted to Me'),
-    ),
-    GetPage(
-      name: AppRoutes.tasksAllotedByMe,
-      page: () => PlaceholderScreen(title: 'Tasks Alloted by Me'),
-    ),
-    // GetPage(
-    //   name: AppRoutes.adminVerfication,
-    //   page: () => AdminVerificationScreen(),
-    //   binding: AdminVerificationBinding(),
-    // ),
-    GetPage(
       name: AppRoutes.adminVerfication,
-      page: () => PlaceholderScreen(title: 'Admin Verification'),
+      page: () => AdminVerificationScreen(),
+      binding: AdminVerificationBinding(),
     ),
     // Add placeholder screens for unimplemented routes
     GetPage(
