@@ -37,6 +37,7 @@ class SidebarController extends GetxController
     drawerOpenController = AnimationController(
       vsync: this,
       duration: drawerOpenDuration,
+      animationBehavior: AnimationBehavior.preserve
     );
     animationController = AnimationController(
       duration: Duration(milliseconds: 300),

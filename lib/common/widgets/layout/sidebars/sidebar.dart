@@ -7,7 +7,6 @@ import 'package:doc_sync/utils/constants/image_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'dart:ui';
 
 class AppSidebar extends StatelessWidget {
   AppSidebar({super.key});
@@ -53,27 +52,24 @@ class AppSidebar extends StatelessWidget {
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.10),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
+                        blurRadius: 10,
+                        offset: const Offset(0, 5),
                       ),
                     ],
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(40),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                      child: Container(
-                        color: Colors.white.withValues(alpha: 0.10),
-                        padding: const EdgeInsets.all(24),
-                        child: AppRoundedImage(
-                          width: 100,
-                          height: 120,
-                          image: AppImages.whiteAppLogo,
-                          backgroundColor: Colors.transparent,
-                          fit: BoxFit.contain,
-                          imageType: ImageType.asset,
-                          padding: 0,
-                        ),
+                    child: Container(
+                      color: Colors.white.withValues(alpha: 0.10),
+                      padding: const EdgeInsets.all(24),
+                      child: AppRoundedImage(
+                        width: 100,
+                        height: 120,
+                        image: AppImages.whiteAppLogo,
+                        backgroundColor: Colors.transparent,
+                        fit: BoxFit.contain,
+                        imageType: ImageType.asset,
+                        padding: 0,
                       ),
                     ),
                   ),
@@ -107,60 +103,55 @@ class AppSidebar extends StatelessWidget {
                         color: isDashboardActive ? AppColors.white : Colors.white.withValues(alpha: 0.22),
                         width: 1.2,
                       ),
-                      boxShadow: [
+                      boxShadow: isDashboardActive ? null : [
                         BoxShadow(
-                          color: Colors.black.withValues(
-                            alpha: isDashboardActive ? 0.0 : 0.10,
-                          ),
-                          blurRadius: isDashboardActive ? 0 : 16,
-                          offset: isDashboardActive ? Offset(0, 0) : const Offset(0, 8),
+                          color: Colors.black.withValues(alpha: 0.10),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
                         ),
                       ],
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(24),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: isDashboardActive ? 0 : 12, sigmaY: isDashboardActive ? 0 : 12),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () => drawerOpenController.menuOnTap(AppRoutes.dashboard),
-                            borderRadius: BorderRadius.circular(24),
-                            hoverColor: AppColors.white.withValues(alpha: 0.10),
-                            splashColor: AppColors.white.withValues(alpha: 0.16),
-                            highlightColor: AppColors.white.withValues(alpha: 0.08),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 16.0,
-                                horizontal: 16.0,
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Iconsax.monitor,
-                                    color: AppColors.secondary,
-                                    size: 26,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () => drawerOpenController.menuOnTap(AppRoutes.dashboard),
+                          borderRadius: BorderRadius.circular(24),
+                          hoverColor: AppColors.white.withValues(alpha: 0.10),
+                          splashColor: AppColors.white.withValues(alpha: 0.16),
+                          highlightColor: AppColors.white.withValues(alpha: 0.08),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 16.0,
+                              horizontal: 16.0,
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Iconsax.monitor,
+                                  color: AppColors.secondary,
+                                  size: 26,
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Text(
+                                    'Dashboard',
+                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                          color: isDashboardActive ? AppColors.secondary : Colors.white.withValues(alpha: 0.92),
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: 0.2,
+                                        ) ??
+                                        TextStyle(
+                                          color: isDashboardActive ? AppColors.secondary : Colors.white.withValues(alpha: 0.92),
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 18,
+                                        ),
                                   ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Text(
-                                      'Dashboard',
-                                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                            color: isDashboardActive ? AppColors.secondary : Colors.white.withValues(alpha: 0.92),
-                                            fontWeight: FontWeight.w700,
-                                            letterSpacing: 0.2,
-                                          ) ??
-                                          TextStyle(
-                                            color: isDashboardActive ? AppColors.secondary : Colors.white.withValues(alpha: 0.92),
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 18,
-                                          ),
-                                    ),
-                                  ),
-                                  // Spacer where the arrow would be in other sections (empty)
-                                  const SizedBox(width: 40),
-                                ],
-                              ),
+                                ),
+                                // Spacer where the arrow would be in other sections (empty)
+                                const SizedBox(width: 40),
+                              ],
                             ),
                           ),
                         ),
@@ -271,9 +262,9 @@ class AppSidebar extends StatelessWidget {
                             decoration: BoxDecoration(
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.08),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 8),
+                                  color: Colors.black.withValues(alpha: 0.05),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 4),
                                 ),
                               ],
                             ),
@@ -394,32 +385,30 @@ class AppSidebar extends StatelessWidget {
             : Colors.white.withValues(alpha: 0.13);
     final borderColor = Colors.white.withValues(alpha: 0.22);
     final boxShadowColor = Colors.black.withValues(
-      alpha: isActive ? 0.13 : 0.10,
+      alpha: isActive ? 0.08 : 0.06,
     );
 
     // Create a unified widget structure for both Dashboard and expandable sections
     return ClipRRect(
       borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Container(
-          width: double.infinity, // Force full width for all cards
-          decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: borderColor, width: 1.2),
-            boxShadow: [
-              BoxShadow(
-                color: boxShadowColor,
-                blurRadius: isActive ? 18 : 16,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          // Use Stack to ensure layout is identical for all cards
-          child:
-              showArrow
-                  ? ExpansionTile(
+      child: Container(
+        width: double.infinity, // Force full width for all cards
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: borderColor, width: 1.2),
+          boxShadow: [
+            BoxShadow(
+              color: boxShadowColor,
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        // Use Stack to ensure layout is identical for all cards
+        child:
+            showArrow
+                ? ExpansionTile(
                     leading: Icon(headerIcon, color: iconColor, size: 26),
                     title: Text(
                       headerTitle,
@@ -461,9 +450,11 @@ class AppSidebar extends StatelessWidget {
                     collapsedShape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24),
                     ),
+                    maintainState: true,
+                    tilePadding: const EdgeInsets.symmetric(horizontal: 16),
                     children: children,
                   )
-                  : Material(
+                : Material(
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: onTap,
@@ -507,7 +498,6 @@ class AppSidebar extends StatelessWidget {
                       ),
                     ),
                   ),
-        ),
       ),
     );
   }
@@ -520,10 +510,11 @@ class AppSidebar extends StatelessWidget {
     required bool isSelected,
     required Color iconColor,
   }) {
-    return AnimatedScale(
-      scale: isSelected ? 1.03 : 1.0,
-      duration: const Duration(milliseconds: 160),
-      curve: Curves.easeOutBack,
+    // For better performance, replace AnimatedScale with conditional scaling
+    final scale = isSelected ? 1.03 : 1.0;
+    
+    return Transform.scale(
+      scale: scale,
       child: Container(
         margin: const EdgeInsets.only(bottom: 4, left: 4, right: 4),
         decoration: BoxDecoration(
@@ -533,8 +524,8 @@ class AppSidebar extends StatelessWidget {
               isSelected
                   ? [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.10),
-                      blurRadius: 6,
+                      color: Colors.black.withValues(alpha: 0.08),
+                      blurRadius: 4,
                       offset: const Offset(0, 1),
                     ),
                   ]

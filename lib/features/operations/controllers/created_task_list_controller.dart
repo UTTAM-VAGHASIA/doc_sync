@@ -38,10 +38,16 @@ class TaskListController extends GetxController {
   
   // Pagination
   RxInt currentPage = 0.obs;
-  RxInt itemsPerPage = 10.obs;
+  int _itemsPerPage = 10;
+  int get itemsPerPage => _itemsPerPage;
+  set itemsPerPage(int value) {
+    _itemsPerPage = value;
+    _applyFiltersAndSort();
+  }
+  
   int get totalPages => filteredTasks.isEmpty 
     ? 1 
-    : (filteredTasks.length / itemsPerPage.value).ceil();
+    : (filteredTasks.length / _itemsPerPage).ceil();
   
   // Task status counts
   RxInt totalAllotted = 0.obs;
@@ -71,10 +77,6 @@ class TaskListController extends GetxController {
     ever(sortBy, (_) => _applyFiltersAndSort());
     ever(sortAscending, (_) => _applyFiltersAndSort());
     ever(currentPage, (_) => _paginate());
-    ever(itemsPerPage, (_) => {
-      _paginate(),
-      print("Items per page changed to: ${itemsPerPage.value}"),
-    });
   }
 
   Future<void> setAllotedDate(DateTime? date) async {
@@ -223,9 +225,6 @@ class TaskListController extends GetxController {
              );
     }).toList();
     
-    // Store the search results separately before applying other filters
-    List<Task> searchResults = List.from(result);
-    
     // Then apply status filter
     if (activeFilters.isNotEmpty) {
       result = result.where((task) {
@@ -308,7 +307,7 @@ class TaskListController extends GetxController {
   }
   
   void _paginate() {
-    final startIndex = currentPage.value * itemsPerPage.value;
+    final startIndex = currentPage.value * _itemsPerPage;
     
     if (filteredTasks.isEmpty) {
       paginatedTasks.value = [];
@@ -317,8 +316,8 @@ class TaskListController extends GetxController {
     }
     
     // Make sure we don't go out of bounds
-    final endIndex = (startIndex + itemsPerPage.value < filteredTasks.length) 
-        ? startIndex + itemsPerPage.value 
+    final endIndex = (startIndex + _itemsPerPage < filteredTasks.length) 
+        ? startIndex + _itemsPerPage 
         : filteredTasks.length;
         
     if (startIndex >= filteredTasks.length) {

@@ -41,9 +41,8 @@ class PaginationControls extends StatelessWidget {
                     border: Border.all(color: Colors.grey.shade300),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Obx(
-                    () => DropdownButton<int>(
-                      value: controller.itemsPerPage.value,
+                  child: DropdownButton<int>(
+                      value: controller.itemsPerPage,
                       underline: const SizedBox(),
                       items:
                           [5, 10, 15, 20].map((value) {
@@ -54,11 +53,10 @@ class PaginationControls extends StatelessWidget {
                           }).toList(),
                       onChanged: (value) {
                         if (value != null) {
-                          controller.itemsPerPage.value = value;
+                          controller.itemsPerPage = value;
                         }
                       },
                     ),
-                  ),
                 ),
                 const SizedBox(width: 8),
                 Text('entries', style: TextStyle(color: textColor)),
@@ -116,7 +114,7 @@ class PaginationControls extends StatelessWidget {
             // Page info
             Obx(() {
               final start =
-                  controller.currentPage.value * controller.itemsPerPage.value +
+                  controller.currentPage.value * controller.itemsPerPage +
                   1;
               final end = start + controller.paginatedTasks.length - 1;
               final total = controller.filteredTasks.length;

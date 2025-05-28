@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.7] - Unreleased
+
+### Added
+
+### Fixed
+
+- Improved the performance of Sidebar. So no more lag in sidebar for low-end devices.
+- Fixed the State Management of Tasks List. Now, the list updates after user changes the items per page.
+
 ## [0.0.6] - 2025-05-27
 
 ### Added
