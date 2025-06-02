@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+
+## [0.0.81] - 2025-05-02
+
+## Added
+
+- Adapted a new versioning scheme.
+
+## Fixed
+
+- Removed validation from login form for email.
+
 ## [0.0.7] - 2025-05-29
 
 ### Added
