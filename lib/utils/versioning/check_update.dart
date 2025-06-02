@@ -210,18 +210,18 @@ class CheckUpdate {
   /// Simple version comparison. Returns true if `latestVersion` > `currentVersion`.
   static bool _isNewerVersion(String latestVersion, String currentVersion) {
     try {
-      List<int> latestParts = latestVersion.split('.').map(int.parse).toList();
-      List<int> currentParts =
-          currentVersion.split('.').map(int.parse).toList();
-      int len =
-          latestParts.length > currentParts.length
-              ? latestParts.length
-              : currentParts.length;
+      List<String> latestParts = latestVersion.split('.');
+      List<String> currentParts = currentVersion.split('.');
+      int len = latestParts.length > currentParts.length
+          ? latestParts.length
+          : currentParts.length;
       for (int i = 0; i < len; i++) {
-        int latestPart = (i < latestParts.length) ? latestParts[i] : 0;
-        int currentPart = (i < currentParts.length) ? currentParts[i] : 0;
-        if (latestPart > currentPart) return true;
-        if (latestPart < currentPart) return false;
+        String latestPart = (i < latestParts.length) ? latestParts[i] : "0";
+        String currentPart = (i < currentParts.length) ? currentParts[i] : "0";
+        // Compare as strings to maintain lexicographical ordering
+        int comparison = latestPart.compareTo(currentPart);
+        if (comparison > 0) return true;
+        if (comparison < 0) return false;
       }
       return false; // Versions are identical
     } catch (e) {
