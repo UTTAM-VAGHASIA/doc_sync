@@ -27,7 +27,7 @@ class LoginForm extends StatelessWidget {
             // Email
             TextFormField(
               controller: controller.email,
-              validator: AppValidator.validateEmail,
+              validator: (value) => AppValidator.validateEmptyText('Email', value),
               decoration: InputDecoration(
                 prefixIcon: Icon(Iconsax.direct_right),
                 labelText: AppTexts.email,
