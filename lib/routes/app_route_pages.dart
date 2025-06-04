@@ -1,4 +1,5 @@
 import 'package:doc_sync/bindings/add_client_binding.dart';
+import 'package:doc_sync/bindings/client_list_binding.dart';
 import 'package:doc_sync/bindings/new_task_bindings.dart';
 import 'package:doc_sync/bindings/created_task_list_binding.dart';
 import 'package:doc_sync/common/widgets/layout/templates/placeholder_screen.dart';
@@ -9,6 +10,7 @@ import 'package:doc_sync/features/authentication/screens/reset_password/reset_pa
 import 'package:doc_sync/features/authentication/screens/splash_screen/splash_screen.dart';
 import 'package:doc_sync/bindings/dashboard_bindings.dart';
 import 'package:doc_sync/features/masters/screens/add_client_screen/add_client.dart';
+import 'package:doc_sync/features/masters/screens/client_list/client_list.dart';
 import 'package:doc_sync/features/operations/screens/new_task/new_task.dart';
 import 'package:doc_sync/features/operations/screens/created_task_list/created_task_list.dart';
 import 'package:doc_sync/features/operations/screens/admin_verification/admin_verification.dart';
@@ -65,8 +67,8 @@ class AppRoutePages {
     ),
     GetPage(
       name: AppRoutes.client,
-      page: () => PlaceholderScreen(title: 'Client Management'),
-      middlewares: [RouteMiddleWare()],
+      page: () => ClientListScreen(),
+      binding: ClientListBindings(),
     ),
     GetPage(
       name: AppRoutes.staff,

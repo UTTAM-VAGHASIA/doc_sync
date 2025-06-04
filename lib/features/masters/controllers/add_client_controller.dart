@@ -1,4 +1,5 @@
 import 'package:doc_sync/features/masters/models/client_model.dart';
+import 'package:doc_sync/routes/routes.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:doc_sync/utils/popups/loaders.dart';
 import 'package:flutter/material.dart';
@@ -337,7 +338,7 @@ class AddClientController extends GetxController {
                       ),
                       onPressed: () {
                         Get.back();
-                        Get.offAllNamed('/clients'); // Navigate to client list
+                        Get.offAllNamed(AppRoutes.client); // Navigate to client list
                       },
                     ),
                   ),
