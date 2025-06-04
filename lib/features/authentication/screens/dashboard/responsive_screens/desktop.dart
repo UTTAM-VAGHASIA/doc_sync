@@ -41,7 +41,6 @@ class _DashboardDesktopScreenState extends State<DashboardDesktopScreen> {
     final Color cardBackgroundColor = AppColors.white;
     final Color textColor = AppColors.textPrimary;
     final Color subtleTextColor = AppColors.textSecondary;
-    final screenSize = MediaQuery.of(context).size;
 
     return Expanded(
       child: LiquidPullToRefresh(
@@ -409,7 +408,7 @@ class _DashboardDesktopScreenState extends State<DashboardDesktopScreen> {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: statusColor.withOpacity(0.1),
+                              color: statusColor.withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
                             child: Center(
@@ -604,7 +603,7 @@ class _DashboardDesktopScreenState extends State<DashboardDesktopScreen> {
                     style: IconButton.styleFrom(
                       foregroundColor: AppColors.primary,
                       backgroundColor: dashboardController.currentPage.value > 0
-                          ? AppColors.primary.withOpacity(0.1)
+                          ? AppColors.primary.withValues(alpha: 0.1)
                           : Colors.grey.shade200,
                     ),
                   ),
@@ -616,7 +615,7 @@ class _DashboardDesktopScreenState extends State<DashboardDesktopScreen> {
                         : null,
                     style: IconButton.styleFrom(
                       backgroundColor: dashboardController.currentPage.value > 0
-                          ? AppColors.primary.withOpacity(0.1)
+                          ? AppColors.primary.withValues(alpha: 0.1)
                           : Colors.grey.shade200,
                       foregroundColor: AppColors.primary,
                     ),
@@ -625,7 +624,7 @@ class _DashboardDesktopScreenState extends State<DashboardDesktopScreen> {
                     margin: const EdgeInsets.symmetric(horizontal: 16),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
+                      color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -645,7 +644,7 @@ class _DashboardDesktopScreenState extends State<DashboardDesktopScreen> {
                     style: IconButton.styleFrom(
                       backgroundColor: dashboardController.currentPage.value <
                               dashboardController.totalPages - 1
-                          ? AppColors.primary.withOpacity(0.1)
+                          ? AppColors.primary.withValues(alpha: 0.1)
                           : Colors.grey.shade200,
                       foregroundColor: AppColors.primary,
                     ),
@@ -661,7 +660,7 @@ class _DashboardDesktopScreenState extends State<DashboardDesktopScreen> {
                     style: IconButton.styleFrom(
                       backgroundColor: dashboardController.currentPage.value <
                               dashboardController.totalPages - 1
-                          ? AppColors.primary.withOpacity(0.1)
+                          ? AppColors.primary.withValues(alpha: 0.1)
                           : Colors.grey.shade200,
                       foregroundColor: AppColors.primary,
                 ),
@@ -703,7 +702,7 @@ class _DashboardDesktopScreenState extends State<DashboardDesktopScreen> {
         selected: isSelected,
         onSelected: (_) => controller.updateSort(field),
         backgroundColor: Colors.grey.shade200,
-        selectedColor: AppColors.primary.withOpacity(0.2),
+        selectedColor: AppColors.primary.withValues(alpha: 0.2),
         labelStyle: TextStyle(
           color: isSelected ? AppColors.primary : textColor,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
@@ -727,9 +726,9 @@ class _DashboardDesktopScreenState extends State<DashboardDesktopScreen> {
       margin: const EdgeInsets.only(bottom: 4),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: iconColor.withOpacity(0.05),
+        color: iconColor.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: iconColor.withOpacity(0.2)),
+        border: Border.all(color: iconColor.withValues(alpha: 0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

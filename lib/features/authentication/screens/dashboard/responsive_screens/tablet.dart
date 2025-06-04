@@ -418,7 +418,7 @@ class _DashboardTabletScreenState extends State<DashboardTabletScreen> {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: statusColor.withOpacity(0.1),
+                              color: statusColor.withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
                             child: Center(
@@ -599,7 +599,7 @@ class _DashboardTabletScreenState extends State<DashboardTabletScreen> {
                         : null,
                     style: IconButton.styleFrom(
                       backgroundColor: dashboardController.currentPage.value > 0
-                          ? AppColors.primary.withOpacity(0.1)
+                          ? AppColors.primary.withValues(alpha: 0.1)
                           : Colors.grey.shade200,
                     ),
                   ),
@@ -621,7 +621,7 @@ class _DashboardTabletScreenState extends State<DashboardTabletScreen> {
                     style: IconButton.styleFrom(
                       backgroundColor: dashboardController.currentPage.value <
                               dashboardController.totalPages - 1
-                          ? AppColors.primary.withOpacity(0.1)
+                          ? AppColors.primary.withValues(alpha: 0.1)
                           : Colors.grey.shade200,
                     ),
                   ),
@@ -662,7 +662,7 @@ class _DashboardTabletScreenState extends State<DashboardTabletScreen> {
         selected: isSelected,
         onSelected: (_) => controller.updateSort(field),
         backgroundColor: Colors.grey.shade200,
-        selectedColor: AppColors.primary.withOpacity(0.2),
+        selectedColor: AppColors.primary.withValues(alpha: 0.2),
         labelStyle: TextStyle(
           color: isSelected ? AppColors.primary : textColor,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
