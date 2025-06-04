@@ -9,6 +9,8 @@ class AppRoutes {
   static const taskHistory = "/task-history";
   static const futureTasks = "/future-tasks";
   static const client = "/client";
+  static const addClient = "/add-client";
+
   static const staff = "/staff";
   static const group = "/group";
   static const taskMaster = "/task-master";
@@ -25,6 +27,7 @@ class AppRoutes {
     adminVerfication,
     taskHistory,
     futureTasks,
+    addClient,
     client,
     staff,
     group,
