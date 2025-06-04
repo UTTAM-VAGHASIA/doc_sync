@@ -709,24 +709,4 @@ class _DashboardTabletScreenState extends State<DashboardTabletScreen> {
       ],
     );
   }
-
-  // Get initials from name
-  String _getInitials(String? name) {
-    if (name == null || name.isEmpty) return '';
-    
-    final names = name.split(' ');
-    if (names.length > 1) {
-      return '${names[0][0]}${names[1][0]}';
-    } else if (names.length == 1 && names[0].isNotEmpty) {
-      return names[0][0];
-    }
-    return '';
-  }
-  
-  // Get color based on completion rate
-  Color _getProgressColor(int rate) {
-    if (rate < 30) return Colors.red;
-    if (rate < 70) return Colors.orange;
-    return Colors.green;
-  }
 }
