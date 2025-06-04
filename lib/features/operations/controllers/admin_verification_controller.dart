@@ -112,6 +112,35 @@ class AdminVerificationController extends GetxController {
     currentPage.value = totalPages.value;
   }
 
+  // Method to skip multiple pages backward
+  void skipPagesBackward() {
+    int skipSize = _calculateSkipSize();
+    int targetPage = (currentPage.value - skipSize).clamp(1, totalPages.value);
+    currentPage.value = targetPage;
+    print("Skipping $skipSize pages backward to page: $targetPage");
+  }
+  
+  // Method to skip multiple pages forward
+  void skipPagesForward() {
+    int skipSize = _calculateSkipSize();
+    int targetPage = (currentPage.value + skipSize).clamp(1, totalPages.value);
+    currentPage.value = targetPage;
+    print("Skipping $skipSize pages forward to page: $targetPage");
+  }
+  
+  // Calculate how many pages to skip based on total page count
+  int _calculateSkipSize() {
+    if (totalPages.value > 300) {
+      return 100; // Skip 100 pages if more than 300 pages
+    } else if (totalPages.value > 100) {
+      return 50; // Skip 50 pages if between 100 and 300 pages
+    } else if (totalPages.value > 50) {
+      return 10; // Skip 10 pages if between 50 and 100 pages
+    } else {
+      return 5; // Skip 5 pages for smaller page counts
+    }
+  }
+
   @override
   void onInit() {
     super.onInit();

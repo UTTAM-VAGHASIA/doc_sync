@@ -66,54 +66,8 @@ class PaginationControls extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            // Navigation buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Obx(
-                  () => IconButton(
-                    icon: const Icon(Icons.chevron_left),
-                    onPressed:
-                        controller.currentPage.value > 1
-                            ? controller.previousPage
-                            : null,
-                    style: IconButton.styleFrom(
-                      backgroundColor:
-                          controller.currentPage.value > 1
-                              ? AppColors.primary.withValues(alpha:0.1)
-                              : Colors.grey.shade200,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Obx(
-                  () => Text(
-                    'Page ${controller.currentPage.value} of ${controller.totalPages.value}',
-                    style: TextStyle(
-                      color: textColor,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Obx(
-                  () => IconButton(
-                    icon: const Icon(Icons.chevron_right),
-                    onPressed:
-                        controller.currentPage.value < controller.totalPages.value
-                            ? controller.nextPage
-                            : null,
-                    style: IconButton.styleFrom(
-                      backgroundColor:
-                          controller.currentPage.value <
-                                  controller.totalPages.value
-                              ? AppColors.primary.withValues(alpha:0.1)
-                              : Colors.grey.shade200,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            // Enhanced page navigation
+            Obx(() => _buildPageNavigator()),
             // Page info
             Obx(() {
               final start =
@@ -136,6 +90,204 @@ class PaginationControls extends StatelessWidget {
               );
             }),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPageNavigator() {
+    final int totalPages = controller.totalPages.value;
+    final int currentPage = controller.currentPage.value;
+    
+    // Calculate skip size for information display
+    int skipSize = 5;
+    if (totalPages > 300) {
+      skipSize = 100;
+    } else if (totalPages > 100) {
+      skipSize = 50;
+    } else if (totalPages > 50) {
+      skipSize = 10;
+    }
+    
+    // Determine which 3 page numbers to show
+    int midPage = currentPage;
+    int leftPage = midPage - 1;
+    int rightPage = midPage + 1;
+    
+    // Adjust if we're at the edges
+    if (leftPage < 1) {
+      leftPage = 1;
+      midPage = 2;
+      rightPage = 3;
+    } else if (rightPage > totalPages) {
+      if (totalPages >= 3) {
+        rightPage = totalPages;
+        midPage = rightPage - 1;
+        leftPage = midPage - 1;
+      } else {
+        // Handle case with fewer than 3 pages
+        leftPage = 1;
+        midPage = totalPages > 1 ? 2 : 1;
+        rightPage = totalPages > 2 ? 3 : midPage;
+      }
+    }
+    
+    // Build the navigation controls
+    return Container(
+      height: 48,
+      width: double.infinity,
+      child: Center(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Skip multiple pages backward button
+              _buildDoubleArrowButton(
+                icon: Icons.keyboard_double_arrow_left,
+                onTap: totalPages > 10 ? controller.skipPagesBackward : null,
+                isEnabled: currentPage > 1,
+                tooltip: "Skip $skipSize pages back",
+              ),
+              const SizedBox(width: 2),
+              
+              // Previous page button
+              _buildSingleArrowButton(
+                icon: Icons.chevron_left,
+                onTap: controller.previousPage,
+                isEnabled: currentPage > 1,
+                tooltip: "Previous page",
+              ),
+              const SizedBox(width: 4),
+              
+              // The 3 main page numbers
+              if (totalPages > 0 && leftPage >= 1 && leftPage <= totalPages)
+                _buildPageButton(leftPage, currentPage),
+              if (totalPages > 1 && midPage <= totalPages && midPage >= 1)
+                _buildPageButton(midPage, currentPage),
+              if (totalPages > 2 && rightPage <= totalPages && rightPage >= 1)
+                _buildPageButton(rightPage, currentPage),
+              
+              const SizedBox(width: 4),
+              // Next page button
+              _buildSingleArrowButton(
+                icon: Icons.chevron_right,
+                onTap: controller.nextPage,
+                isEnabled: currentPage < totalPages,
+                tooltip: "Next page",
+              ),
+              const SizedBox(width: 2),
+              
+              // Skip multiple pages forward button
+              _buildDoubleArrowButton(
+                icon: Icons.keyboard_double_arrow_right,
+                onTap: totalPages > 10 ? controller.skipPagesForward : null,
+                isEnabled: currentPage < totalPages,
+                tooltip: "Skip $skipSize pages forward",
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildSingleArrowButton({
+    required IconData icon,
+    required VoidCallback? onTap,
+    required bool isEnabled,
+    required String tooltip,
+  }) {
+    return Tooltip(
+      message: tooltip,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 1),
+        child: Material(
+          color: isEnabled ? AppColors.primary.withValues(alpha: 0.1) : Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(8),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: isEnabled ? onTap : null,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              child: Icon(
+                icon,
+                size: 20,
+                color: isEnabled ? AppColors.primary : Colors.grey.shade400,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildDoubleArrowButton({
+    required IconData icon,
+    required VoidCallback? onTap,
+    required bool isEnabled,
+    required String tooltip,
+  }) {
+    final bool isActive = isEnabled && onTap != null;
+    
+    return Tooltip(
+      message: tooltip,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 1),
+        child: Material(
+          color: isActive ? AppColors.primary.withValues(alpha: 0.1) : Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(8),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: isActive ? onTap : null,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              child: Icon(
+                icon,
+                size: 20,
+                color: isActive ? AppColors.primary : Colors.grey.shade400,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildPageButton(int pageNumber, int currentPage) {
+    final bool isSelected = pageNumber == currentPage;
+    
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 2),
+      child: Material(
+        color: isSelected ? AppColors.primary : cardBackgroundColor,
+        elevation: isSelected ? 2 : 0,
+        borderRadius: BorderRadius.circular(8),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: isSelected ? null : () {
+            controller.currentPage.value = pageNumber;
+          },
+          child: Container(
+            width: 32,
+            height: 36,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: isSelected ? AppColors.primary : Colors.grey.shade300,
+                width: 1,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              '$pageNumber',
+              style: TextStyle(
+                color: isSelected ? Colors.white : textColor,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                fontSize: 14,
+              ),
+            ),
+          ),
         ),
       ),
     );

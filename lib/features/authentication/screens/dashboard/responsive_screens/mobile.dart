@@ -105,7 +105,6 @@ class DashboardMobileScreen extends StatelessWidget {
                 subtleTextColor: subtleTextColor,
               ),
 
-            const SizedBox(height: 24),
 
             // --- Work Flow Section (Employee Performance) ---
             Padding(

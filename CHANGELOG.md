@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 
 ## Fixed
 
+- Fixed Pagination UI.
+- Fixed Filter options UI.
 
 ## [0.0.81] - 2025-05-02
 
