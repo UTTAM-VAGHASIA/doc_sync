@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.82] - Unreleased
+
+## Added
+
+## Fixed
+
 
 ## [0.0.81] - 2025-05-02
 
