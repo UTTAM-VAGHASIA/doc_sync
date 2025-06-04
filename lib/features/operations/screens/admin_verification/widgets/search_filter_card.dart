@@ -9,10 +9,10 @@ class SearchFilterCard extends StatelessWidget {
   final TextEditingController searchController;
 
   const SearchFilterCard({
-    Key? key,
+    super.key,
     required this.adminVerificationController,
     required this.searchController,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -330,77 +330,6 @@ class SearchFilterCard extends StatelessWidget {
         ),
       );
     });
-  }
-
-  Widget _buildFilterChip(
-    String label,
-    String value,
-    AdminVerificationController controller,
-    IconData icon,
-    int count,
-    Color color,
-  ) {
-    return Obx(
-      () {
-        final isSelected = value == 'all' 
-            ? controller.activeFilters.contains('all')
-            : controller.activeFilters.contains(value);
-            
-        return FilterChip(
-          label: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: 16,
-                color: isSelected
-                    ? AppColors.primary
-                    : AppColors.textSecondary,
-              ),
-              const SizedBox(width: 4),
-              Text(label),
-              const SizedBox(width: 4),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha:0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  count.toString(),
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          selected: isSelected,
-          onSelected: (_) => controller.updateFilter(value),
-          backgroundColor: Colors.transparent,
-          selectedColor: AppColors.primary.withValues(alpha:0.1),
-          labelStyle: TextStyle(
-            color: isSelected
-                ? AppColors.primary
-                : AppColors.textPrimary,
-            fontWeight: isSelected
-                ? FontWeight.bold
-                : FontWeight.normal,
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-            side: BorderSide(
-              color: isSelected
-                  ? AppColors.primary
-                  : Colors.grey.shade300,
-            ),
-          ),
-        );
-      },
-    );
   }
 
   Widget _buildStatusFilterCard(

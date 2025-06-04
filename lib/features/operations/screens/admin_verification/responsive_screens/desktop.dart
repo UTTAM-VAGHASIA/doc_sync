@@ -1,8 +1,5 @@
-import 'package:doc_sync/features/operations/controllers/admin_verification_controller.dart';
 import 'package:doc_sync/features/operations/screens/admin_verification/responsive_screens/mobile.dart';
-import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class AdminVerificationDesktopScreen extends StatelessWidget {
   const AdminVerificationDesktopScreen({super.key});

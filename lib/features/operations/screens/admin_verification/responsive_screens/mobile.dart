@@ -1,17 +1,13 @@
 import 'package:doc_sync/features/operations/controllers/admin_verification_controller.dart';
-import 'package:doc_sync/features/operations/models/admin_verification_task_model.dart';
 import 'package:doc_sync/features/operations/screens/admin_verification/widgets/date_selection_card.dart';
 import 'package:doc_sync/features/operations/screens/admin_verification/widgets/pagination_controls.dart';
 import 'package:doc_sync/features/operations/screens/admin_verification/widgets/search_filter_card.dart';
-import 'package:doc_sync/features/operations/screens/admin_verification/widgets/task_card.dart';
 import 'package:doc_sync/features/operations/screens/admin_verification/widgets/task_list.dart';
 import 'package:doc_sync/features/operations/screens/new_task/widgets/route_header.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
-import 'package:doc_sync/common/widgets/shimmers/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:intl/intl.dart';
 
 class AdminVerificationMobileScreen extends StatelessWidget {
   const AdminVerificationMobileScreen({super.key});

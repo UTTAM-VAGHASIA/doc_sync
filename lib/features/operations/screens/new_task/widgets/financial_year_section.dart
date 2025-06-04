@@ -179,7 +179,7 @@ class FinancialYearSection extends StatelessWidget {
         builder: (context) {
           // Remove extra lines by using Material and no padding
           return Dialog(
-            backgroundColor: Theme.of(context).dialogBackgroundColor,
+            backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -401,11 +401,6 @@ class FinancialYearSection extends StatelessWidget {
                             return;
                           }
                         }
-
-                        // Construct year string for display (not used here, but for future)
-                        String yearString = formatOption.value == 0
-                            ? '$startYear-$formattedEndYear'
-                            : '$startYear-$formattedEndYear';
 
                         await controller.addFinancialYear(
                           startYear: startYear,

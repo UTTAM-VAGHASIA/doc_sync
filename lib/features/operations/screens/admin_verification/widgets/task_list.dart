@@ -1,5 +1,4 @@
 import 'package:doc_sync/features/operations/controllers/admin_verification_controller.dart';
-import 'package:doc_sync/features/operations/models/admin_verification_task_model.dart';
 import 'package:doc_sync/features/operations/screens/admin_verification/widgets/task_card.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:doc_sync/common/widgets/shimmers/shimmer.dart';
@@ -13,12 +12,12 @@ class TaskList extends StatelessWidget {
   final Color subtleTextColor;
 
   const TaskList({
-    Key? key,
+    super.key,
     required this.adminVerificationController,
     required this.cardBackgroundColor,
     required this.textColor,
     required this.subtleTextColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +40,7 @@ class TaskList extends StatelessWidget {
 }
 
 class EmptyTaskList extends StatelessWidget {
-  const EmptyTaskList({Key? key}) : super(key: key);
+  const EmptyTaskList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +74,7 @@ class EmptyTaskList extends StatelessWidget {
 }
 
 class TaskListShimmer extends StatelessWidget {
-  const TaskListShimmer({Key? key}) : super(key: key);
+  const TaskListShimmer({super.key});
 
   @override
   Widget build(BuildContext context) {

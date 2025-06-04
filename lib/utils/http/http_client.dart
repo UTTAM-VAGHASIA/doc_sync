@@ -6,13 +6,10 @@ import 'package:doc_sync/utils/constants/api_constants.dart';
 import 'package:http/http.dart' as http;
 
 class AppHttpHelper {
-  late final String _baseUrl;
   static const _timeoutDuration = ApiConstants.timeoutDuration;
   
   // Constructor now initializes with the current baseUrl
-  AppHttpHelper() {
-    _baseUrl = ApiConstants().baseUrl;
-  }
+  AppHttpHelper();
 
   /*
 
