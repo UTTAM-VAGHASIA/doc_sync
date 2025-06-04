@@ -1,4 +1,6 @@
 import 'package:doc_sync/features/masters/controllers/add_client_controller.dart';
+import 'package:doc_sync/features/masters/screens/add_client_screen/widgets/group_dropdown.dart';
+import 'package:doc_sync/features/masters/screens/add_client_screen/widgets/accountant_dropdown.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -63,7 +65,6 @@ class ClientInfoSection extends StatelessWidget {
               onChanged: (value) => controller.firmName.value = value,
               value: controller.firmName,
               keyboardType: TextInputType.text,
-              isRequired: true,
               icon: Iconsax.building,
             ),
             const SizedBox(height: 16),
@@ -76,10 +77,17 @@ class ClientInfoSection extends StatelessWidget {
               onChanged: (value) => controller.contactPerson.value = value,
               value: controller.contactPerson,
               keyboardType: TextInputType.name,
-              isRequired: true,
               icon: Iconsax.user,
             ),
             const SizedBox(height: 16),
+            
+            // Group Dropdown
+            GroupDropdown(controller: controller),
+            
+            const SizedBox(height: 16),
+            
+            // Accountant Dropdown
+            AccountantDropdown(controller: controller),
             
             // // Status
             // _buildDropdownField(
@@ -181,7 +189,7 @@ class ClientInfoSection extends StatelessWidget {
         filled: true,
         fillColor: Colors.grey[50],
         labelStyle: TextStyle(
-          color: isRequired ? Colors.redAccent : null,
+          color: isRequired ? Colors.grey.shade300 : null,
         ),
       ),
       child: DropdownButtonHideUnderline(

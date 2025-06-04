@@ -1,4 +1,6 @@
 import 'package:doc_sync/features/masters/models/client_model.dart';
+import 'package:doc_sync/features/masters/models/group_model.dart';
+import 'package:doc_sync/features/masters/models/accountant_model.dart';
 import 'package:doc_sync/routes/routes.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:doc_sync/utils/popups/loaders.dart';
@@ -22,6 +24,8 @@ class AddClientController extends GetxController {
   final RxBool isDraftLoading = false.obs;
   final RxBool isDraftSaving = false.obs;
   final RxBool isDraftClearing = false.obs;
+  final RxBool isLoadingGroups = false.obs;
+  final RxBool isLoadingAccountants = false.obs;
 
   // Form Values
   final RxString fileNo = ''.obs;
@@ -36,15 +40,108 @@ class AddClientController extends GetxController {
   final RxString operation = ''.obs;
   final RxString status = 'Active'.obs; // Default status
 
+  // Group-related properties
+  final RxList<Group> groups = <Group>[].obs;
+  final Rxn<Group> selectedGroup = Rxn<Group>();
+
+  // Accountant-related properties
+  final RxList<Accountant> accountants = <Accountant>[].obs;
+  final Rxn<Accountant> selectedAccountant = Rxn<Accountant>();
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchGroups();
+    fetchAccountants();
+  }
+
   // Method to load data
   Future<void> loadData() async {
     try {
       // Add your data loading logic here
+      fetchGroups();
+      fetchAccountants();
       await Future.delayed(
         const Duration(milliseconds: 500),
       ); // Placeholder delay
     } catch (e) {
       AppLoaders.errorSnackBar(title: 'Error', message: e.toString());
+    }
+  }
+
+  // Fetch groups from API
+  Future<void> fetchGroups() async {
+    isLoadingGroups.value = true;
+    try {
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) {
+        RetryQueueManager.instance.addJob(fetchGroups);
+        AppLoaders.customToast(message: "Offline. Will retry when back online.");
+        return;
+      }
+
+      final data = await AppHttpHelper().sendMultipartRequest("get_group_list", method: "GET");
+
+      if (data['success']) {
+        final groupsData = data['data'] as List<dynamic>;
+        groups.clear();
+        groups.addAll(groupsData.map((json) => Group.fromJson(json as Map<String, dynamic>)));
+        
+        // Select the first active group by default if available
+        final activeGroups = groups.where((group) => group.status.toLowerCase() == 'active').toList();
+        if (activeGroups.isNotEmpty) {
+          selectedGroup.value = activeGroups.first;
+        }
+        
+        print("Fetched ${groups.length} groups");
+      } else {
+        AppLoaders.errorSnackBar(
+          title: "Group List Error",
+          message: data['message'] ?? "Failed to load groups",
+        );
+      }
+    } catch (e) {
+      AppLoaders.errorSnackBar(
+        title: "Group List Error",
+        message: "Error loading groups: ${e.toString()}",
+      );
+    } finally {
+      isLoadingGroups.value = false;
+    }
+  }
+
+  // Fetch accountants from API
+  Future<void> fetchAccountants() async {
+    isLoadingAccountants.value = true;
+    try {
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) {
+        RetryQueueManager.instance.addJob(fetchAccountants);
+        AppLoaders.customToast(message: "Offline. Will retry when back online.");
+        return;
+      }
+
+      final data = await AppHttpHelper().sendMultipartRequest("get_accountant_list", method: "GET");
+
+      if (data['success']) {
+        final accountantsData = data['data'] as List<dynamic>;
+        accountants.clear();
+        accountants.addAll(accountantsData.map((json) => Accountant.fromJson(json as Map<String, dynamic>)));
+        
+        print("Fetched ${accountants.length} accountants");
+      } else {
+        AppLoaders.errorSnackBar(
+          title: "Accountant List Error",
+          message: data['message'] ?? "Failed to load accountants",
+        );
+      }
+    } catch (e) {
+      AppLoaders.errorSnackBar(
+        title: "Accountant List Error",
+        message: "Error loading accountants: ${e.toString()}",
+      );
+    } finally {
+      isLoadingAccountants.value = false;
     }
   }
 
@@ -61,6 +158,14 @@ class AddClientController extends GetxController {
     otherId.value = '';
     operation.value = '';
     status.value = 'Active';
+    
+    // Reselect the first active group as default
+    final activeGroups = groups.where((group) => group.status.toLowerCase() == 'active').toList();
+    if (activeGroups.isNotEmpty) {
+      selectedGroup.value = activeGroups.first;
+    } else {
+      selectedGroup.value = null;
+    }
   }
 
   // Form validation logic
@@ -93,6 +198,22 @@ class AddClientController extends GetxController {
       AppLoaders.errorSnackBar(
         title: 'Error',
         message: 'Please enter contact number',
+      );
+      return false;
+    }
+
+    if (selectedGroup.value == null) {
+      AppLoaders.errorSnackBar(
+        title: 'Error',
+        message: 'Please select a group',
+      );
+      return false;
+    }
+
+    if (selectedAccountant.value == null) {
+      AppLoaders.errorSnackBar(
+        title: 'Error',
+        message: 'Please select an accountant',
       );
       return false;
     }
@@ -192,6 +313,8 @@ class AddClientController extends GetxController {
       'other_id': otherId.value,
       'operation': operation.value,
       'status': status.value,
+      'group_id': selectedGroup.value?.groupId ?? '',
+      'accountant_id': selectedAccountant.value?.accountantId ?? '',
     };
   }
 
@@ -208,6 +331,18 @@ class AddClientController extends GetxController {
     otherId.value = draft['other_id'] ?? '';
     operation.value = draft['operation'] ?? '';
     status.value = draft['status'] ?? 'Active';
+    
+    // Set selected group if it exists in the draft
+    final groupId = draft['group_id'];
+    if (groupId != null && groupId != '') {
+      selectedGroup.value = groups.firstWhereOrNull((group) => group.groupId == groupId);
+    }
+
+    // Set selected accountant if it exists in the draft
+    final accountantId = draft['accountant_id'];
+    if (accountantId != null && accountantId != '') {
+      selectedAccountant.value = accountants.firstWhereOrNull((acc) => acc.accountantId == accountantId);
+    }
   }
 
   /// Submits the new client form
@@ -233,8 +368,8 @@ class AddClientController extends GetxController {
         'file_no': fileNo.value,
         'pan': pan.value,
         'other_id': otherId.value,
-        'accountant_id': '11', // Placeholder - would typically come from user role/context
-        'groups_id': '43',     // Placeholder - would typically be dynamically determined
+        'accountant_id': selectedAccountant.value?.accountantId ?? '11', // Use selected accountant
+        'groups_id': selectedGroup.value?.groupId ?? '43', // Use selected group
         'email_id': email.value,
         'gstn': gstn.value,
         'tan': tan.value,

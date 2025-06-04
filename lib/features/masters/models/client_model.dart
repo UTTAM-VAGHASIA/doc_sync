@@ -12,6 +12,7 @@ class Client {
   final String pan;
   final String otherId;
   final String operation;
+  final String groupId;
 
   const Client({
     required this.clientId,
@@ -27,6 +28,7 @@ class Client {
     required this.pan,
     required this.otherId,
     required this.operation,
+    required this.groupId,
   });
 
   // Add toJson method for serialization
@@ -45,6 +47,7 @@ class Client {
       'pan': pan,
       'other_id': otherId,
       'operation': operation,
+      'group_id': groupId,
     };
   }
 
@@ -63,6 +66,7 @@ class Client {
       pan: json['pan'] ?? '',
       otherId: json['other_id'] ?? '',
       operation: json['operation'] ?? '',
+      groupId: json['group_id'] ?? '',
     );
   }
 
