@@ -81,17 +81,17 @@ class ClientInfoSection extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             
-            // Status
-            _buildDropdownField(
-              context: context,
-              label: 'Status',
-              value: controller.status,
-              items: ['Active', 'Inactive'],
-              onChanged: (value) {
-                if (value != null) controller.status.value = value;
-              },
-              icon: Iconsax.status,
-            ),
+            // // Status
+            // _buildDropdownField(
+            //   context: context,
+            //   label: 'Status',
+            //   value: controller.status,
+            //   items: ['Active', 'Inactive'],
+            //   onChanged: (value) {
+            //     if (value != null) controller.status.value = value;
+            //   },
+            //   icon: Iconsax.status,
+            // ),
           ],
         ),
       ),

@@ -18,28 +18,6 @@ class AddClientMobileScreen extends StatelessWidget {
     final controller = Get.find<AddClientController>();
 
     return Scaffold(
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Save Draft FAB
-          FloatingActionButton(
-            heroTag: 'saveDraftFab',
-            onPressed: () => controller.saveDraft(),
-            backgroundColor: AppColors.secondary,
-            mini: true,
-            child: const Icon(Iconsax.save_2),
-          ),
-          const SizedBox(height: 8),
-          
-          // Submit FAB
-          FloatingActionButton(
-            heroTag: 'submitFab',
-            onPressed: () => controller.submitNewClient(),
-            backgroundColor: AppColors.primary,
-            child: const Icon(Iconsax.add),
-          ),
-        ],
-      ),
       body: LiquidPullToRefresh(
         key: controller.refreshIndicatorKey,
         onRefresh: () async {

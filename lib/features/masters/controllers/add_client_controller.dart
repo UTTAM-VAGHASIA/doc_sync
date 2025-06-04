@@ -223,14 +223,32 @@ class AddClientController extends GetxController {
         );
         return;
       }
-      final Map<String, dynamic> payload = _collectFormData();
+      
+      // Prepare the payload according to the required format
+      final Map<String, dynamic> payload = {
+        'firm_name': firmName.value,
+        'contact_person': contactPerson.value,
+        'contact_no': contactNo.value,
+        'file_no': fileNo.value,
+        'pan': pan.value,
+        'other_id': otherId.value,
+        'accountant_id': '11', // Placeholder - would typically come from user role/context
+        'groups_id': '43',     // Placeholder - would typically be dynamically determined
+        'email_id': email.value,
+        'gstn': gstn.value,
+        'tan': tan.value,
+      };
+      
       print('[API REQUEST] add_client payload: ${jsonEncode(payload)}');
+      
       final data = await AppHttpHelper().sendMultipartRequest(
-        'add_client',
+        'add_client', // API endpoint
         method: 'POST',
         fields: {'data': jsonEncode(payload)},
       );
+      
       print('[API RESPONSE] add_client: $data');
+      
       if (data['success'] == true) {
         AppLoaders.successSnackBar(
           title: 'Success',
@@ -265,7 +283,7 @@ class AddClientController extends GetxController {
               Icon(Icons.check_circle, color: AppColors.primary, size: 56),
               const SizedBox(height: 16),
               Text(
-                'Client Added!',
+                'Client Added Successfully!',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -274,7 +292,7 @@ class AddClientController extends GetxController {
               ),
               const SizedBox(height: 12),
               const Text(
-                'The client has been added successfully.\n\nWould you like to add another client or go to the client list?',
+                'The client has been added successfully.\n\nWhat would you like to do next?',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16),
               ),
@@ -284,7 +302,7 @@ class AddClientController extends GetxController {
                   Expanded(
                     child: OutlinedButton.icon(
                       icon: const Icon(Icons.add),
-                      label: const Text('Add Another'),
+                      label: const Text('Add Another Client'),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 18,
@@ -303,7 +321,7 @@ class AddClientController extends GetxController {
                   Expanded(
                     child: ElevatedButton.icon(
                       icon: const Icon(Icons.list_alt),
-                      label: const Text('Go to Client List'),
+                      label: const Text('View Client List'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
@@ -319,7 +337,7 @@ class AddClientController extends GetxController {
                       ),
                       onPressed: () {
                         Get.back();
-                        Get.offAllNamed('/clients'); // Update with your route
+                        Get.offAllNamed('/clients'); // Navigate to client list
                       },
                     ),
                   ),
