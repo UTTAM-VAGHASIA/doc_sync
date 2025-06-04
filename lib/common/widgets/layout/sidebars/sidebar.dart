@@ -283,6 +283,15 @@ class AppSidebar extends StatelessWidget {
                                 buildSubMenuItem(
                                   context: context,
                                   icon: Icons.person_outline,
+                                  title: 'Add Client',
+                                  onTap:
+                                      () => drawerOpenController.menuOnTap(AppRoutes.addClient),
+                                  isSelected: drawerOpenController.isActive(AppRoutes.addClient),
+                                  iconColor: AppColors.tertiary,
+                                ),
+                                buildSubMenuItem(
+                                  context: context,
+                                  icon: Icons.person_outline,
                                   title: 'Client',
                                   onTap:
                                       () => drawerOpenController.menuOnTap(AppRoutes.client),
