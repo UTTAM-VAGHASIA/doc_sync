@@ -8,8 +8,7 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 class DateSelectionCard extends StatelessWidget {
   final TaskListController taskListController;
 
-  const DateSelectionCard({Key? key, required this.taskListController})
-    : super(key: key);
+  const DateSelectionCard({super.key, required this.taskListController});
 
   @override
   Widget build(BuildContext context) {

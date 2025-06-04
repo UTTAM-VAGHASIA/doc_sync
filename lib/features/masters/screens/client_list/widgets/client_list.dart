@@ -1,5 +1,4 @@
 import 'package:doc_sync/features/masters/controllers/client_list_controller.dart';
-import 'package:doc_sync/features/masters/models/client_model.dart';
 import 'package:doc_sync/features/masters/screens/client_list/widgets/client_card.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:doc_sync/common/widgets/shimmers/shimmer.dart';
@@ -13,12 +12,12 @@ class ClientList extends StatelessWidget {
   final Color subtleTextColor;
 
   const ClientList({
-    Key? key,
+    super.key,
     required this.clientListController,
     required this.cardBackgroundColor,
     required this.textColor,
     required this.subtleTextColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +40,7 @@ class ClientList extends StatelessWidget {
 }
 
 class EmptyClientList extends StatelessWidget {
-  const EmptyClientList({Key? key}) : super(key: key);
+  const EmptyClientList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +74,7 @@ class EmptyClientList extends StatelessWidget {
 }
 
 class ClientListShimmer extends StatelessWidget {
-  const ClientListShimmer({Key? key}) : super(key: key);
+  const ClientListShimmer({super.key});
 
   @override
   Widget build(BuildContext context) {

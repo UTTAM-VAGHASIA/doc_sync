@@ -1,4 +1,3 @@
-import 'package:doc_sync/features/masters/models/client_model.dart';
 import 'package:doc_sync/features/masters/models/group_model.dart';
 import 'package:doc_sync/features/masters/models/accountant_model.dart';
 import 'package:doc_sync/routes/routes.dart';

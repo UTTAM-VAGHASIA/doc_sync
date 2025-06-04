@@ -1,6 +1,5 @@
 import 'package:doc_sync/common/widgets/layout/headers/header.dart';
 import 'package:doc_sync/common/widgets/layout/sidebars/sidebar.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class MobileLayout extends StatelessWidget {

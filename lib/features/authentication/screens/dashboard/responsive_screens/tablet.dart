@@ -2,7 +2,6 @@ import 'package:doc_sync/common/widgets/shimmers/shimmer.dart';
 import 'package:doc_sync/features/authentication/controllers/dashboard_controller.dart';
 import 'package:doc_sync/features/authentication/models/dashboard_table_item_model.dart';
 import 'package:doc_sync/features/authentication/screens/dashboard/widgets/greeting_with_route.dart';
-import 'package:doc_sync/features/authentication/screens/dashboard/widgets/responsive_card_grid.dart';
 import 'package:doc_sync/features/authentication/screens/dashboard/widgets/summary_cards.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';

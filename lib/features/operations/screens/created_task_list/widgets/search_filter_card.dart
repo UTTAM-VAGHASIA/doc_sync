@@ -9,10 +9,10 @@ class SearchFilterCard extends StatelessWidget {
   final TextEditingController searchController;
 
   const SearchFilterCard({
-    Key? key,
+    super.key,
     required this.taskListController,
     required this.searchController,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

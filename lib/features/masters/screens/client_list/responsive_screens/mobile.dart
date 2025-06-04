@@ -1,5 +1,4 @@
 import 'package:doc_sync/features/masters/controllers/client_list_controller.dart';
-import 'package:doc_sync/features/masters/models/client_model.dart';
 import 'package:doc_sync/features/masters/screens/client_list/widgets/client_list.dart';
 import 'package:doc_sync/features/masters/screens/client_list/widgets/pagination_controls.dart';
 import 'package:doc_sync/features/masters/screens/client_list/widgets/search_filter_card.dart';

@@ -1,6 +1,5 @@
 import 'package:doc_sync/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 
 // Enhanced summary card design for all screen sizes
 Widget buildSummaryCard({

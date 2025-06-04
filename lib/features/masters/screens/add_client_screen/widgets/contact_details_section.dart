@@ -9,9 +9,9 @@ class ContactDetailsSection extends StatelessWidget {
   final AddClientController controller;
 
   const ContactDetailsSection({
-    Key? key,
+    super.key,
     required this.controller,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

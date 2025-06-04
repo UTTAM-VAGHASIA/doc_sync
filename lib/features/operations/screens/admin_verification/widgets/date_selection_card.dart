@@ -8,8 +8,7 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 class DateSelectionCard extends StatelessWidget {
   final AdminVerificationController adminVerificationController;
 
-  const DateSelectionCard({Key? key, required this.adminVerificationController})
-    : super(key: key);
+  const DateSelectionCard({super.key, required this.adminVerificationController});
 
   @override
   Widget build(BuildContext context) {

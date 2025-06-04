@@ -9,11 +9,11 @@ class PaginationControls extends StatelessWidget {
   final Color textColor;
 
   const PaginationControls({
-    Key? key,
+    super.key,
     required this.controller,
     required this.cardBackgroundColor,
     required this.textColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

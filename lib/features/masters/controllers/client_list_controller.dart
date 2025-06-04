@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:doc_sync/features/authentication/controllers/user_controller.dart';
 import 'package:doc_sync/features/masters/models/client_model.dart';
 import 'package:doc_sync/utils/helpers/network_manager.dart';
 import 'package:doc_sync/utils/helpers/retry_queue_manager.dart';

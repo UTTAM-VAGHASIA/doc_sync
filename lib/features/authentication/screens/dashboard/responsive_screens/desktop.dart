@@ -1,13 +1,8 @@
-import 'package:data_table_2/data_table_2.dart';
-import 'package:doc_sync/common/widgets/data_table/paginated_data_table.dart';
 import 'package:doc_sync/common/widgets/shimmers/shimmer.dart';
 import 'package:doc_sync/features/authentication/controllers/dashboard_controller.dart';
-import 'package:doc_sync/features/authentication/models/dashboard_table_data_source.dart';
 import 'package:doc_sync/features/authentication/screens/dashboard/widgets/greeting_with_route.dart';
-import 'package:doc_sync/features/authentication/screens/dashboard/widgets/responsive_card_grid.dart';
 import 'package:doc_sync/features/authentication/screens/dashboard/widgets/summary_cards.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
-import 'package:doc_sync/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';

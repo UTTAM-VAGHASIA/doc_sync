@@ -9,8 +9,7 @@ import 'package:iconsax/iconsax.dart';
 class AccountantDropdown extends StatelessWidget {
   final AddClientController controller;
 
-  const AccountantDropdown({Key? key, required this.controller})
-    : super(key: key);
+  const AccountantDropdown({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {

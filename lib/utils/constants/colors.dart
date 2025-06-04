@@ -56,7 +56,7 @@ extension ColorExtension on Color {
       red != null ? (red * 255).round() : this.red,
       green != null ? (green * 255).round() : this.green,
       blue != null ? (blue * 255).round() : this.blue,
-      alpha ?? this.opacity,
+      alpha ?? opacity,
     );
   }
 }

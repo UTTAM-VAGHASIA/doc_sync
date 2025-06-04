@@ -21,9 +21,9 @@ class OrganizationDialog extends StatefulWidget {
   final bool isForced;
 
   const OrganizationDialog({
-    Key? key,
+    super.key,
     this.isForced = false,
-  }) : super(key: key);
+  });
 
   @override
   State<OrganizationDialog> createState() => _OrganizationDialogState();
