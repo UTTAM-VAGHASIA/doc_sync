@@ -24,7 +24,7 @@ class ClientInfoSection extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
+            color: Colors.grey.withOpacity(0.1),
             spreadRadius: 1,
             blurRadius: 5,
             offset: const Offset(0, 2),
@@ -163,5 +163,53 @@ class ClientInfoSection extends StatelessWidget {
         onChanged: onChanged,
       );
     });
+  }
+
+  Widget _buildDropdownField({
+    required BuildContext context,
+    required String label,
+    required RxString value,
+    required List<String> items,
+    required Function(String?) onChanged,
+    required IconData icon,
+    bool isRequired = false,
+  }) {
+    return Obx(() => InputDecorator(
+      decoration: InputDecoration(
+        labelText: isRequired ? '$label *' : label,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 8,
+        ),
+        prefixIcon: Padding(
+          padding: const EdgeInsets.only(left: 12, right: 8),
+          child: Icon(icon, color: AppColors.textSecondary),
+        ),
+        filled: true,
+        fillColor: Colors.grey[50],
+        labelStyle: TextStyle(
+          color: isRequired ? Colors.grey.shade300 : null,
+        ),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: value.value,
+          isDense: true,
+          onChanged: onChanged,
+          style: TextStyle(
+            color: Colors.black87,
+            fontSize: 16,
+          ),
+          icon: Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
+          items: items.map((String item) {
+            return DropdownMenuItem<String>(
+              value: item,
+              child: Text(item),
+            );
+          }).toList(),
+        ),
+      ),
+    ));
   }
 } 
