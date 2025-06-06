@@ -312,7 +312,7 @@ class AddClientController extends GetxController {
       'other_id': otherId.value,
       'operation': operation.value,
       'status': status.value,
-      'group_id': selectedGroup.value?.groupId ?? '',
+      'group_id': selectedGroup.value?.id ?? '',
       'accountant_id': selectedAccountant.value?.accountantId ?? '',
     };
   }
@@ -334,7 +334,7 @@ class AddClientController extends GetxController {
     // Set selected group if it exists in the draft
     final groupId = draft['group_id'];
     if (groupId != null && groupId != '') {
-      selectedGroup.value = groups.firstWhereOrNull((group) => group.groupId == groupId);
+      selectedGroup.value = groups.firstWhereOrNull((group) => group.id == groupId);
     }
 
     // Set selected accountant if it exists in the draft
@@ -368,7 +368,7 @@ class AddClientController extends GetxController {
         'pan': pan.value,
         'other_id': otherId.value,
         'accountant_id': selectedAccountant.value?.accountantId ?? '11', // Use selected accountant
-        'groups_id': selectedGroup.value?.groupId ?? '43', // Use selected group
+        'groups_id': selectedGroup.value?.id ?? '43', // Use selected group
         'email_id': email.value,
         'gstn': gstn.value,
         'tan': tan.value,

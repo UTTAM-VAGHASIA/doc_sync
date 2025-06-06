@@ -1,16 +1,16 @@
-import 'package:doc_sync/features/masters/controllers/client_list_controller.dart';
+import 'package:doc_sync/features/masters/controllers/group_list_controller.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
 class SearchFilterCard extends StatelessWidget {
-  final ClientListController clientListController;
+  final GroupListController groupListController;
   final TextEditingController searchController;
 
   const SearchFilterCard({
     super.key,
-    required this.clientListController,
+    required this.groupListController,
     required this.searchController,
   });
 
@@ -31,8 +31,8 @@ class SearchFilterCard extends StatelessWidget {
             Expanded(
               child: Obx(() {
                 // Keep the controller in sync with the observable
-                if (searchController.text != clientListController.searchQuery.value) {
-                  searchController.text = clientListController.searchQuery.value;
+                if (searchController.text != groupListController.searchQuery.value) {
+                  searchController.text = groupListController.searchQuery.value;
                   searchController.selection = TextSelection.fromPosition(
                     TextPosition(offset: searchController.text.length),
                   );
@@ -42,14 +42,14 @@ class SearchFilterCard extends StatelessWidget {
                   controller: searchController,
                   onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
                   decoration: InputDecoration(
-                    hintText: 'Search clients, file no, contacts...',
+                    hintText: 'Search groups, task name...',
                     prefixIcon: const Icon(Iconsax.search_normal),
-                    suffixIcon: clientListController.searchQuery.value.isNotEmpty
+                    suffixIcon: groupListController.searchQuery.value.isNotEmpty
                         ? IconButton(
                             icon: const Icon(Icons.close),
                             onPressed: () {
                               searchController.clear();
-                              clientListController.updateSearch('');
+                              groupListController.updateSearch('');
                             },
                           )
                         : null,
@@ -62,7 +62,7 @@ class SearchFilterCard extends StatelessWidget {
                       vertical: 12,
                     ),
                   ),
-                  onChanged: clientListController.updateSearch,
+                  onChanged: groupListController.updateSearch,
                 );
               }),
             ),
@@ -71,8 +71,8 @@ class SearchFilterCard extends StatelessWidget {
             
             // Filter Button
             Obx(() => Badge(
-              isLabelVisible: clientListController.activeFilters.isNotEmpty,
-              label: Text(clientListController.activeFilters.length.toString()),
+              isLabelVisible: groupListController.activeFilters.isNotEmpty,
+              label: Text(groupListController.activeFilters.length.toString()),
               backgroundColor: AppColors.primary,
               child: IconButton(
                 onPressed: () => _showFilterBottomSheet(context),
@@ -97,15 +97,15 @@ class SearchFilterCard extends StatelessWidget {
       isScrollControlled: true,
       showDragHandle: false,
       backgroundColor: Colors.transparent,
-      builder: (context) => _FilterBottomSheet(clientListController: clientListController),
+      builder: (context) => _FilterBottomSheet(groupListController: groupListController),
     );
   }
 }
 
 class _FilterBottomSheet extends StatelessWidget {
-  final ClientListController clientListController;
+  final GroupListController groupListController;
 
-  const _FilterBottomSheet({required this.clientListController});
+  const _FilterBottomSheet({required this.groupListController});
 
   @override
   Widget build(BuildContext context) {
@@ -151,11 +151,11 @@ class _FilterBottomSheet extends StatelessWidget {
                     Row(
                       children: [
                         // Reset filters button
-                        if (clientListController.activeFilters.isNotEmpty)
+                        if (groupListController.activeFilters.isNotEmpty)
                           TextButton.icon(
                             onPressed: () {
-                              clientListController.activeFilters.clear();
-                              clientListController.updateFilter('all');
+                              groupListController.activeFilters.clear();
+                              groupListController.updateFilter('all');
                             },
                             icon: const Icon(Icons.refresh, size: 18),
                             label: const Text('Reset'),
@@ -189,11 +189,11 @@ class _FilterBottomSheet extends StatelessWidget {
                     // All filter - full width
                     Obx(
                       () => _buildFullWidthFilterCard(
-                        'All Clients',
+                        'All Groups',
                         'all',
-                        clientListController,
-                        Iconsax.profile_2user,
-                        clientListController.totalClientsCount,
+                        groupListController,
+                        Iconsax.task_square,
+                        groupListController.totalGroupsCount,
                         AppColors.primary,
                       ),
                     ),
@@ -206,22 +206,22 @@ class _FilterBottomSheet extends StatelessWidget {
                         children: [
                           Expanded(
                             child: _buildStatusFilterCard(
-                              'Active',
-                              'active',
-                              clientListController,
+                              'Enabled',
+                              'enable',
+                              groupListController,
                               Iconsax.tick_circle,
-                              clientListController.totalActiveClients.value,
+                              groupListController.totalEnabledGroups.value,
                               Colors.green.shade700,
                             ),
                           ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: _buildStatusFilterCard(
-                              'Inactive',
-                              'inactive',
-                              clientListController,
+                              'Disabled',
+                              'disable',
+                              groupListController,
                               Iconsax.close_circle,
-                              clientListController.totalInactiveClients.value,
+                              groupListController.totalDisabledGroups.value,
                               Colors.red.shade700,
                             ),
                           ),
@@ -239,13 +239,11 @@ class _FilterBottomSheet extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          _buildSortChip('Firm Name', 'firm_name', clientListController),
+                          _buildSortChip('Group Name', 'group_name', groupListController),
                           const SizedBox(width: 8),
-                          _buildSortChip('File Number', 'file_no', clientListController),
+                          _buildSortChip('Task Name', 'task_name', groupListController),
                           const SizedBox(width: 8),
-                          _buildSortChip('Contact Person', 'contact_person', clientListController),
-                          const SizedBox(width: 8),
-                          _buildSortChip('Email', 'email', clientListController),
+                          _buildSortChip('Status', 'status', groupListController),
                         ],
                       ),
                     ),
@@ -275,7 +273,7 @@ class _FilterBottomSheet extends StatelessWidget {
   Widget _buildFullWidthFilterCard(
     String label,
     String value,
-    ClientListController controller,
+    GroupListController controller,
     IconData icon,
     int count,
     Color color,
@@ -355,7 +353,7 @@ class _FilterBottomSheet extends StatelessWidget {
   Widget _buildStatusFilterCard(
     String label,
     String value,
-    ClientListController controller,
+    GroupListController controller,
     IconData icon,
     int count,
     Color color,
@@ -440,7 +438,7 @@ class _FilterBottomSheet extends StatelessWidget {
   Widget _buildSortChip(
     String label, 
     String value, 
-    ClientListController controller
+    GroupListController controller
   ) {
     return Obx(() {
       final isSelected = controller.sortBy.value == value;

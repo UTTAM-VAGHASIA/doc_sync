@@ -1,10 +1,10 @@
-import 'package:doc_sync/features/masters/controllers/client_list_controller.dart';
+import 'package:doc_sync/features/masters/controllers/group_list_controller.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class PaginationControls extends StatelessWidget {
-  final ClientListController controller;
+  final GroupListController controller;
   final Color cardBackgroundColor;
   final Color textColor;
 
@@ -82,20 +82,20 @@ class PaginationControls extends StatelessWidget {
                         underline: const SizedBox(),
                         items: [
                           DropdownMenuItem<String>(
-                            value: 'firm_name',
-                            child: const Text('Firm Name'),
+                            value: 'all',
+                            child: const Text('Original Order'),
                           ),
                           DropdownMenuItem<String>(
-                            value: 'file_no',
-                            child: const Text('File No'),
+                            value: 'group_name',
+                            child: const Text('Group Name'),
                           ),
                           DropdownMenuItem<String>(
-                            value: 'contact_person',
-                            child: const Text('Contact Person'),
+                            value: 'client_name',
+                            child: const Text('Client Name'),
                           ),
                           DropdownMenuItem<String>(
-                            value: 'email',
-                            child: const Text('Email'),
+                            value: 'status',
+                            child: const Text('Status'),
                           ),
                         ],
                         onChanged: (value) {
@@ -134,15 +134,15 @@ class PaginationControls extends StatelessWidget {
             Obx(() {
               final start =
                   controller.currentPage.value * controller.itemsPerPage +
-                  (controller.filteredClients.isEmpty ? 0 : 1);
-              final end = start + controller.paginatedClients.length - 
-                  (controller.filteredClients.isEmpty ? 0 : 1);
-              final total = controller.filteredClients.length;
+                  (controller.filteredGroups.isEmpty ? 0 : 1);
+              final end = start + controller.paginatedGroups.length - 
+                  (controller.filteredGroups.isEmpty ? 0 : 1);
+              final total = controller.filteredGroups.length;
 
               return Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  controller.filteredClients.isEmpty 
+                  controller.filteredGroups.isEmpty 
                       ? 'No entries to show' 
                       : 'Showing $start to $end of $total entries',
                   style: TextStyle(
@@ -353,4 +353,4 @@ class PaginationControls extends StatelessWidget {
       ),
     );
   }
-} 
+}
