@@ -1,14 +1,10 @@
-import 'package:doc_sync/features/masters/controllers/client_list_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class ClientListDesktopScreen extends StatelessWidget {
   const ClientListDesktopScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Initialize controller
-    final clientListController = Get.put(ClientListController());
     
     return Center(
       child: Text(

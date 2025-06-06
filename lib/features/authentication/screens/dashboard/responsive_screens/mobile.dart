@@ -423,7 +423,7 @@ class DashboardMobileScreen extends StatelessWidget {
                             selected: dashboardController.sortBy.value == 'name',
                             onSelected: (_) => dashboardController.updateSort('name'),
                             backgroundColor: Colors.grey.shade200,
-                            selectedColor: AppColors.primary.withOpacity(0.2),
+                            selectedColor: AppColors.primary.withValues(alpha: 0.2),
                             labelStyle: TextStyle(
                               color: dashboardController.sortBy.value == 'name' 
                                   ? AppColors.primary 
@@ -454,7 +454,7 @@ class DashboardMobileScreen extends StatelessWidget {
                             selected: dashboardController.sortBy.value == 'pending',
                             onSelected: (_) => dashboardController.updateSort('pending'),
                             backgroundColor: Colors.grey.shade200,
-                            selectedColor: AppColors.primary.withOpacity(0.2),
+                            selectedColor: AppColors.primary.withValues(alpha: 0.2),
                             labelStyle: TextStyle(
                               color: dashboardController.sortBy.value == 'pending' 
                                   ? AppColors.primary 
@@ -485,7 +485,7 @@ class DashboardMobileScreen extends StatelessWidget {
                             selected: dashboardController.sortBy.value == 'completed',
                             onSelected: (_) => dashboardController.updateSort('completed'),
                             backgroundColor: Colors.grey.shade200,
-                            selectedColor: AppColors.primary.withOpacity(0.2),
+                            selectedColor: AppColors.primary.withValues(alpha: 0.2),
                             labelStyle: TextStyle(
                               color: dashboardController.sortBy.value == 'completed' 
                                   ? AppColors.primary 
@@ -560,7 +560,7 @@ class DashboardMobileScreen extends StatelessWidget {
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: statusColor.withOpacity(0.1),
+                            color: statusColor.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
                           ),
                           child: Center(
@@ -782,7 +782,7 @@ class DashboardMobileScreen extends StatelessWidget {
                         style: IconButton.styleFrom(
                           backgroundColor:
                               dashboardController.currentPage.value > 0
-                                  ? AppColors.primary.withOpacity(0.1)
+                                  ? AppColors.primary.withValues(alpha: 0.1)
                                   : Colors.grey.shade200,
                         ),
                       )),
@@ -806,7 +806,7 @@ class DashboardMobileScreen extends StatelessWidget {
                           backgroundColor:
                               dashboardController.currentPage.value <
                                       dashboardController.totalPages - 1
-                                  ? AppColors.primary.withOpacity(0.1)
+                                  ? AppColors.primary.withValues(alpha: 0.1)
                                   : Colors.grey.shade200,
                         ),
                       )),
