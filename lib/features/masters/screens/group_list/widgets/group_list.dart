@@ -98,7 +98,6 @@ class _GroupExpansionCardState extends State<GroupExpansionCard> with SingleTick
   @override
   Widget build(BuildContext context) {
     final bool isEnabled = widget.group.status.toLowerCase() == 'enable';
-    final Color statusColor = isEnabled ? Colors.green.shade700 : Colors.red.shade700;
     
     return Card(
       elevation: 2,
@@ -125,8 +124,8 @@ class _GroupExpansionCardState extends State<GroupExpansionCard> with SingleTick
                     height: 40,
                     decoration: BoxDecoration(
                       color: isEnabled 
-                          ? Colors.green.withOpacity(0.1)
-                          : Colors.red.withOpacity(0.1),
+                          ? Colors.green.withValues(alpha: 0.1)
+                          : Colors.red.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Center(
@@ -163,8 +162,8 @@ class _GroupExpansionCardState extends State<GroupExpansionCard> with SingleTick
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: isEnabled 
-                          ? Colors.green.withOpacity(0.1)
-                          : Colors.red.withOpacity(0.1),
+                          ? Colors.green.withValues(alpha: 0.1)
+                          : Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(

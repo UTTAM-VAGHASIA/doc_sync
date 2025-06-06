@@ -1,5 +1,4 @@
 import 'package:doc_sync/features/operations/models/task_history_model.dart';
-import 'package:doc_sync/features/operations/screens/task_history/widgets/task_sheet_utils.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -159,36 +158,10 @@ class TaskExpansionCardState extends State<TaskExpansionCard>
                   top: BorderSide(color: Colors.grey.shade200, width: 1.0),
                 ),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Actions menu
-                  Container(
-                    decoration: BoxDecoration(color: Colors.grey.shade100),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _buildActionButton(
-                          label: 'View',
-                          icon: Icons.visibility_outlined,
-                          color: Colors.blue,
-                          onTap: () {
-                            // Show task detail sheet
-                            TaskSheetUtils.showTaskDetailSheet(context, widget.task);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Divider between actions and details
-                  Divider(height: 1, thickness: 1, color: Colors.grey.shade200),
-
-                  // Task details
+                              child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Task details
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -260,42 +233,6 @@ class TaskExpansionCardState extends State<TaskExpansionCard>
     );
   }
 
-  Widget _buildActionButton({
-    required String label,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha:0.1),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: color.withValues(alpha:0.3)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 18, color: color),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  color: color,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget buildDetailRow(
     BuildContext context,
