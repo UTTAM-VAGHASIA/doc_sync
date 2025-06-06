@@ -2,6 +2,7 @@ import 'package:doc_sync/bindings/add_client_binding.dart';
 import 'package:doc_sync/bindings/client_list_binding.dart';
 import 'package:doc_sync/bindings/new_task_bindings.dart';
 import 'package:doc_sync/bindings/created_task_list_binding.dart';
+import 'package:doc_sync/bindings/task_history_binding.dart';
 import 'package:doc_sync/common/widgets/layout/templates/placeholder_screen.dart';
 import 'package:doc_sync/features/authentication/screens/dashboard/dashboard.dart';
 import 'package:doc_sync/features/authentication/screens/forgot_password/forgot_password.dart';
@@ -15,6 +16,7 @@ import 'package:doc_sync/features/operations/screens/new_task/new_task.dart';
 import 'package:doc_sync/features/operations/screens/created_task_list/created_task_list.dart';
 import 'package:doc_sync/features/operations/screens/admin_verification/admin_verification.dart';
 import 'package:doc_sync/bindings/admin_verification_binding.dart';
+import 'package:doc_sync/features/operations/screens/task_history/task_history.dart';
 
 import 'package:doc_sync/routes/routes.dart';
 import 'package:doc_sync/routes/routes_middleware.dart';
@@ -53,8 +55,8 @@ class AppRoutePages {
     // Add placeholder screens for unimplemented routes
     GetPage(
       name: AppRoutes.taskHistory,
-      page: () => PlaceholderScreen(title: 'Task History'),
-      middlewares: [RouteMiddleWare()],
+      page: () => TaskHistoryScreen(),
+      binding: TaskHistoryBinding(),
     ),
     GetPage(
       name: AppRoutes.futureTasks,

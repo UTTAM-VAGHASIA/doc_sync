@@ -1,12 +1,12 @@
-import 'package:doc_sync/features/operations/controllers/admin_verification_controller.dart';
-import 'package:doc_sync/features/operations/models/admin_verification_task_model.dart';
-import 'package:doc_sync/features/operations/screens/admin_verification/widgets/task_sheet_utils.dart';
+import 'package:doc_sync/features/operations/controllers/task_history_controller.dart';
+import 'package:doc_sync/features/operations/models/task_history_model.dart';
+import 'package:doc_sync/features/operations/screens/task_history/widgets/task_sheet_utils.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class TaskExpansionCard extends StatefulWidget {
-  final AdminVerificationTask task;
+  final TaskHistoryTask task;
   final Color cardBackgroundColor;
   final Color textColor;
   final Color subtleTextColor;
@@ -85,7 +85,7 @@ class TaskExpansionCardState extends State<TaskExpansionCard>
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: adminStatusToColor(
+                      color: taskHistoryStatusToColor(
                         widget.task.taskStatus,
                       ).withValues(alpha:0.1),
                       shape: BoxShape.circle,
@@ -119,17 +119,17 @@ class TaskExpansionCardState extends State<TaskExpansionCard>
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: adminPriorityToColor(
+                      color: taskHistoryPriorityToColor(
                         widget.task.taskPriority,
                       ).withValues(alpha:0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      adminPriorityToString(widget.task.taskPriority),
+                      taskHistoryPriorityToString(widget.task.taskPriority),
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: adminPriorityToColor(widget.task.taskPriority),
+                        color: taskHistoryPriorityToColor(widget.task.taskPriority),
                       ),
                     ),
                   ),
@@ -183,15 +183,6 @@ class TaskExpansionCardState extends State<TaskExpansionCard>
                             TaskSheetUtils.showTaskDetailSheet(context, widget.task);
                           },
                         ),
-                        const SizedBox(width: 8),
-                        _buildActionButton(
-                          label: 'Approve',
-                          icon: Icons.check_circle_outline,
-                          color: Colors.green,
-                          onTap: () {
-                            TaskSheetUtils.showApproveConfirmation(context, widget.task);
-                          },
-                        ),
                       ],
                     ),
                   ),
@@ -201,27 +192,15 @@ class TaskExpansionCardState extends State<TaskExpansionCard>
 
                   // Task details
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0,
-                      vertical: 8.0,
-                    ),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       children: [
-                        // Task details
                         buildDetailRow(
                           context,
-                          'Status',
-                          adminStatusToString(widget.task.taskStatus),
-                          Icons.flag_outlined,
-                          adminStatusToColor(widget.task.taskStatus),
-                          widget.textColor,
-                        ),
-                        buildDetailRow(
-                          context,
-                          'Task ID',
-                          widget.task.taskId,
-                          Icons.tag,
-                          AppColors.primary,
+                          'Sub Task',
+                          widget.task.subTaskName,
+                          Icons.subtitles_outlined,
+                          Colors.purple,
                           widget.textColor,
                         ),
                         buildDetailRow(
@@ -234,26 +213,10 @@ class TaskExpansionCardState extends State<TaskExpansionCard>
                         ),
                         buildDetailRow(
                           context,
-                          'Sub Task',
-                          widget.task.subTaskName,
-                          Icons.subtitles_outlined,
+                          'Financial Year',
+                          widget.task.financialYear,
+                          Icons.calendar_today_outlined,
                           Colors.teal,
-                          widget.textColor,
-                        ),
-                        buildDetailRow(
-                          context,
-                          'Allotted By',
-                          widget.task.allottedByName,
-                          Icons.person_outline,
-                          Colors.purple,
-                          widget.textColor,
-                        ),
-                        buildDetailRow(
-                          context,
-                          'Allotted To',
-                          widget.task.allottedToName,
-                          Icons.person_outline,
-                          Colors.indigo,
                           widget.textColor,
                         ),
                         buildDetailRow(
@@ -279,18 +242,8 @@ class TaskExpansionCardState extends State<TaskExpansionCard>
                           Icons.date_range_outlined,
                           Colors.green,
                           widget.textColor,
-                          isLast: widget.task.instruction.isEmpty && widget.task.verifyByAdmin.isEmpty,
+                          isLast: widget.task.instruction.isEmpty,
                         ),
-                        if (widget.task.verifyByAdmin.isNotEmpty)
-                          buildDetailRow(
-                            context,
-                            'Verification Status',
-                            widget.task.verifyByAdmin == '1' ? 'Pending' : 'Verified',
-                            Icons.verified_outlined,
-                            widget.task.verifyByAdmin == '1' ? Colors.amber : Colors.teal,
-                            widget.textColor,
-                            isLast: widget.task.instruction.isEmpty,
-                          ),
                         if (widget.task.instruction.isNotEmpty)
                           buildInstructionsSection(
                             context,
@@ -428,29 +381,29 @@ class TaskExpansionCardState extends State<TaskExpansionCard>
       ],
     );
   }
-
-  Widget getStatusIcon(AdminTaskStatus status) {
-    Color color = adminStatusToColor(status);
-    IconData icon;
-
-    switch (status) {
-      case AdminTaskStatus.allotted:
-        icon = Icons.assignment_outlined;
-        break;
-      case AdminTaskStatus.completed:
-        icon = Icons.check_circle_outline;
-        break;
-      case AdminTaskStatus.client_waiting:
-        icon = Icons.hourglass_empty;
-        break;
-      case AdminTaskStatus.re_alloted:
-        icon = Icons.replay_outlined;
-        break;
-      case AdminTaskStatus.pending:
-        icon = Icons.pending_actions_outlined;
-        break;
-    }
-
-    return Icon(icon, color: color, size: 20);
-  }
 }
+
+Widget getStatusIcon(TaskHistoryStatus status) {
+  Color color = taskHistoryStatusToColor(status);
+  IconData icon;
+
+  switch (status) {
+    case TaskHistoryStatus.allotted:
+      icon = Icons.assignment_outlined;
+      break;
+    case TaskHistoryStatus.completed:
+      icon = Icons.check_circle_outline;
+      break;
+    case TaskHistoryStatus.client_waiting:
+      icon = Icons.hourglass_empty;
+      break;
+    case TaskHistoryStatus.re_alloted:
+      icon = Icons.replay_outlined;
+      break;
+    case TaskHistoryStatus.pending:
+      icon = Icons.pending_actions_outlined;
+      break;
+  }
+
+  return Icon(icon, color: color, size: 20);
+} 
