@@ -1,9 +1,7 @@
-import 'package:doc_sync/features/operations/controllers/task_history_controller.dart';
 import 'package:doc_sync/features/operations/models/task_history_model.dart';
 import 'package:doc_sync/features/operations/screens/task_history/widgets/task_sheet_utils.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class TaskExpansionCard extends StatefulWidget {
   final TaskHistoryTask task;
