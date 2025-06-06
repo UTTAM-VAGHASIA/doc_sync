@@ -1,9 +1,7 @@
-import 'package:doc_sync/features/operations/controllers/admin_verification_controller.dart';
 import 'package:doc_sync/features/operations/models/admin_verification_task_model.dart';
 import 'package:doc_sync/features/operations/screens/admin_verification/widgets/task_sheet_utils.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class TaskExpansionCard extends StatefulWidget {
   final AdminVerificationTask task;
