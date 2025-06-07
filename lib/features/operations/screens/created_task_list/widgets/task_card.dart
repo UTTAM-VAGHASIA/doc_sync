@@ -79,7 +79,7 @@ class TaskExpansionCardState extends State<TaskExpansionCard> with SingleTickerP
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: statusToColor(widget.task.status).withOpacity(0.1),
+                      color: statusToColor(widget.task.status).withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Center(child: getStatusIcon(widget.task.status)),
@@ -105,7 +105,7 @@ class TaskExpansionCardState extends State<TaskExpansionCard> with SingleTickerP
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: priorityToColor(widget.task.priority).withOpacity(0.1),
+                      color: priorityToColor(widget.task.priority).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -164,14 +164,6 @@ class TaskExpansionCardState extends State<TaskExpansionCard> with SingleTickerP
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         _buildActionButton(
-                          label: 'View',
-                          icon: Icons.visibility_outlined,
-                          color: Colors.blue,
-                          onTap: () {
-                            // View functionality will be implemented later
-                          },
-                        ),
-                        _buildActionButton(
                           label: 'Edit',
                           icon: Icons.edit_outlined,
                           color: Colors.green,
@@ -179,6 +171,7 @@ class TaskExpansionCardState extends State<TaskExpansionCard> with SingleTickerP
                             // Edit functionality will be implemented later
                           },
                         ),
+                        SizedBox(width: 16),
                         _buildActionButton(
                           label: 'Delete',
                           icon: Icons.delete_outline,
@@ -283,6 +276,7 @@ class TaskExpansionCardState extends State<TaskExpansionCard> with SingleTickerP
                             widget.task.instructions!,
                             widget.textColor,
                           ),
+
                       ],
                     ),
                   ),
@@ -301,30 +295,33 @@ class TaskExpansionCardState extends State<TaskExpansionCard> with SingleTickerP
     required Color color,
     required VoidCallback onTap,
   }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: color.withOpacity(0.3)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 18, color: color),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: TextStyle(
-                color: color,
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: color.withValues(alpha: 0.3)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 20, color: color),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: TextStyle(
+                  color: color,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -438,6 +435,7 @@ class TaskExpansionCardState extends State<TaskExpansionCard> with SingleTickerP
             ).textTheme.bodyMedium?.copyWith(color: textColor),
           ),
         ),
+        const SizedBox(height: 8),
       ],
     );
   }
