@@ -1,10 +1,10 @@
-import 'package:doc_sync/features/masters/controllers/task_master_list_controller.dart';
+import 'package:doc_sync/features/masters/controllers/sub_task_master_list_controller.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class PaginationControls extends StatelessWidget {
-  final TaskMasterListController controller;
+  final SubTaskMasterListController controller;
   final Color cardBackgroundColor;
   final Color textColor;
 
@@ -70,15 +70,15 @@ class PaginationControls extends StatelessWidget {
             Obx(() {
               final start =
                   controller.currentPage.value * controller.itemsPerPage +
-                  (controller.filteredTaskMasters.isEmpty ? 0 : 1);
-              final end = start + controller.paginatedTaskMasters.length - 
-                  (controller.filteredTaskMasters.isEmpty ? 0 : 1);
-              final total = controller.filteredTaskMasters.length;
+                  (controller.filteredSubTaskMasters.isEmpty ? 0 : 1);
+              final end = start + controller.paginatedSubTaskMasters.length - 
+                  (controller.filteredSubTaskMasters.isEmpty ? 0 : 1);
+              final total = controller.filteredSubTaskMasters.length;
 
               return Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  controller.filteredTaskMasters.isEmpty 
+                  controller.filteredSubTaskMasters.isEmpty 
                       ? 'No entries to show' 
                       : 'Showing $start to $end of $total entries',
                   style: TextStyle(
@@ -289,4 +289,4 @@ class PaginationControls extends StatelessWidget {
       ),
     );
   }
-} 
+}

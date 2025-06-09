@@ -1,4 +1,4 @@
-import 'package:doc_sync/features/masters/models/task_master_model.dart';
+import 'package:doc_sync/features/masters/models/sub_task_master_model.dart';
 import 'package:doc_sync/utils/helpers/network_manager.dart';
 import 'package:doc_sync/utils/helpers/retry_queue_manager.dart';
 import 'package:doc_sync/utils/http/http_client.dart';
@@ -8,17 +8,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
-class TaskMasterListController extends GetxController {
+class SubTaskMasterListController extends GetxController {
   
-  static TaskMasterListController get instance => Get.find<TaskMasterListController>();
+  static SubTaskMasterListController get instance => Get.find<SubTaskMasterListController>();
 
   // Global key for LiquidPullToRefresh
   final GlobalKey<LiquidPullToRefreshState> refreshIndicatorKey = GlobalKey<LiquidPullToRefreshState>();
 
-  // Lists for task masters
-  RxList<TaskMaster> taskMasters = <TaskMaster>[].obs;
-  RxList<TaskMaster> filteredTaskMasters = <TaskMaster>[].obs;
-  RxList<TaskMaster> paginatedTaskMasters = <TaskMaster>[].obs;
+  // Lists for sub task masters
+  RxList<SubTaskMaster> subTaskMasters = <SubTaskMaster>[].obs;
+  RxList<SubTaskMaster> filteredSubTaskMasters = <SubTaskMaster>[].obs;
+  RxList<SubTaskMaster> paginatedSubTaskMasters = <SubTaskMaster>[].obs;
 
   // Loading state
   RxBool isLoading = false.obs;
@@ -32,7 +32,7 @@ class TaskMasterListController extends GetxController {
   RxBool sortAscending = true.obs;
   
   // Original order from API
-  RxList<TaskMaster> originalTaskMasters = <TaskMaster>[].obs;
+  RxList<SubTaskMaster> originalSubTaskMasters = <SubTaskMaster>[].obs;
   
   // Pagination - Using 1-based indexing to match GroupList
   RxInt currentPage = 0.obs;
@@ -43,19 +43,19 @@ class TaskMasterListController extends GetxController {
     _applyFiltersAndSort();
   }
   
-  int get totalPages => filteredTaskMasters.isEmpty 
+  int get totalPages => filteredSubTaskMasters.isEmpty 
     ? 1 
-    : (filteredTaskMasters.length / _itemsPerPage).ceil();
+    : (filteredSubTaskMasters.length / _itemsPerPage).ceil();
   
   // Status counts
-  RxInt totalEnabledTaskMasters = 0.obs;
-  RxInt totalDisabledTaskMasters = 0.obs;
-  int get totalTaskMastersCount => filteredTaskMasters.length;
+  RxInt totalEnabledSubTaskMasters = 0.obs;
+  RxInt totalDisabledSubTaskMasters = 0.obs;
+  int get totalSubTaskMastersCount => filteredSubTaskMasters.length;
 
   @override
   void onInit() {
     super.onInit();
-    fetchTaskMasters();
+    fetchSubTaskMasters();
     
     // Set up listeners for search, filter and pagination changes
     ever(searchQuery, (_) => _applyFiltersAndSort());
@@ -65,46 +65,46 @@ class TaskMasterListController extends GetxController {
     ever(currentPage, (_) => _paginate());
   }
 
-  Future<void> fetchTaskMasters() async {
+  Future<void> fetchSubTaskMasters() async {
     try {
       isLoading.value = true;
-      taskMasters.clear();
-      filteredTaskMasters.clear();
-      paginatedTaskMasters.clear();
+      subTaskMasters.clear();
+      filteredSubTaskMasters.clear();
+      paginatedSubTaskMasters.clear();
       
       final isConnected = await NetworkManager.instance.isConnected();
       if (!isConnected) {
-        RetryQueueManager.instance.addJob(fetchTaskMasters);
+        RetryQueueManager.instance.addJob(fetchSubTaskMasters);
         AppLoaders.customToast(message: "Offline. Will retry when back online.");
         isLoading.value = false;
         return;
       }
 
-      final data = await AppHttpHelper().sendMultipartRequest("task_master", method: "GET");
+      final data = await AppHttpHelper().sendMultipartRequest("sub_task_master", method: "GET");
 
       if (data['success']) {
-        final taskMastersData = data['data'];
-        final taskMastersList = taskMastersData.map<TaskMaster>(
-          (json) => TaskMaster.fromJson(json as Map<String, dynamic>)
+        final subTaskMastersData = data['data'];
+        final subTaskMastersList = subTaskMastersData.map<SubTaskMaster>(
+          (json) => SubTaskMaster.fromJson(json as Map<String, dynamic>)
         ).toList();
         
-        taskMasters.value = taskMastersList;
+        subTaskMasters.value = subTaskMastersList;
         // Store the original order from API
-        originalTaskMasters.value = List.from(taskMastersList);
-        _updateTaskMasterCounts();
+        originalSubTaskMasters.value = List.from(subTaskMastersList);
+        _updateSubTaskMasterCounts();
         _applyFiltersAndSort();
-        print("Fetched ${taskMasters.length} task masters");
+        print("Fetched ${subTaskMasters.length} sub task masters");
       } else {
         AppLoaders.errorSnackBar(
-          title: "Task Master List Error",
-          message: data['message'] ?? "Failed to load task master data",
+          title: "Sub Task Master List Error",
+          message: data['message'] ?? "Failed to load sub task master data",
         );
         print(data['message']);
       }
     } catch (e) {
       AppLoaders.errorSnackBar(
-        title: "Task Master List Error",
-        message: "Error loading task masters: ${e.toString()}",
+        title: "Sub Task Master List Error",
+        message: "Error loading sub task masters: ${e.toString()}",
       );
       print(e.toString());
     } finally {
@@ -153,47 +153,57 @@ class TaskMasterListController extends GetxController {
     }
   }
   
-  void _updateTaskMasterCounts() {
-    // Calculate status counts for enabled/disabled task masters
-    List<TaskMaster> taskMastersToCount = searchQuery.isEmpty ? taskMasters : filteredTaskMasters;
+  void _updateSubTaskMasterCounts() {
+    // Calculate status counts for enabled/disabled sub task masters
+    List<SubTaskMaster> subTaskMastersToCount = searchQuery.isEmpty ? subTaskMasters : filteredSubTaskMasters;
     
-    totalEnabledTaskMasters.value = taskMastersToCount.where(
-      (taskMaster) => taskMaster.status.toLowerCase() == 'enable'
+    totalEnabledSubTaskMasters.value = subTaskMastersToCount.where(
+      (subTaskMaster) => subTaskMaster.status.toLowerCase() == 'enable'
     ).length;
     
-    totalDisabledTaskMasters.value = taskMastersToCount.where(
-      (taskMaster) => taskMaster.status.toLowerCase() == 'disable'
+    totalDisabledSubTaskMasters.value = subTaskMastersToCount.where(
+      (subTaskMaster) => subTaskMaster.status.toLowerCase() == 'disable'
     ).length;
   }
   
   void _applyFiltersAndSort() {
     // 1. Apply search filter
     if (searchQuery.isEmpty) {
-      filteredTaskMasters.value = List.from(taskMasters);
+      filteredSubTaskMasters.value = List.from(subTaskMasters);
     } else {
-      filteredTaskMasters.value = taskMasters.where((taskMaster) {
+      filteredSubTaskMasters.value = subTaskMasters.where((subTaskMaster) {
         final query = searchQuery.value.toLowerCase();
-        return taskMaster.taskName.toLowerCase().contains(query) ||
-               taskMaster.id.toLowerCase().contains(query);
+        return subTaskMaster.subTaskName.toLowerCase().contains(query) ||
+               subTaskMaster.taskName.toLowerCase().contains(query) ||
+               subTaskMaster.id.toLowerCase().contains(query);
       }).toList();
     }
     
     // 2. Apply status filters if active
     if (activeFilters.isNotEmpty) {
-      filteredTaskMasters.value = filteredTaskMasters.where((taskMaster) {
-        if (activeFilters.contains('enable') && taskMaster.status.toLowerCase() == 'enable') return true;
-        if (activeFilters.contains('disable') && taskMaster.status.toLowerCase() == 'disable') return true;
+      filteredSubTaskMasters.value = filteredSubTaskMasters.where((subTaskMaster) {
+        if (activeFilters.contains('enable') && subTaskMaster.status.toLowerCase() == 'enable') return true;
+        if (activeFilters.contains('disable') && subTaskMaster.status.toLowerCase() == 'disable') return true;
         return false;
       }).toList();
     }
     
     // 3. Apply sorting (if not 'all')
     if (sortBy.value != 'all') {
-      filteredTaskMasters.sort((a, b) {
+      filteredSubTaskMasters.sort((a, b) {
         int comparison = 0;
         switch (sortBy.value) {
           case 'task_name':
             comparison = a.taskName.compareTo(b.taskName);
+            break;
+          case 'sub_task_name':
+            comparison = a.subTaskName.compareTo(b.subTaskName);
+            break;
+          case 'amount':
+            // Parse amount as double for numeric sorting
+            final double aAmount = double.tryParse(a.amount) ?? 0;
+            final double bAmount = double.tryParse(b.amount) ?? 0;
+            comparison = aAmount.compareTo(bAmount);
             break;
           case 'status':
             comparison = a.status.compareTo(b.status);
@@ -209,16 +219,16 @@ class TaskMasterListController extends GetxController {
     } else {
       // For 'all', preserve the original API order (for filtered items)
       // First get all the filtered IDs
-      final filteredIds = filteredTaskMasters.map((tm) => tm.id).toSet();
+      final filteredIds = filteredSubTaskMasters.map((stm) => stm.id).toSet();
       
       // Then reorder based on original sequence
-      filteredTaskMasters.value = originalTaskMasters
-          .where((tm) => filteredIds.contains(tm.id))
+      filteredSubTaskMasters.value = originalSubTaskMasters
+          .where((stm) => filteredIds.contains(stm.id))
           .toList();
     }
     
     // Update counts based on filtered results
-    _updateTaskMasterCounts();
+    _updateSubTaskMasterCounts();
     
     // Apply pagination
     _paginate();
@@ -228,31 +238,31 @@ class TaskMasterListController extends GetxController {
     final startIndex = currentPage.value * itemsPerPage;
     final endIndex = (currentPage.value + 1) * itemsPerPage;
     
-    if (startIndex >= filteredTaskMasters.length && filteredTaskMasters.isNotEmpty) {
+    if (startIndex >= filteredSubTaskMasters.length && filteredSubTaskMasters.isNotEmpty) {
       // If we're on a page that no longer exists (e.g., after filtering), go to first page
       currentPage.value = 0;
       _paginate();
     } else {
-      paginatedTaskMasters.value = filteredTaskMasters.isEmpty ? [] : 
-        filteredTaskMasters.sublist(
+      paginatedSubTaskMasters.value = filteredSubTaskMasters.isEmpty ? [] : 
+        filteredSubTaskMasters.sublist(
           startIndex,
-          endIndex > filteredTaskMasters.length ? filteredTaskMasters.length : endIndex
+          endIndex > filteredSubTaskMasters.length ? filteredSubTaskMasters.length : endIndex
         );
     }
   }
   
-  // Method to edit a task master
-  void editTaskMaster(TaskMaster taskMaster) {
-    // Navigate to edit screen with task master data
-    Get.toNamed('/edit-task-master', arguments: taskMaster);
+  // Method to edit a sub task master
+  void editSubTaskMaster(SubTaskMaster subTaskMaster) {
+    // Navigate to edit screen with sub task master data
+    Get.toNamed('/edit-sub-task-master', arguments: subTaskMaster);
   }
   
-  // Method to delete a task master
-  Future<void> deleteTaskMaster(String taskMasterId) async {
+  // Method to delete a sub task master
+  Future<void> deleteSubTaskMaster(String subTaskMasterId) async {
     try {
       final isConnected = await NetworkManager.instance.isConnected();
       if (!isConnected) {
-        RetryQueueManager.instance.addJob(() => deleteTaskMaster(taskMasterId));
+        RetryQueueManager.instance.addJob(() => deleteSubTaskMaster(subTaskMasterId));
         AppLoaders.customToast(message: "Offline. Will retry when back online.");
         return;
       }
@@ -260,8 +270,8 @@ class TaskMasterListController extends GetxController {
       // Show confirmation dialog
       final shouldDelete = await Get.dialog<bool>(
         AlertDialog(
-          title: const Text('Delete Task Master'),
-          content: const Text('Are you sure you want to delete this task?'),
+          title: const Text('Delete Sub Task Master'),
+          content: const Text('Are you sure you want to delete this sub task?'),
           actions: [
             TextButton(
               onPressed: () => Get.back(result: false),
@@ -283,10 +293,10 @@ class TaskMasterListController extends GetxController {
       AppFullScreenLoader.popUpCircular();
       
       final data = await AppHttpHelper().sendMultipartRequest(
-        "delete_task_master",
+        "delete_sub_task_master",
         method: "POST",
         fields: {
-          "id": taskMasterId,
+          "id": subTaskMasterId,
         },
       );
       
@@ -295,13 +305,13 @@ class TaskMasterListController extends GetxController {
       if (data['success']) {
         AppLoaders.successSnackBar(
           title: "Success",
-          message: data['message'] ?? "Task master deleted successfully",
+          message: data['message'] ?? "Sub task master deleted successfully",
         );
-        fetchTaskMasters(); // Refresh the list
+        fetchSubTaskMasters(); // Refresh the list
       } else {
         AppLoaders.errorSnackBar(
           title: "Delete Failed",
-          message: data['message'] ?? "Failed to delete task master",
+          message: data['message'] ?? "Failed to delete sub task master",
         );
       }
     } catch (e) {

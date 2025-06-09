@@ -1,19 +1,20 @@
-import 'package:doc_sync/features/masters/controllers/task_master_list_controller.dart';
-import 'package:doc_sync/features/masters/screens/task_master/widgets/task_master_card.dart';
+
+import 'package:doc_sync/features/masters/controllers/sub_task_master_list_controller.dart';
+import 'package:doc_sync/features/masters/screens/sub_task_master/widgets/sub_task_master_card.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:get/get.dart';
 
-class TaskMasterList extends StatelessWidget {
-  final TaskMasterListController taskMasterListController;
+class SubTaskMasterList extends StatelessWidget {
+  final SubTaskMasterListController subTaskMasterListController;
   final Color cardBackgroundColor;
   final Color textColor;
   final Color subtleTextColor;
 
-  const TaskMasterList({
+  const SubTaskMasterList({
     super.key,
-    required this.taskMasterListController,
+    required this.subTaskMasterListController,
     required this.cardBackgroundColor,
     required this.textColor,
     required this.subtleTextColor,
@@ -22,16 +23,16 @@ class TaskMasterList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final taskMasters = taskMasterListController.paginatedTaskMasters;
+      final subTaskMasters = subTaskMasterListController.paginatedSubTaskMasters;
       return ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: taskMasters.length,
+        itemCount: subTaskMasters.length,
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         itemBuilder: (context, index) {
-          final taskMaster = taskMasters[index];
-          return TaskMasterExpansionCard(
-            taskMaster: taskMaster,
+          final subTaskMaster = subTaskMasters[index];
+          return SubTaskMasterExpansionCard(
+            subTaskMaster: subTaskMaster,
             cardBackgroundColor: cardBackgroundColor,
             textColor: textColor,
             subtleTextColor: subtleTextColor,
@@ -42,8 +43,8 @@ class TaskMasterList extends StatelessWidget {
   }
 }
 
-class TaskMasterListShimmer extends StatelessWidget {
-  const TaskMasterListShimmer({super.key});
+class SubTaskMasterListShimmer extends StatelessWidget {
+  const SubTaskMasterListShimmer({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -109,8 +110,8 @@ class TaskMasterListShimmer extends StatelessWidget {
   }
 }
 
-class EmptyTaskMasterList extends StatelessWidget {
-  const EmptyTaskMasterList({super.key});
+class EmptySubTaskMasterList extends StatelessWidget {
+  const EmptySubTaskMasterList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +128,7 @@ class EmptyTaskMasterList extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'No tasks found',
+              'No sub tasks found',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     color: AppColors.textSecondary,
                   ),
