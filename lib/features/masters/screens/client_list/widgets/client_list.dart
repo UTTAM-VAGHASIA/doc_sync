@@ -3,7 +3,7 @@ import 'package:doc_sync/features/masters/screens/client_list/widgets/client_car
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:doc_sync/common/widgets/shimmers/shimmer.dart';
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
+import 'package:get/get.dart';
 
 class ClientList extends StatelessWidget {
   final ClientListController clientListController;
@@ -21,21 +21,24 @@ class ClientList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: clientListController.paginatedClients.length,
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      itemBuilder: (context, index) {
-        final client = clientListController.paginatedClients[index];
-        return ClientExpansionCard(
-          client: client,
-          cardBackgroundColor: cardBackgroundColor,
-          textColor: textColor,
-          subtleTextColor: subtleTextColor,
-        );
-      },
-    );
+    return Obx(() {
+      final clients = clientListController.paginatedClients;
+      return ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: clients.length,
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        itemBuilder: (context, index) {
+          final client = clients[index];
+          return ClientExpansionCard(
+            client: client,
+            cardBackgroundColor: cardBackgroundColor,
+            textColor: textColor,
+            subtleTextColor: subtleTextColor,
+          );
+        },
+      );
+    });
   }
 }
 
@@ -46,25 +49,27 @@ class EmptyClientList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: const EdgeInsets.symmetric(vertical: 32.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Iconsax.user, size: 80, color: AppColors.grey),
+            Icon(
+              Icons.person_off,
+              size: 64,
+              color: Colors.grey.shade400,
+            ),
             const SizedBox(height: 16),
             Text(
-              'No clients found with current filters',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textSecondary,
-              ),
+              'No clients found',
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Colors.grey.shade600,
+                  ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Try adjusting your search or filter settings',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textSecondary),
+              'Try adjusting your search or filters',
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: Colors.grey.shade500,
+                  ),
             ),
           ],
         ),
@@ -82,13 +87,15 @@ class ClientListShimmer extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: 5,
-      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
-      itemBuilder: (context, index) {
-        return const Padding(
-          padding: EdgeInsets.only(bottom: 16.0),
-          child: AppShimmerEffect(width: double.infinity, height: 80),
-        );
-      },
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      itemBuilder: (context, index) => Padding(
+        padding: const EdgeInsets.only(bottom: 12.0),
+        child: AppShimmerEffect(
+          width: double.infinity,
+          height: 80,
+          radius: 12,
+        ),
+      ),
     );
   }
 } 

@@ -1,3 +1,4 @@
+import 'package:doc_sync/features/masters/screens/client_list/responsive_screens/mobile.dart';
 import 'package:flutter/material.dart';
 
 class ClientListDesktopScreen extends StatelessWidget {
@@ -5,13 +6,12 @@ class ClientListDesktopScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
-    return Center(
-      child: Text(
-        'Desktop version of client list will be implemented soon',
-        style: Theme.of(context).textTheme.headlineMedium,
-        textAlign: TextAlign.center,
-      ),
-    );
+    // For now, just use the mobile version - can be customized later
+    // This is just a placeholder to ensure our modular architecture supports multiple screen sizes
+    return const ClientListMobileScreen();
+
+    // When implementing a desktop-specific layout in the future,
+    // you can leverage the same modular widgets created for the mobile layout
+    // but arrange them differently to take advantage of the larger screen size
   }
 } 

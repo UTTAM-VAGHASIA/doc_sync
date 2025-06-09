@@ -1,28 +1,28 @@
-import 'package:doc_sync/features/masters/controllers/client_list_controller.dart';
-import 'package:doc_sync/features/masters/models/client_model.dart';
+import 'package:doc_sync/features/masters/controllers/group_list_controller.dart';
+import 'package:doc_sync/features/masters/models/group_model.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ClientExpansionCard extends StatefulWidget {
-  final Client client;
+class GroupExpansionCard extends StatefulWidget {
+  final Group group;
   final Color cardBackgroundColor;
   final Color textColor;
   final Color subtleTextColor;
-  
-  const ClientExpansionCard({
-    super.key, 
-    required this.client,
+
+  const GroupExpansionCard({
+    super.key,
+    required this.group,
     required this.cardBackgroundColor,
     required this.textColor,
     required this.subtleTextColor,
   });
-  
+
   @override
-  ClientExpansionCardState createState() => ClientExpansionCardState();
+  State<GroupExpansionCard> createState() => GroupExpansionCardState();
 }
 
-class ClientExpansionCardState extends State<ClientExpansionCard> with SingleTickerProviderStateMixin {
+class GroupExpansionCardState extends State<GroupExpansionCard> with SingleTickerProviderStateMixin {
   bool isExpanded = false;
   late AnimationController _controller;
   late Animation<double> _heightFactor;
@@ -58,7 +58,7 @@ class ClientExpansionCardState extends State<ClientExpansionCard> with SingleTic
   
   @override
   Widget build(BuildContext context) {
-    final bool isEnabled = widget.client.status.toLowerCase() == 'enable';
+    final bool isEnabled = widget.group.status.toLowerCase() == 'enable';
     
     return Card(
       elevation: 2,
@@ -67,7 +67,7 @@ class ClientExpansionCardState extends State<ClientExpansionCard> with SingleTic
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Column(
         children: [
-          // Main client header - always visible
+          // Header section with expand button
           InkWell(
             onTap: _toggleExpand,
             borderRadius: BorderRadius.only(
@@ -91,12 +91,8 @@ class ClientExpansionCardState extends State<ClientExpansionCard> with SingleTic
                     ),
                     child: Center(
                       child: Icon(
-                        isEnabled
-                            ? Icons.check_circle_outline
-                            : Icons.cancel_outlined,
-                        color: isEnabled
-                            ? Colors.green
-                            : Colors.red,
+                        Icons.group,
+                        color: isEnabled ? Colors.green : Colors.red,
                         size: 20,
                       ),
                     ),
@@ -107,7 +103,7 @@ class ClientExpansionCardState extends State<ClientExpansionCard> with SingleTic
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.client.firmName,
+                          widget.group.groupName,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -117,7 +113,7 @@ class ClientExpansionCardState extends State<ClientExpansionCard> with SingleTic
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          "File No: ${widget.client.fileNo}",
+                          "Client: ${widget.group.clientName}",
                           style: TextStyle(fontSize: 12, color: widget.subtleTextColor),
                         ),
                       ],
@@ -126,19 +122,17 @@ class ClientExpansionCardState extends State<ClientExpansionCard> with SingleTic
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: isEnabled
+                      color: isEnabled 
                           ? Colors.green.withOpacity(0.1)
                           : Colors.red.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      widget.client.status,
+                      widget.group.status,
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: isEnabled
-                            ? Colors.green
-                            : Colors.red,
+                        color: isEnabled ? Colors.green : Colors.red,
                       ),
                     ),
                   ),
@@ -193,7 +187,7 @@ class ClientExpansionCardState extends State<ClientExpansionCard> with SingleTic
                           icon: Icons.edit_outlined,
                           color: Colors.green,
                           onTap: () {
-                            Get.find<ClientListController>().editClient(widget.client);
+                            // Edit functionality will be implemented later
                           },
                         ),
                         SizedBox(width: 16),
@@ -202,31 +196,7 @@ class ClientExpansionCardState extends State<ClientExpansionCard> with SingleTic
                           icon: Icons.delete_outline,
                           color: Colors.red,
                           onTap: () {
-                            // Show delete confirmation dialog
-                            Get.dialog(
-                              AlertDialog(
-                                title: const Text('Delete Client'),
-                                content: Text(
-                                  'Are you sure you want to delete ${widget.client.firmName}?',
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Get.back(),
-                                    child: const Text('Cancel'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Get.back();
-                                      Get.find<ClientListController>().deleteClient(widget.client.clientId);
-                                    },
-                                    child: const Text(
-                                      'Delete',
-                                      style: TextStyle(color: Colors.red),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
+                            // Delete functionality will be implemented later
                           },
                         ),
                       ],
@@ -236,7 +206,7 @@ class ClientExpansionCardState extends State<ClientExpansionCard> with SingleTic
                   // Divider between actions and details
                   Divider(height: 1, thickness: 1, color: Colors.grey.shade200),
                   
-                  // Client details
+                  // Group details
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24.0,
@@ -246,112 +216,24 @@ class ClientExpansionCardState extends State<ClientExpansionCard> with SingleTic
                       children: [
                         buildDetailRow(
                           context,
-                          'Client ID',
-                          widget.client.clientId,
-                          Icons.tag,
-                          AppColors.primary,
-                          widget.textColor,
-                        ),
-                        buildDetailRow(
-                          context,
-                          'Firm Name',
-                          widget.client.firmName,
-                          Icons.business,
+                          'Group Name',
+                          widget.group.groupName,
+                          Icons.group,
                           Colors.blue,
                           widget.textColor,
                         ),
                         buildDetailRow(
                           context,
-                          'File No',
-                          widget.client.fileNo,
-                          Icons.folder_outlined,
-                          Colors.orange,
-                          widget.textColor,
-                        ),
-                        buildDetailRow(
-                          context,
-                          'Contact Person',
-                          widget.client.contactPerson,
+                          'Client',
+                          widget.group.clientName,
                           Icons.person_outline,
                           Colors.purple,
                           widget.textColor,
                         ),
                         buildDetailRow(
                           context,
-                          'Contact No',
-                          widget.client.contactNo,
-                          Icons.phone_outlined,
-                          Colors.green,
-                          widget.textColor,
-                        ),
-                        buildDetailRow(
-                          context,
-                          'Email',
-                          widget.client.email,
-                          Icons.email_outlined,
-                          Colors.red,
-                          widget.textColor,
-                        ),
-                        buildDetailRow(
-                          context,
-                          'GSTN',
-                          widget.client.gstn.isEmpty ? 'N/A' : widget.client.gstn,
-                          Icons.receipt_long_outlined,
-                          Colors.teal,
-                          widget.textColor,
-                        ),
-                        buildDetailRow(
-                          context,
-                          'TAN',
-                          widget.client.tan.isEmpty ? 'N/A' : widget.client.tan,
-                          Icons.assignment_outlined,
-                          Colors.indigo,
-                          widget.textColor,
-                        ),
-                        buildDetailRow(
-                          context,
-                          'PAN',
-                          widget.client.pan.isEmpty ? 'N/A' : widget.client.pan,
-                          Icons.credit_card_outlined,
-                          Colors.amber.shade800,
-                          widget.textColor,
-                        ),
-                        buildDetailRow(
-                          context,
-                          'Accountant ID',
-                          widget.client.accountantId,
-                          Icons.account_circle_outlined,
-                          Colors.deepPurple,
-                          widget.textColor,
-                        ),
-                        buildDetailRow(
-                          context,
-                          'Group ID',
-                          widget.client.groupId.isEmpty ? 'N/A' : widget.client.groupId,
-                          Icons.group_outlined,
-                          Colors.cyan,
-                          widget.textColor,
-                        ),
-                        buildDetailRow(
-                          context,
-                          'Other ID',
-                          widget.client.otherId.isEmpty ? 'N/A' : widget.client.otherId,
-                          Icons.more_horiz,
-                          Colors.brown,
-                          widget.textColor,
-                        ),
-                        buildDetailRow(
-                          context,
-                          'Operation',
-                          widget.client.operation,
-                          Icons.history,
-                          Colors.blueGrey,
-                          widget.textColor,
-                        ),
-                        buildDetailRow(
-                          context,
                           'Status',
-                          widget.client.status,
+                          widget.group.status,
                           isEnabled ? Icons.check_circle_outline : Icons.cancel_outlined,
                           isEnabled ? Colors.green : Colors.red,
                           widget.textColor,
@@ -406,7 +288,7 @@ class ClientExpansionCardState extends State<ClientExpansionCard> with SingleTic
       ),
     );
   }
-  
+
   Widget buildDetailRow(
     BuildContext context,
     String label,
