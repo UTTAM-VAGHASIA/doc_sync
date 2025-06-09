@@ -188,14 +188,6 @@ class ClientExpansionCardState extends State<ClientExpansionCard> with SingleTic
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         _buildActionButton(
-                          label: 'View',
-                          icon: Iconsax.eye,
-                          color: Colors.blue,
-                          onTap: () {
-                            Get.find<ClientListController>().openClientDetails(widget.client);
-                          },
-                        ),
-                        _buildActionButton(
                           label: 'Edit',
                           icon: Iconsax.edit,
                           color: Colors.green,

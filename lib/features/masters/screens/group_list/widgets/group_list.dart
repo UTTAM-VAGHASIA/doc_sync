@@ -222,14 +222,6 @@ class _GroupExpansionCardState extends State<GroupExpansionCard> with SingleTick
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         _buildActionButton(
-                          label: 'View',
-                          icon: Iconsax.eye,
-                          color: Colors.blue,
-                          onTap: () {
-                            Get.find<GroupListController>().viewGroupDetails(widget.group);
-                          },
-                        ),
-                        _buildActionButton(
                           label: 'Edit',
                           icon: Iconsax.edit,
                           color: Colors.green,

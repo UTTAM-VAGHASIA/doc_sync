@@ -95,9 +95,20 @@ class SearchFilterCard extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      showDragHandle: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => _FilterBottomSheet(groupListController: groupListController),
+      showDragHandle: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      useSafeArea: true,
+      isDismissible: true,
+      constraints: null,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: _FilterBottomSheet(groupListController: groupListController),
+      ),
     );
   }
 }
@@ -109,153 +120,134 @@ class _FilterBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.8, // 80% of screen height
-      maxChildSize: 0.9,
-      minChildSize: 0.5,
-      expand: false,
-      builder: (_, scrollController) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Drag Handle
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 5,
-                  margin: const EdgeInsets.only(top: 10.0),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-            
-              // Header with title and close button
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Filter Options',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with title and close button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Filter Options',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                    Row(
-                      children: [
-                        // Reset filters button
-                        if (groupListController.activeFilters.isNotEmpty)
-                          TextButton.icon(
-                            onPressed: () {
-                              groupListController.activeFilters.clear();
-                              groupListController.updateFilter('all');
-                            },
-                            icon: const Icon(Icons.refresh, size: 18),
-                            label: const Text('Reset'),
-                            style: TextButton.styleFrom(
-                              foregroundColor: Colors.grey.shade700,
-                            ),
+                  ),
+                  Row(
+                    children: [
+                      // Reset filters button
+                      if (groupListController.activeFilters.isNotEmpty)
+                        TextButton.icon(
+                          onPressed: () {
+                            groupListController.activeFilters.clear();
+                            groupListController.updateFilter('all');
+                          },
+                          icon: const Icon(Icons.refresh, size: 18),
+                          label: const Text('Reset'),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.grey.shade700,
                           ),
-                        IconButton(
-                          onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.close),
+                        ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.close),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            const Divider(),
+
+            // Filter options content
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Filter by Status
+                  const SizedBox(height: 8),
+                  _buildSectionHeader(context, 'Filter by Status'),
+                  const SizedBox(height: 12),
+                  
+                  // All filter - full width
+                  Obx(
+                    () => _buildFullWidthFilterCard(
+                      'All Groups',
+                      'all',
+                      groupListController,
+                      Iconsax.task_square,
+                      groupListController.totalGroupsCount,
+                      AppColors.primary,
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 12),
+
+                  // Status filter chips
+                  Obx(
+                    () => Row(
+                      children: [
+                        Expanded(
+                          child: _buildStatusFilterCard(
+                            'Enabled',
+                            'enable',
+                            groupListController,
+                            Iconsax.tick_circle,
+                            groupListController.totalEnabledGroups.value,
+                            Colors.green.shade700,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: _buildStatusFilterCard(
+                            'Disabled',
+                            'disable',
+                            groupListController,
+                            Iconsax.close_circle,
+                            groupListController.totalDisabledGroups.value,
+                            Colors.red.shade700,
+                          ),
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Sort options
+                  _buildSectionHeader(context, 'Sort by'),
+                  const SizedBox(height: 12),
+
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _buildSortChip('All', 'all', groupListController),
+                        const SizedBox(width: 8),
+                        _buildSortChip('Group Name', 'group_name', groupListController),
+                        const SizedBox(width: 8),
+                        _buildSortChip('Task Name', 'task_name', groupListController),
+                        const SizedBox(width: 8),
+                        _buildSortChip('Status', 'status', groupListController),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+                ],
               ),
-
-              const Divider(),
-
-              // Filter options content
-              Expanded(
-                child: ListView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  children: [
-                    // Filter by Status
-                    const SizedBox(height: 8),
-                    _buildSectionHeader(context, 'Filter by Status'),
-                    const SizedBox(height: 12),
-                    
-                    // All filter - full width
-                    Obx(
-                      () => _buildFullWidthFilterCard(
-                        'All Groups',
-                        'all',
-                        groupListController,
-                        Iconsax.task_square,
-                        groupListController.totalGroupsCount,
-                        AppColors.primary,
-                      ),
-                    ),
-                    
-                    const SizedBox(height: 12),
-
-                    // Status filter chips
-                    Obx(
-                      () => Row(
-                        children: [
-                          Expanded(
-                            child: _buildStatusFilterCard(
-                              'Enabled',
-                              'enable',
-                              groupListController,
-                              Iconsax.tick_circle,
-                              groupListController.totalEnabledGroups.value,
-                              Colors.green.shade700,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: _buildStatusFilterCard(
-                              'Disabled',
-                              'disable',
-                              groupListController,
-                              Iconsax.close_circle,
-                              groupListController.totalDisabledGroups.value,
-                              Colors.red.shade700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Sort options
-                    _buildSectionHeader(context, 'Sort by'),
-                    const SizedBox(height: 12),
-
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          _buildSortChip('Group Name', 'group_name', groupListController),
-                          const SizedBox(width: 8),
-                          _buildSortChip('Task Name', 'task_name', groupListController),
-                          const SizedBox(width: 8),
-                          _buildSortChip('Status', 'status', groupListController),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
