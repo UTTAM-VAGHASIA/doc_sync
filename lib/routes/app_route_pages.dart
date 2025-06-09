@@ -4,6 +4,7 @@ import 'package:doc_sync/bindings/group_list_binding.dart';
 import 'package:doc_sync/bindings/new_task_bindings.dart';
 import 'package:doc_sync/bindings/created_task_list_binding.dart';
 import 'package:doc_sync/bindings/task_history_binding.dart';
+import 'package:doc_sync/bindings/task_master_binding.dart';
 import 'package:doc_sync/common/widgets/layout/templates/placeholder_screen.dart';
 import 'package:doc_sync/features/authentication/screens/dashboard/dashboard.dart';
 import 'package:doc_sync/features/authentication/screens/forgot_password/forgot_password.dart';
@@ -14,6 +15,7 @@ import 'package:doc_sync/bindings/dashboard_bindings.dart';
 import 'package:doc_sync/features/masters/screens/add_client_screen/add_client.dart';
 import 'package:doc_sync/features/masters/screens/client_list/client_list.dart';
 import 'package:doc_sync/features/masters/screens/group_list/group_list.dart';
+import 'package:doc_sync/features/masters/screens/task_master/task_master.dart';
 import 'package:doc_sync/features/operations/screens/new_task/new_task.dart';
 import 'package:doc_sync/features/operations/screens/created_task_list/created_task_list.dart';
 import 'package:doc_sync/features/operations/screens/admin_verification/admin_verification.dart';
@@ -86,8 +88,8 @@ class AppRoutePages {
     ),
     GetPage(
       name: AppRoutes.taskMaster,
-      page: () => PlaceholderScreen(title: 'Task Master'),
-      middlewares: [RouteMiddleWare()],
+      page: () => TaskMasterScreen(),
+      binding:  TaskMasterBindings(),
     ),
     GetPage(
       name: AppRoutes.subTask,
