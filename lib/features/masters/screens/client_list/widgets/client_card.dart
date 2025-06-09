@@ -83,17 +83,17 @@ class ClientExpansionCardState extends State<ClientExpansionCard> with SingleTic
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: widget.client.status.toLowerCase() == 'active' 
+                      color: widget.client.status.toLowerCase() == 'enable' 
                           ? Colors.green.withOpacity(0.1)
                           : Colors.red.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Center(
                       child: Icon(
-                        widget.client.status.toLowerCase() == 'active'
+                        widget.client.status.toLowerCase() == 'enable'
                             ? Iconsax.tick_circle
                             : Iconsax.close_circle,
-                        color: widget.client.status.toLowerCase() == 'active'
+                        color: widget.client.status.toLowerCase() == 'enable'
                             ? Colors.green
                             : Colors.red,
                         size: 24,
@@ -125,7 +125,7 @@ class ClientExpansionCardState extends State<ClientExpansionCard> with SingleTic
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: widget.client.status.toLowerCase() == 'active'
+                      color: widget.client.status.toLowerCase() == 'enable'
                           ? Colors.green.withOpacity(0.1)
                           : Colors.red.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(4),
@@ -135,7 +135,7 @@ class ClientExpansionCardState extends State<ClientExpansionCard> with SingleTic
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: widget.client.status.toLowerCase() == 'active'
+                        color: widget.client.status.toLowerCase() == 'enable'
                             ? Colors.green
                             : Colors.red,
                       ),

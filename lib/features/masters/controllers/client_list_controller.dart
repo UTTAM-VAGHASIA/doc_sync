@@ -29,7 +29,7 @@ class ClientListController extends GetxController {
   RxSet<String> activeFilters = <String>{}.obs;
   
   // Sorting
-  RxString sortBy = 'firm_name'.obs; // Default sort by firm name
+  RxString sortBy = 'all'.obs; // Default sort to 'all'
   RxBool sortAscending = true.obs;
   
   // Pagination
@@ -46,8 +46,8 @@ class ClientListController extends GetxController {
     : (filteredClients.length / _itemsPerPage).ceil();
   
   // Client status counts
-  RxInt totalActiveClients = 0.obs;
-  RxInt totalInactiveClients = 0.obs;
+  RxInt totalEnableClients = 0.obs;
+  RxInt totalDisableClients = 0.obs;
   int get totalClientsCount => filteredClients.length;
 
   @override
@@ -187,11 +187,11 @@ class ClientListController extends GetxController {
   }
   
   void _updateClientCounts() {
-    // Calculate status counts for active/inactive clients
+    // Calculate status counts for enable/disable clients
     List<Client> clientsToCount = searchQuery.isEmpty ? clients : filteredClients;
     
-    totalActiveClients.value = clientsToCount.where((client) => client.status.toLowerCase() == 'active').length;
-    totalInactiveClients.value = clientsToCount.where((client) => client.status.toLowerCase() == 'inactive').length;
+    totalEnableClients.value = clientsToCount.where((client) => client.status.toLowerCase() == 'enable').length;
+    totalDisableClients.value = clientsToCount.where((client) => client.status.toLowerCase() == 'disable').length;
   }
   
   void _applyFiltersAndSort() {
@@ -212,36 +212,38 @@ class ClientListController extends GetxController {
     // 2. Apply status filters if active
     if (activeFilters.isNotEmpty) {
       filteredClients.value = filteredClients.where((client) {
-        if (activeFilters.contains('active') && client.status.toLowerCase() == 'active') return true;
-        if (activeFilters.contains('inactive') && client.status.toLowerCase() == 'inactive') return true;
+        if (activeFilters.contains('enable') && client.status.toLowerCase() == 'enable') return true;
+        if (activeFilters.contains('disable') && client.status.toLowerCase() == 'disable') return true;
         return false;
       }).toList();
     }
     
     // 3. Apply sorting
-    filteredClients.sort((a, b) {
-      int comparison = 0;
-      switch (sortBy.value) {
-        case 'firm_name':
-          comparison = a.firmName.compareTo(b.firmName);
-          break;
-        case 'file_no':
-          comparison = a.fileNo.compareTo(b.fileNo);
-          break;
-        case 'contact_person':
-          comparison = a.contactPerson.compareTo(b.contactPerson);
-          break;
-        case 'email':
-          comparison = a.email.compareTo(b.email);
-          break;
-        case 'contact_no':
-          comparison = a.contactNo.compareTo(b.contactNo);
-          break;
-        default:
-          comparison = a.firmName.compareTo(b.firmName);
-      }
-      return sortAscending.value ? comparison : -comparison;
-    });
+    if (sortBy.value != 'all') {
+      filteredClients.sort((a, b) {
+        int comparison = 0;
+        switch (sortBy.value) {
+          case 'firm_name':
+            comparison = a.firmName.compareTo(b.firmName);
+            break;
+          case 'file_no':
+            comparison = a.fileNo.compareTo(b.fileNo);
+            break;
+          case 'contact_person':
+            comparison = a.contactPerson.compareTo(b.contactPerson);
+            break;
+          case 'email':
+            comparison = a.email.compareTo(b.email);
+            break;
+          case 'contact_no':
+            comparison = a.contactNo.compareTo(b.contactNo);
+            break;
+          default:
+            comparison = a.firmName.compareTo(b.firmName);
+        }
+        return sortAscending.value ? comparison : -comparison;
+      });
+    }
     
     // Update counts based on filtered results
     _updateClientCounts();
@@ -312,4 +314,5 @@ class ClientListController extends GetxController {
       );
     }
   }
+  
 } 

@@ -46,7 +46,7 @@ class ClientListMobileScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 5),
 
               // Search and filter card
               Padding(

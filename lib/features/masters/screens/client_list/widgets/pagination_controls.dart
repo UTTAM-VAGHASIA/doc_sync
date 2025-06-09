@@ -31,100 +31,36 @@ class PaginationControls extends StatelessWidget {
           children: [
             // Items per page and sort controls row
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Items per page selector
-                Row(
-                  children: [
-                    Text('Show', style: TextStyle(color: textColor)),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: DropdownButton<int>(
-                          value: controller.itemsPerPage,
-                          underline: const SizedBox(),
-                          items:
-                              [5, 10, 15, 20].map((value) {
-                                return DropdownMenuItem<int>(
-                                  value: value,
-                                  child: Text('$value'),
-                                );
-                              }).toList(),
-                          onChanged: (value) {
-                            if (value != null) {
-                              controller.itemsPerPage = value;
-                            }
-                          },
-                        ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text('entries', style: TextStyle(color: textColor)),
-                  ],
+                Text('Show', style: TextStyle(color: textColor)),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: DropdownButton<int>(
+                    value: controller.itemsPerPage,
+                    underline: const SizedBox(),
+                    items:
+                        [5, 10, 15, 20].map((value) {
+                          return DropdownMenuItem<int>(
+                            value: value,
+                            child: Text('$value'),
+                          );
+                        }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        controller.itemsPerPage = value;
+                        controller.currentPage.value = 1;
+                      }
+                    },
+                  ),
                 ),
-                
-                // Sort by selector
-                Row(
-                  children: [
-                    Text('Sort by:', style: TextStyle(color: textColor)),
-                    const SizedBox(width: 8),
-                    Obx(() => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: DropdownButton<String>(
-                        value: controller.sortBy.value,
-                        underline: const SizedBox(),
-                        items: [
-                          DropdownMenuItem<String>(
-                            value: 'firm_name',
-                            child: const Text('Firm Name'),
-                          ),
-                          DropdownMenuItem<String>(
-                            value: 'file_no',
-                            child: const Text('File No'),
-                          ),
-                          DropdownMenuItem<String>(
-                            value: 'contact_person',
-                            child: const Text('Contact Person'),
-                          ),
-                          DropdownMenuItem<String>(
-                            value: 'email',
-                            child: const Text('Email'),
-                          ),
-                        ],
-                        onChanged: (value) {
-                          if (value != null) {
-                            controller.updateSort(value);
-                          }
-                        },
-                      ),
-                    )),
-                    const SizedBox(width: 8),
-                    Obx(() => InkWell(
-                      onTap: () {
-                        controller.sortAscending.value = !controller.sortAscending.value;
-                        controller.updateSort(controller.sortBy.value);
-                      },
-                      borderRadius: BorderRadius.circular(4),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Icon(
-                          controller.sortAscending.value
-                              ? Icons.arrow_upward
-                              : Icons.arrow_downward,
-                          size: 18,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    )),
-                  ],
-                ),
+                const SizedBox(width: 8),
+                Text('entries', style: TextStyle(color: textColor)),
               ],
             ),
             const SizedBox(height: 16),
