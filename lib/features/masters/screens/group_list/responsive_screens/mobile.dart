@@ -1,4 +1,5 @@
 import 'package:doc_sync/features/masters/controllers/group_list_controller.dart';
+import 'package:doc_sync/features/masters/screens/group_list/widgets/add_group_dialog.dart';
 import 'package:doc_sync/features/masters/screens/group_list/widgets/group_list.dart';
 import 'package:doc_sync/features/masters/screens/group_list/widgets/group_route_header.dart';
 import 'package:doc_sync/features/masters/screens/group_list/widgets/pagination_controls.dart';
@@ -45,7 +46,7 @@ class GroupListMobileScreen extends StatelessWidget {
                   subtitle: 'Home / Masters / Group List',
                   onAddPressed: () {
                     // Open add group dialog
-                    _showAddGroupDialog(context, groupListController);
+                    _showAddGroupDialog(context);
                   },
                 ),
               ),
@@ -102,77 +103,10 @@ class GroupListMobileScreen extends StatelessWidget {
   }
 
   // Show dialog to add a new group
-  void _showAddGroupDialog(BuildContext context, GroupListController controller) {
-    final TextEditingController groupNameController = TextEditingController();
-    
+  void _showAddGroupDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Container(
-          width: 400,
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Dialog header
-              Text(
-                'Add Group',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 24),
-              
-              // Form fields
-              TextField(
-                controller: groupNameController,
-                decoration: InputDecoration(
-                  labelText: 'Group Name',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              
-              // Action buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(
-                      'Cancel',
-                      style: TextStyle(color: AppColors.textSecondary),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    onPressed: () {
-                      if (groupNameController.text.isNotEmpty) {
-                        // controller.addGroup(groupNameController.text);
-                        Navigator.pop(context);
-                      }
-                    },
-                    child: const Text('Add'),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
+      builder: (context) => AddGroupDialog(),
     );
   }
 } 

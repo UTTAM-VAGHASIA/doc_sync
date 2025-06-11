@@ -1,4 +1,5 @@
 import 'package:doc_sync/features/masters/models/group_model.dart';
+import 'package:doc_sync/features/masters/screens/group_list/widgets/group_add_successful_dialog.dart';
 import 'package:doc_sync/utils/helpers/network_manager.dart';
 import 'package:doc_sync/utils/helpers/retry_queue_manager.dart';
 import 'package:doc_sync/utils/http/http_client.dart';
@@ -22,6 +23,7 @@ class GroupListController extends GetxController {
 
   // Loading state
   RxBool isLoading = false.obs;
+  RxBool isSubmitting = false.obs;
 
   // Search and filter
   RxString searchQuery = ''.obs;
@@ -107,6 +109,66 @@ class GroupListController extends GetxController {
       print(e.toString());
     } finally {
       isLoading.value = false;
+    }
+  }
+  
+  // Method to add a new group
+  Future<void> addGroup(String groupName) async {
+    if (groupName.trim().isEmpty) {
+      AppLoaders.errorSnackBar(
+        title: 'Error',
+        message: 'Group name cannot be empty',
+      );
+      return;
+    }
+    
+    isSubmitting.value = true;
+    try {
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) {
+        RetryQueueManager.instance.addJob(() => addGroup(groupName));
+        AppLoaders.customToast(message: "Offline. Will retry when back online.");
+        isSubmitting.value = false;
+        return;
+      }
+
+      AppFullScreenLoader.popUpCircular();
+      
+      final data = await AppHttpHelper().sendMultipartRequest(
+        "add_group",
+        method: "POST",
+        fields: {
+          'data': '{"group_name":"$groupName"}',
+        },
+      );
+      
+      AppFullScreenLoader.stopLoading();
+      
+      if (data['success']) {
+        // Refresh the group list
+        await fetchGroups();
+        // Close the dialog if it's open
+        if (Get.isDialogOpen ?? false) Get.back();
+        // Show success dialog
+        Get.dialog(
+          const GroupAddSuccessfulDialog(),
+          barrierDismissible: false,
+        );
+      } else {
+        AppLoaders.errorSnackBar(
+          title: "Add Group Error",
+          message: data['message'] ?? "Failed to add group",
+        );
+      }
+    } catch (e) {
+      AppFullScreenLoader.stopLoading();
+      AppLoaders.errorSnackBar(
+        title: "Add Group Error",
+        message: "Error adding group: ${e.toString()}",
+      );
+      print(e.toString());
+    } finally {
+      isSubmitting.value = false;
     }
   }
   

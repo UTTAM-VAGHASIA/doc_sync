@@ -382,7 +382,7 @@ class AddClientController extends GetxController {
           message: data['message'] ?? 'Client added successfully',
         );
         resetForm();
-        _showPostSubmitDialog();
+        showPostSubmitDialog();
       } else {
         AppLoaders.errorSnackBar(
           title: 'Error',
@@ -397,7 +397,7 @@ class AddClientController extends GetxController {
   }
 
   /// Shows a dialog after successful submission
-  void _showPostSubmitDialog() {
+  void showPostSubmitDialog() {
     Get.dialog(
       Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
