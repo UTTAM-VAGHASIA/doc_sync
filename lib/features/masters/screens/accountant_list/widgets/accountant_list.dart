@@ -1,6 +1,5 @@
 import 'package:doc_sync/features/masters/controllers/accountant_list_controller.dart';
 import 'package:doc_sync/features/masters/screens/accountant_list/widgets/accountant_card.dart';
-import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:doc_sync/common/widgets/shimmers/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

@@ -1,6 +1,4 @@
 import 'package:doc_sync/features/masters/controllers/group_list_controller.dart';
-import 'package:doc_sync/features/masters/models/group_model.dart';
-import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:doc_sync/common/widgets/shimmers/shimmer.dart';
 import 'package:doc_sync/features/masters/screens/group_list/widgets/group_card.dart';
 import 'package:flutter/material.dart';

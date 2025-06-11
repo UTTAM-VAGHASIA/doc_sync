@@ -7,7 +7,6 @@ import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:doc_sync/common/widgets/shimmers/shimmer.dart';
 
 class AddClientDesktopScreen extends StatelessWidget {
   const AddClientDesktopScreen({super.key});
@@ -65,7 +64,7 @@ class AddClientDesktopScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 10,
                               offset: const Offset(0, 5),
                             ),

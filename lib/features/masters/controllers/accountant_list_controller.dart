@@ -4,7 +4,6 @@ import 'package:doc_sync/features/masters/models/accountant_model.dart';
 import 'package:doc_sync/utils/helpers/network_manager.dart';
 import 'package:doc_sync/utils/helpers/retry_queue_manager.dart';
 import 'package:doc_sync/utils/http/http_client.dart';
-import 'package:doc_sync/utils/popups/full_screen_loader.dart';
 import 'package:doc_sync/utils/popups/loaders.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

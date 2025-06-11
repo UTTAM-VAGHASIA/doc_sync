@@ -1,8 +1,6 @@
-import 'package:doc_sync/features/masters/controllers/group_list_controller.dart';
 import 'package:doc_sync/features/masters/models/group_model.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class GroupExpansionCard extends StatefulWidget {
   final Group group;
@@ -85,8 +83,8 @@ class GroupExpansionCardState extends State<GroupExpansionCard> with SingleTicke
                     height: 40,
                     decoration: BoxDecoration(
                       color: isEnabled 
-                          ? Colors.green.withOpacity(0.1)
-                          : Colors.red.withOpacity(0.1),
+                          ? Colors.green.withValues(alpha: 0.1)
+                          : Colors.red.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Center(
@@ -123,8 +121,8 @@ class GroupExpansionCardState extends State<GroupExpansionCard> with SingleTicke
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: isEnabled 
-                          ? Colors.green.withOpacity(0.1)
-                          : Colors.red.withOpacity(0.1),
+                          ? Colors.green.withValues(alpha: 0.1)
+                          : Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -264,9 +262,9 @@ class GroupExpansionCardState extends State<GroupExpansionCard> with SingleTicke
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: color.withOpacity(0.3)),
+            border: Border.all(color: color.withValues(alpha: 0.3)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
