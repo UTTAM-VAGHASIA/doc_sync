@@ -1,37 +1,37 @@
-import 'package:doc_sync/features/masters/controllers/group_list_controller.dart';
-import 'package:doc_sync/features/masters/screens/group_list/widgets/group_list.dart';
-import 'package:doc_sync/features/masters/screens/group_list/widgets/group_route_header.dart';
-import 'package:doc_sync/features/masters/screens/group_list/widgets/pagination_controls.dart';
-import 'package:doc_sync/features/masters/screens/group_list/widgets/search_filter_card.dart';
+import 'package:doc_sync/features/masters/controllers/accountant_list_controller.dart';
+import 'package:doc_sync/features/masters/screens/accountant_list/widgets/accountant_list.dart';
+import 'package:doc_sync/features/masters/screens/accountant_list/widgets/accountant_route_header.dart';
+import 'package:doc_sync/features/masters/screens/accountant_list/widgets/pagination_controls.dart';
+import 'package:doc_sync/features/masters/screens/accountant_list/widgets/search_filter_card.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
-class GroupListMobileScreen extends StatelessWidget {
-  const GroupListMobileScreen({super.key});
+class AccountantListMobileScreen extends StatelessWidget {
+  const AccountantListMobileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     // Initialize controller
-    final groupListController = Get.put(GroupListController());
+    final accountantListController = Get.put(AccountantListController());
     final Color cardBackgroundColor = AppColors.white;
     final Color textColor = AppColors.textPrimary;
     final Color subtleTextColor = AppColors.textSecondary;
 
     // Text controller for the search field
     final TextEditingController searchController = TextEditingController(
-      text: groupListController.searchQuery.value,
+      text: accountantListController.searchQuery.value,
     );
 
     return SafeArea(
       child: LiquidPullToRefresh(
-        key: groupListController.refreshIndicatorKey,
+        key: accountantListController.refreshIndicatorKey,
         animSpeedFactor: 2.3,
         color: AppColors.primary,
         backgroundColor: AppColors.light,
         showChildOpacityTransition: false,
-        onRefresh: () => groupListController.fetchGroups(),
+        onRefresh: () => accountantListController.fetchAccountants(),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
@@ -40,12 +40,12 @@ class GroupListMobileScreen extends StatelessWidget {
               // Header
               Padding(
                 padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
-                child: GroupRouteHeader(
-                  title: 'Group List',
-                  subtitle: 'Home / Masters / Group List',
+                child: AccountantRouteHeader(
+                  title: 'Accountant List',
+                  subtitle: 'Home / Masters / Accountant List',
                   onAddPressed: () {
-                    // Open add group dialog
-                    _showAddGroupDialog(context, groupListController);
+                    // Open add accountant dialog
+                    _showAddAccountantDialog(context, accountantListController);
                   },
                 ),
               ),
@@ -56,29 +56,29 @@ class GroupListMobileScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: SearchFilterCard(
-                  groupListController: groupListController,
+                  accountantListController: accountantListController,
                   searchController: searchController,
                 ),
               ),
 
               const SizedBox(height: 16),
 
-              // Group list
-              GetX<GroupListController>(
+              // Accountant list
+              GetX<AccountantListController>(
                 builder: (controller) {
                   if (controller.isLoading.value) {
-                    return const GroupListShimmer();
+                    return const AccountantListShimmer();
                   }
 
-                  if (controller.filteredGroups.isEmpty) {
-                    return const EmptyGroupList();
+                  if (controller.filteredAccountants.isEmpty) {
+                    return const EmptyAccountantList();
                   }
 
                   return Column(
                     children: [
-                      // Group list
-                      GroupList(
-                        groupListController: controller,
+                      // Accountant list
+                      AccountantList(
+                        accountantListController: controller,
                         cardBackgroundColor: cardBackgroundColor,
                         textColor: textColor,
                         subtleTextColor: subtleTextColor,
@@ -101,9 +101,11 @@ class GroupListMobileScreen extends StatelessWidget {
     );
   }
 
-  // Show dialog to add a new group
-  void _showAddGroupDialog(BuildContext context, GroupListController controller) {
-    final TextEditingController groupNameController = TextEditingController();
+  // Show dialog to add a new accountant
+  void _showAddAccountantDialog(BuildContext context, AccountantListController controller) {
+    final TextEditingController nameController = TextEditingController();
+    final TextEditingController contact1Controller = TextEditingController();
+    final TextEditingController contact2Controller = TextEditingController();
     
     showDialog(
       context: context,
@@ -118,7 +120,7 @@ class GroupListMobileScreen extends StatelessWidget {
             children: [
               // Dialog header
               Text(
-                'Add Group',
+                'Add Accountant',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: AppColors.primary,
                   fontWeight: FontWeight.bold,
@@ -128,13 +130,35 @@ class GroupListMobileScreen extends StatelessWidget {
               
               // Form fields
               TextField(
-                controller: groupNameController,
+                controller: nameController,
                 decoration: InputDecoration(
-                  labelText: 'Group Name',
+                  labelText: 'Accountant Name',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: contact1Controller,
+                decoration: InputDecoration(
+                  labelText: 'Primary Contact',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: contact2Controller,
+                decoration: InputDecoration(
+                  labelText: 'Secondary Contact (Optional)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 24),
               
@@ -160,8 +184,13 @@ class GroupListMobileScreen extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      if (groupNameController.text.isNotEmpty) {
-                        // controller.addGroup(groupNameController.text);
+                      if (nameController.text.isNotEmpty && 
+                          contact1Controller.text.isNotEmpty) {
+                        // controller.addAccountant(
+                        //   name: nameController.text,
+                        //   contact1: contact1Controller.text,
+                        //   contact2: contact2Controller.text,
+                        // );
                         Navigator.pop(context);
                       }
                     },

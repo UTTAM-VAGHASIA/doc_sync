@@ -1,29 +1,29 @@
 import 'dart:convert';
 
-import 'package:doc_sync/features/masters/models/client_model.dart';
+import 'package:doc_sync/features/masters/models/accountant_model.dart';
 import 'package:doc_sync/utils/helpers/network_manager.dart';
 import 'package:doc_sync/utils/helpers/retry_queue_manager.dart';
 import 'package:doc_sync/utils/http/http_client.dart';
+import 'package:doc_sync/utils/popups/full_screen_loader.dart';
 import 'package:doc_sync/utils/popups/loaders.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
-class ClientListController extends GetxController {
+class AccountantListController extends GetxController {
   
-  static ClientListController get instance => Get.find<ClientListController>();
+  static AccountantListController get instance => Get.find<AccountantListController>();
 
   // Global key for LiquidPullToRefresh
   final GlobalKey<LiquidPullToRefreshState> refreshIndicatorKey = GlobalKey<LiquidPullToRefreshState>();
 
-  // Lists for clients
-  RxList<Client> clients = <Client>[].obs;
-  RxList<Client> filteredClients = <Client>[].obs;
-  RxList<Client> paginatedClients = <Client>[].obs;
+  // Lists for accountants
+  RxList<Accountant> accountants = <Accountant>[].obs;
+  RxList<Accountant> filteredAccountants = <Accountant>[].obs;
+  RxList<Accountant> paginatedAccountants = <Accountant>[].obs;
 
   // Loading state
   RxBool isLoading = false.obs;
-  RxBool isSubmitting = false.obs;
 
   // Search and filter
   RxString searchQuery = ''.obs;
@@ -32,6 +32,9 @@ class ClientListController extends GetxController {
   // Sorting
   RxString sortBy = 'all'.obs; // Default sort to 'all'
   RxBool sortAscending = true.obs;
+  
+  // Original order from API
+  RxList<Accountant> originalAccountants = <Accountant>[].obs;
   
   // Pagination
   RxInt currentPage = 0.obs;
@@ -42,19 +45,19 @@ class ClientListController extends GetxController {
     _applyFiltersAndSort();
   }
   
-  int get totalPages => filteredClients.isEmpty 
+  int get totalPages => filteredAccountants.isEmpty 
     ? 1 
-    : (filteredClients.length / _itemsPerPage).ceil();
+    : (filteredAccountants.length / _itemsPerPage).ceil();
   
-  // Client status counts
-  RxInt totalEnableClients = 0.obs;
-  RxInt totalDisableClients = 0.obs;
-  int get totalClientsCount => filteredClients.length;
+  // Accountant status counts
+  RxInt totalEnabledAccountants = 0.obs;
+  RxInt totalDisabledAccountants = 0.obs;
+  int get totalAccountantsCount => filteredAccountants.length;
 
   @override
   void onInit() {
     super.onInit();
-    fetchClients();
+    fetchAccountants();
     
     // Set up listeners for search, filter and pagination changes
     ever(searchQuery, (_) => _applyFiltersAndSort());
@@ -64,41 +67,44 @@ class ClientListController extends GetxController {
     ever(currentPage, (_) => _paginate());
   }
 
-  Future<void> fetchClients() async {
+  Future<void> fetchAccountants() async {
     try {
       isLoading.value = true;
-      clients.clear();
-      filteredClients.clear();
-      paginatedClients.clear();
+      accountants.clear();
+      filteredAccountants.clear();
+      paginatedAccountants.clear();
       
       final isConnected = await NetworkManager.instance.isConnected();
       if (!isConnected) {
-        RetryQueueManager.instance.addJob(fetchClients);
+        RetryQueueManager.instance.addJob(fetchAccountants);
         AppLoaders.customToast(message: "Offline. Will retry when back online.");
         isLoading.value = false;
         return;
       }
 
-      final data = await AppHttpHelper().sendMultipartRequest("get_client_list", method: "GET");
+      final data = await AppHttpHelper().sendMultipartRequest("accountant_master", method: "GET");
 
       if (data['success']) {
-        final clientsListData = data['data'];
-        final clientsList = clientsListData.map<Client>((json) => Client.fromJson(json as Map<String, dynamic>)).toList();
-        clients.value = clientsList;
-        _updateClientCounts();
+        final accountantsListData = data['data'];
+        print("Accountant list API response: $accountantsListData");
+        final accountantsList = accountantsListData.map<Accountant>((json) => Accountant.fromJson(json as Map<String, dynamic>)).toList();
+        accountants.value = accountantsList;
+        // Store the original order from API
+        originalAccountants.value = List.from(accountantsList);
+        _updateAccountantCounts();
         _applyFiltersAndSort();
-        print("Fetched ${clients.length} clients");
+        print("Fetched ${accountants.length} accountants");
       } else {
         AppLoaders.errorSnackBar(
-          title: "Client List Error",
-          message: data['message'] ?? "Failed to load client data",
+          title: "Accountant List Error",
+          message: data['message'] ?? "Failed to load accountant data",
         );
         print(data['message']);
       }
     } catch (e) {
       AppLoaders.errorSnackBar(
-        title: "Client List Error",
-        message: "Error loading clients: ${e.toString()}",
+        title: "Accountant List Error",
+        message: "Error loading accountants: ${e.toString()}",
       );
       print(e.toString());
     } finally {
@@ -187,67 +193,62 @@ class ClientListController extends GetxController {
     }
   }
   
-  void _updateClientCounts() {
-    // Calculate status counts for enable/disable clients
-    List<Client> clientsToCount = searchQuery.isEmpty ? clients : filteredClients;
+  void _updateAccountantCounts() {
+    // Calculate status counts for enabled/disabled accountants
+    List<Accountant> accountantsToCount = searchQuery.isEmpty ? accountants : filteredAccountants;
     
-    totalEnableClients.value = clientsToCount.where((client) => client.status.toLowerCase() == 'enable').length;
-    totalDisableClients.value = clientsToCount.where((client) => client.status.toLowerCase() == 'disable').length;
+    totalEnabledAccountants.value = accountantsToCount.where((accountant) => accountant.status.toLowerCase() == 'enable').length;
+    totalDisabledAccountants.value = accountantsToCount.where((accountant) => accountant.status.toLowerCase() == 'disable').length;
   }
   
   void _applyFiltersAndSort() {
     // 1. Apply search filter
     if (searchQuery.isEmpty) {
-      filteredClients.value = List.from(clients);
+      filteredAccountants.value = List.from(accountants);
     } else {
-      filteredClients.value = clients.where((client) {
+      filteredAccountants.value = accountants.where((accountant) {
         final query = searchQuery.value.toLowerCase();
-        return client.firmName.toLowerCase().contains(query) ||
-               client.fileNo.toLowerCase().contains(query) ||
-               client.contactPerson.toLowerCase().contains(query) ||
-               client.email.toLowerCase().contains(query) ||
-               client.contactNo.contains(query);
+        return accountant.accountantName.toLowerCase().contains(query) ||
+               accountant.contact1.toLowerCase().contains(query) ||
+               accountant.contact2.toLowerCase().contains(query);
       }).toList();
     }
     
     // 2. Apply status filters if active
     if (activeFilters.isNotEmpty) {
-      filteredClients.value = filteredClients.where((client) {
-        if (activeFilters.contains('enable') && client.status.toLowerCase() == 'enable') return true;
-        if (activeFilters.contains('disable') && client.status.toLowerCase() == 'disable') return true;
+      filteredAccountants.value = filteredAccountants.where((accountant) {
+        if (activeFilters.contains('enable') && accountant.status.toLowerCase() == 'enable') return true;
+        if (activeFilters.contains('disable') && accountant.status.toLowerCase() == 'disable') return true;
         return false;
       }).toList();
     }
     
     // 3. Apply sorting
     if (sortBy.value != 'all') {
-      filteredClients.sort((a, b) {
+      filteredAccountants.sort((a, b) {
         int comparison = 0;
         switch (sortBy.value) {
-          case 'firm_name':
-            comparison = a.firmName.compareTo(b.firmName);
+          case 'accountant_name':
+            comparison = a.accountantName.compareTo(b.accountantName);
             break;
-          case 'file_no':
-            comparison = a.fileNo.compareTo(b.fileNo);
+          case 'contact1':
+            comparison = a.contact1.compareTo(b.contact1);
             break;
-          case 'contact_person':
-            comparison = a.contactPerson.compareTo(b.contactPerson);
+          case 'contact2':
+            comparison = a.contact2.compareTo(b.contact2);
             break;
-          case 'email':
-            comparison = a.email.compareTo(b.email);
-            break;
-          case 'contact_no':
-            comparison = a.contactNo.compareTo(b.contactNo);
+          case 'status':
+            comparison = a.status.compareTo(b.status);
             break;
           default:
-            comparison = a.firmName.compareTo(b.firmName);
+            comparison = a.accountantName.compareTo(b.accountantName);
         }
         return sortAscending.value ? comparison : -comparison;
       });
     }
     
     // Update counts based on filtered results
-    _updateClientCounts();
+    _updateAccountantCounts();
     
     // Apply pagination
     _paginate();
@@ -257,130 +258,62 @@ class ClientListController extends GetxController {
     final startIndex = currentPage.value * itemsPerPage;
     final endIndex = (currentPage.value + 1) * itemsPerPage;
     
-    if (startIndex >= filteredClients.length) {
-      paginatedClients.value = [];
+    if (startIndex >= filteredAccountants.length) {
+      paginatedAccountants.value = [];
     } else {
-      paginatedClients.value = filteredClients.sublist(
+      paginatedAccountants.value = filteredAccountants.sublist(
         startIndex,
-        endIndex > filteredClients.length ? filteredClients.length : endIndex
+        endIndex > filteredAccountants.length ? filteredAccountants.length : endIndex
       );
     }
   }
   
-  // Method to open details of a specific client
-  void openClientDetails(Client client) {
-    // This would typically navigate to a client details screen
-    Get.toNamed('/client-details', arguments: client);
+  // Method to view details of a specific accountant
+  void viewAccountantDetails(Accountant accountant) {
+    // This would typically navigate to a accountant details screen
+    Get.toNamed('/accountant-details', arguments: accountant);
   }
   
-  // Method to edit a client
-  void editClient(Client client) {
-    // Navigate to edit client screen with client data
-    Get.toNamed('/edit-client', arguments: client);
+  // Method to edit an accountant
+  void editAccountant(Accountant accountant) {
+    // Navigate to edit accountant screen with accountant data
+    Get.toNamed('/edit-accountant', arguments: accountant);
   }
   
-  // Method to delete a client
-  Future<void> deleteClient(String clientId) async {
+  // Method to delete an accountant
+  Future<void> deleteAccountant(String accountantId) async {
     try {
       final isConnected = await NetworkManager.instance.isConnected();
       if (!isConnected) {
-        RetryQueueManager.instance.addJob(() => deleteClient(clientId));
+        RetryQueueManager.instance.addJob(() => deleteAccountant(accountantId));
         AppLoaders.customToast(message: "Offline. Will retry when back online.");
         return;
       }
 
       final data = await AppHttpHelper().sendMultipartRequest(
-        "delete_client", 
+        "delete_accountant", 
         method: "POST", 
-        fields: {'data': jsonEncode({"client_id": clientId})}
+        fields: {'data': jsonEncode({"accountant_id": accountantId})}
       );
 
       if (data['success']) {
         AppLoaders.successSnackBar(
           title: "Success", 
-          message: data['message'] ?? "Client deleted successfully"
+          message: data['message'] ?? "Accountant deleted successfully"
         );
-        // Refresh client list
-        fetchClients();
+        // Refresh accountant list
+        fetchAccountants();
       } else {
         AppLoaders.errorSnackBar(
           title: "Error", 
-          message: data['message'] ?? "Failed to delete client"
+          message: data['message'] ?? "Failed to delete accountant"
         );
       }
     } catch (e) {
       AppLoaders.errorSnackBar(
         title: "Error",
-        message: "Error deleting client: ${e.toString()}",
+        message: "Error deleting accountant: ${e.toString()}",
       );
-    }
-  }
-  
-  // Method to add a new client
-  Future<bool> addClient({
-    required String firmName,
-    required String fileNo,
-    required String contactPerson,
-    required String email,
-    required String contactNo,
-    String? gstn,
-    String? tan,
-    String? pan,
-    String? accountantId,
-    String status = 'enable',
-  }) async {
-    try {
-      isSubmitting.value = true;
-      
-      final isConnected = await NetworkManager.instance.isConnected();
-      if (!isConnected) {
-        AppLoaders.customToast(message: "Offline. Cannot add client while offline.");
-        return false;
-      }
-
-      // Prepare data for API
-      final clientData = {
-        "firm_name": firmName,
-        "file_no": fileNo,
-        "contact_person": contactPerson,
-        "email_id": email,
-        "contact_no": contactNo,
-        "gstn": gstn ?? "",
-        "tan": tan ?? "",
-        "pan": pan ?? "",
-        "accountant_id": accountantId ?? "",
-        "status": status,
-      };
-
-      final data = await AppHttpHelper().sendMultipartRequest(
-        "add_client", 
-        method: "POST", 
-        fields: {'data': jsonEncode(clientData)}
-      );
-
-      if (data['success']) {
-        AppLoaders.successSnackBar(
-          title: "Success", 
-          message: data['message'] ?? "Client added successfully"
-        );
-        // Refresh client list
-        fetchClients();
-        return true;
-      } else {
-        AppLoaders.errorSnackBar(
-          title: "Error", 
-          message: data['message'] ?? "Failed to add client"
-        );
-        return false;
-      }
-    } catch (e) {
-      AppLoaders.errorSnackBar(
-        title: "Error",
-        message: "Error adding client: ${e.toString()}",
-      );
-      return false;
-    } finally {
-      isSubmitting.value = false;
     }
   }
 } 

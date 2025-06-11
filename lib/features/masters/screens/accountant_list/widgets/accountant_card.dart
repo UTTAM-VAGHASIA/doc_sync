@@ -1,31 +1,30 @@
-// Sub Task Master Card Widget
-// TODO: Implement Sub Task Master Card 
+// Accountant Card Widget
 
-import 'package:doc_sync/features/masters/controllers/sub_task_master_list_controller.dart';
-import 'package:doc_sync/features/masters/models/sub_task_master_model.dart';
+import 'package:doc_sync/features/masters/controllers/accountant_list_controller.dart';
+import 'package:doc_sync/features/masters/models/accountant_model.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class SubTaskMasterExpansionCard extends StatefulWidget {
-  final SubTaskMaster subTaskMaster;
+class AccountantExpansionCard extends StatefulWidget {
+  final Accountant accountant;
   final Color cardBackgroundColor;
   final Color textColor;
   final Color subtleTextColor;
 
-  const SubTaskMasterExpansionCard({
+  const AccountantExpansionCard({
     super.key,
-    required this.subTaskMaster,
+    required this.accountant,
     required this.cardBackgroundColor,
     required this.textColor,
     required this.subtleTextColor,
   });
 
   @override
-  State<SubTaskMasterExpansionCard> createState() => SubTaskMasterExpansionCardState();
+  State<AccountantExpansionCard> createState() => AccountantExpansionCardState();
 }
 
-class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> with SingleTickerProviderStateMixin {
+class AccountantExpansionCardState extends State<AccountantExpansionCard> with SingleTickerProviderStateMixin {
   bool isExpanded = false;
   late AnimationController _controller;
   late Animation<double> _heightFactor;
@@ -61,7 +60,7 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
   
   @override
   Widget build(BuildContext context) {
-    final bool isEnabled = widget.subTaskMaster.status.toLowerCase() == 'enable';
+    final bool isEnabled = widget.accountant.status.toLowerCase() == 'enable';
     
     return Card(
       elevation: 2,
@@ -95,7 +94,7 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
                     ),
                     child: Center(
                       child: Icon(
-                        Icons.layers_outlined,
+                        Icons.person_outlined,
                         color: isEnabled ? Colors.green : Colors.red,
                         size: 20,
                       ),
@@ -107,7 +106,7 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.subTaskMaster.subTaskName,
+                          widget.accountant.accountantName,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -118,7 +117,7 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          "Task: ${widget.subTaskMaster.taskName}",
+                          "Contact: ${widget.accountant.contact1}",
                           style: TextStyle(fontSize: 12, color: widget.subtleTextColor),
                           softWrap: true,
                           maxLines: 2,
@@ -135,7 +134,7 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      widget.subTaskMaster.status,
+                      widget.accountant.status,
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -194,7 +193,7 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
                           icon: Icons.edit_outlined,
                           color: Colors.green,
                           onTap: () {
-                            Get.find<SubTaskMasterListController>().editSubTaskMaster(widget.subTaskMaster);
+                            Get.find<AccountantListController>().editAccountant(widget.accountant);
                           },
                         ),
                         const SizedBox(width: 16),
@@ -206,9 +205,9 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
                             // Show delete confirmation dialog
                             Get.dialog(
                               AlertDialog(
-                                title: const Text('Delete Sub Task'),
+                                title: const Text('Delete Accountant'),
                                 content: Text(
-                                  'Are you sure you want to delete ${widget.subTaskMaster.subTaskName}?',
+                                  'Are you sure you want to delete ${widget.accountant.accountantName}?',
                                 ),
                                 actions: [
                                   TextButton(
@@ -218,7 +217,7 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
                                   TextButton(
                                     onPressed: () {
                                       Get.back();
-                                      Get.find<SubTaskMasterListController>().deleteSubTaskMaster(widget.subTaskMaster.id);
+                                      Get.find<AccountantListController>().deleteAccountant(widget.accountant.id);
                                     },
                                     child: const Text(
                                       'Delete',
@@ -237,7 +236,7 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
                   // Divider between actions and details
                   Divider(height: 1, thickness: 1, color: Colors.grey.shade200),
                   
-                  // Sub Task master details
+                  // Accountant details
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24.0,
@@ -248,47 +247,39 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
                         buildDetailRow(
                           context,
                           'ID',
-                          widget.subTaskMaster.id,
+                          widget.accountant.id,
                           Icons.tag,
                           AppColors.primary,
                           widget.textColor,
                         ),
                         buildDetailRow(
                           context,
-                          'Task ID',
-                          widget.subTaskMaster.taskId,
-                          Icons.link,
-                          Colors.purple,
-                          widget.textColor,
-                        ),
-                        buildDetailRow(
-                          context,
-                          'Task Name',
-                          widget.subTaskMaster.taskName,
-                          Icons.assignment_outlined,
+                          'Name',
+                          widget.accountant.accountantName,
+                          Icons.person_outline,
                           Colors.blue,
                           widget.textColor,
                         ),
                         buildDetailRow(
                           context,
-                          'Sub Task Name',
-                          widget.subTaskMaster.subTaskName,
-                          Icons.layers_outlined,
+                          'Primary Contact',
+                          widget.accountant.contact1,
+                          Icons.phone,
                           Colors.teal,
                           widget.textColor,
                         ),
                         buildDetailRow(
                           context,
-                          'Amount',
-                          '₹${widget.subTaskMaster.amount}',
-                          Icons.attach_money,
-                          Colors.green.shade800,
+                          'Secondary Contact',
+                          widget.accountant.contact2,
+                          Icons.phone_forwarded,
+                          Colors.purple,
                           widget.textColor,
                         ),
                         buildDetailRow(
                           context,
                           'Date & Time',
-                          formatDateTime(widget.subTaskMaster.dateTime),
+                          formatDateTime(widget.accountant.dateTime),
                           Icons.access_time,
                           Colors.orange,
                           widget.textColor,
@@ -296,7 +287,7 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
                         buildDetailRow(
                           context,
                           'Status',
-                          widget.subTaskMaster.status,
+                          widget.accountant.status,
                           isEnabled ? Icons.check_circle_outline : Icons.cancel_outlined,
                           isEnabled ? Colors.green : Colors.red,
                           widget.textColor,
@@ -352,7 +343,7 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
     );
   }
   
-                  Widget buildDetailRow(
+  Widget buildDetailRow(
     BuildContext context,
     String label,
     String value,

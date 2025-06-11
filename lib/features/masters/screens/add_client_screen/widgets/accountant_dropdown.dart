@@ -56,7 +56,7 @@ class AccountantDropdown extends StatelessWidget {
         onChanged: (Accountant? newValue) {
           controller.selectedAccountant.value = newValue;
         },
-        getLabel: (Accountant accountant) => accountant.name,
+        getLabel: (Accountant accountant) => accountant.accountantName,
         prefixIcon: Icon(Iconsax.user, color: AppColors.textSecondary),
         isLoading: controller.isLoadingAccountants.value,
         enabled: controller.accountants.isNotEmpty,

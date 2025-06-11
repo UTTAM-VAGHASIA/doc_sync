@@ -201,18 +201,10 @@ class AddClientController extends GetxController {
       return false;
     }
 
-    if (selectedGroup.value == null) {
+    if (fileNo.value.trim().isEmpty) {
       AppLoaders.errorSnackBar(
         title: 'Error',
-        message: 'Please select a group',
-      );
-      return false;
-    }
-
-    if (selectedAccountant.value == null) {
-      AppLoaders.errorSnackBar(
-        title: 'Error',
-        message: 'Please select an accountant',
+        message: 'Please enter file number',
       );
       return false;
     }
@@ -313,7 +305,7 @@ class AddClientController extends GetxController {
       'operation': operation.value,
       'status': status.value,
       'group_id': selectedGroup.value?.id ?? '',
-      'accountant_id': selectedAccountant.value?.accountantId ?? '',
+      'accountant_id': selectedAccountant.value?.id ?? '',
     };
   }
 
@@ -340,7 +332,7 @@ class AddClientController extends GetxController {
     // Set selected accountant if it exists in the draft
     final accountantId = draft['accountant_id'];
     if (accountantId != null && accountantId != '') {
-      selectedAccountant.value = accountants.firstWhereOrNull((acc) => acc.accountantId == accountantId);
+      selectedAccountant.value = accountants.firstWhereOrNull((acc) => acc.id == accountantId);
     }
   }
 
@@ -367,8 +359,8 @@ class AddClientController extends GetxController {
         'file_no': fileNo.value,
         'pan': pan.value,
         'other_id': otherId.value,
-        'accountant_id': selectedAccountant.value?.accountantId ?? '11', // Use selected accountant
-        'groups_id': selectedGroup.value?.id ?? '43', // Use selected group
+        'accountant_id': "11", // Hardcoded accountant ID value
+        'groups_id': "43",
         'email_id': email.value,
         'gstn': gstn.value,
         'tan': tan.value,

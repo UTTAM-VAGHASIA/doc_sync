@@ -1,31 +1,30 @@
-// Sub Task Master Card Widget
-// TODO: Implement Sub Task Master Card 
+// Financial Year Card Widget
 
-import 'package:doc_sync/features/masters/controllers/sub_task_master_list_controller.dart';
-import 'package:doc_sync/features/masters/models/sub_task_master_model.dart';
+import 'package:doc_sync/features/masters/controllers/financial_year_list_controller.dart';
+import 'package:doc_sync/features/masters/models/financial_year_model.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class SubTaskMasterExpansionCard extends StatefulWidget {
-  final SubTaskMaster subTaskMaster;
+class FinancialYearExpansionCard extends StatefulWidget {
+  final FinancialYear financialYear;
   final Color cardBackgroundColor;
   final Color textColor;
   final Color subtleTextColor;
 
-  const SubTaskMasterExpansionCard({
+  const FinancialYearExpansionCard({
     super.key,
-    required this.subTaskMaster,
+    required this.financialYear,
     required this.cardBackgroundColor,
     required this.textColor,
     required this.subtleTextColor,
   });
 
   @override
-  State<SubTaskMasterExpansionCard> createState() => SubTaskMasterExpansionCardState();
+  State<FinancialYearExpansionCard> createState() => FinancialYearExpansionCardState();
 }
 
-class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> with SingleTickerProviderStateMixin {
+class FinancialYearExpansionCardState extends State<FinancialYearExpansionCard> with SingleTickerProviderStateMixin {
   bool isExpanded = false;
   late AnimationController _controller;
   late Animation<double> _heightFactor;
@@ -61,8 +60,6 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
   
   @override
   Widget build(BuildContext context) {
-    final bool isEnabled = widget.subTaskMaster.status.toLowerCase() == 'enable';
-    
     return Card(
       elevation: 2,
       color: widget.cardBackgroundColor,
@@ -88,15 +85,13 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: isEnabled 
-                          ? Colors.green.withOpacity(0.1)
-                          : Colors.red.withOpacity(0.1),
+                      color: AppColors.primary.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Center(
                       child: Icon(
-                        Icons.layers_outlined,
-                        color: isEnabled ? Colors.green : Colors.red,
+                        Icons.calendar_today_outlined,
+                        color: AppColors.primary,
                         size: 20,
                       ),
                     ),
@@ -107,7 +102,7 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.subTaskMaster.subTaskName,
+                          widget.financialYear.year,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -118,7 +113,7 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          "Task: ${widget.subTaskMaster.taskName}",
+                          "Added by: ${widget.financialYear.addBy}",
                           style: TextStyle(fontSize: 12, color: widget.subtleTextColor),
                           softWrap: true,
                           maxLines: 2,
@@ -126,24 +121,6 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
                       ],
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: isEnabled 
-                          ? Colors.green.withOpacity(0.1)
-                          : Colors.red.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      widget.subTaskMaster.status,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: isEnabled ? Colors.green : Colors.red,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
                   AnimatedRotation(
                     turns: isExpanded ? 0.5 : 0.0,
                     duration: const Duration(milliseconds: 300),
@@ -194,7 +171,7 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
                           icon: Icons.edit_outlined,
                           color: Colors.green,
                           onTap: () {
-                            Get.find<SubTaskMasterListController>().editSubTaskMaster(widget.subTaskMaster);
+                            Get.find<FinancialYearListController>().editFinancialYear(widget.financialYear);
                           },
                         ),
                         const SizedBox(width: 16),
@@ -206,9 +183,9 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
                             // Show delete confirmation dialog
                             Get.dialog(
                               AlertDialog(
-                                title: const Text('Delete Sub Task'),
+                                title: const Text('Delete Financial Year'),
                                 content: Text(
-                                  'Are you sure you want to delete ${widget.subTaskMaster.subTaskName}?',
+                                  'Are you sure you want to delete ${widget.financialYear.year}?',
                                 ),
                                 actions: [
                                   TextButton(
@@ -218,7 +195,7 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
                                   TextButton(
                                     onPressed: () {
                                       Get.back();
-                                      Get.find<SubTaskMasterListController>().deleteSubTaskMaster(widget.subTaskMaster.id);
+                                      Get.find<FinancialYearListController>().deleteFinancialYear(widget.financialYear.fId);
                                     },
                                     child: const Text(
                                       'Delete',
@@ -237,7 +214,7 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
                   // Divider between actions and details
                   Divider(height: 1, thickness: 1, color: Colors.grey.shade200),
                   
-                  // Sub Task master details
+                  // Financial Year details
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24.0,
@@ -248,57 +225,33 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
                         buildDetailRow(
                           context,
                           'ID',
-                          widget.subTaskMaster.id,
+                          widget.financialYear.fId,
                           Icons.tag,
                           AppColors.primary,
                           widget.textColor,
                         ),
                         buildDetailRow(
                           context,
-                          'Task ID',
-                          widget.subTaskMaster.taskId,
-                          Icons.link,
-                          Colors.purple,
-                          widget.textColor,
-                        ),
-                        buildDetailRow(
-                          context,
-                          'Task Name',
-                          widget.subTaskMaster.taskName,
-                          Icons.assignment_outlined,
+                          'Year',
+                          widget.financialYear.year,
+                          Icons.calendar_month_outlined,
                           Colors.blue,
                           widget.textColor,
                         ),
                         buildDetailRow(
                           context,
-                          'Sub Task Name',
-                          widget.subTaskMaster.subTaskName,
-                          Icons.layers_outlined,
+                          'Added By',
+                          widget.financialYear.addBy,
+                          Icons.person_outline,
                           Colors.teal,
                           widget.textColor,
                         ),
                         buildDetailRow(
                           context,
-                          'Amount',
-                          '₹${widget.subTaskMaster.amount}',
-                          Icons.attach_money,
-                          Colors.green.shade800,
-                          widget.textColor,
-                        ),
-                        buildDetailRow(
-                          context,
-                          'Date & Time',
-                          formatDateTime(widget.subTaskMaster.dateTime),
+                          'Created On',
+                          formatDateTime(widget.financialYear.createdOn),
                           Icons.access_time,
                           Colors.orange,
-                          widget.textColor,
-                        ),
-                        buildDetailRow(
-                          context,
-                          'Status',
-                          widget.subTaskMaster.status,
-                          isEnabled ? Icons.check_circle_outline : Icons.cancel_outlined,
-                          isEnabled ? Colors.green : Colors.red,
                           widget.textColor,
                           isLast: true,
                         ),
@@ -352,7 +305,7 @@ class SubTaskMasterExpansionCardState extends State<SubTaskMasterExpansionCard> 
     );
   }
   
-                  Widget buildDetailRow(
+  Widget buildDetailRow(
     BuildContext context,
     String label,
     String value,

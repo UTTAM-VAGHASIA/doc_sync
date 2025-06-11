@@ -1,37 +1,37 @@
-import 'package:doc_sync/features/masters/controllers/group_list_controller.dart';
-import 'package:doc_sync/features/masters/screens/group_list/widgets/group_list.dart';
-import 'package:doc_sync/features/masters/screens/group_list/widgets/group_route_header.dart';
-import 'package:doc_sync/features/masters/screens/group_list/widgets/pagination_controls.dart';
-import 'package:doc_sync/features/masters/screens/group_list/widgets/search_filter_card.dart';
+import 'package:doc_sync/features/masters/controllers/financial_year_list_controller.dart';
+import 'package:doc_sync/features/masters/screens/financial_year_list/widgets/financial_year_list.dart';
+import 'package:doc_sync/features/masters/screens/financial_year_list/widgets/financial_year_route_header.dart';
+import 'package:doc_sync/features/masters/screens/financial_year_list/widgets/pagination_controls.dart';
+import 'package:doc_sync/features/masters/screens/financial_year_list/widgets/search_filter_card.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
-class GroupListMobileScreen extends StatelessWidget {
-  const GroupListMobileScreen({super.key});
+class FinancialYearListMobileScreen extends StatelessWidget {
+  const FinancialYearListMobileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     // Initialize controller
-    final groupListController = Get.put(GroupListController());
+    final financialYearListController = Get.put(FinancialYearListController());
     final Color cardBackgroundColor = AppColors.white;
     final Color textColor = AppColors.textPrimary;
     final Color subtleTextColor = AppColors.textSecondary;
 
     // Text controller for the search field
     final TextEditingController searchController = TextEditingController(
-      text: groupListController.searchQuery.value,
+      text: financialYearListController.searchQuery.value,
     );
 
     return SafeArea(
       child: LiquidPullToRefresh(
-        key: groupListController.refreshIndicatorKey,
+        key: financialYearListController.refreshIndicatorKey,
         animSpeedFactor: 2.3,
         color: AppColors.primary,
         backgroundColor: AppColors.light,
         showChildOpacityTransition: false,
-        onRefresh: () => groupListController.fetchGroups(),
+        onRefresh: () => financialYearListController.fetchFinancialYears(),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
@@ -40,12 +40,12 @@ class GroupListMobileScreen extends StatelessWidget {
               // Header
               Padding(
                 padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
-                child: GroupRouteHeader(
-                  title: 'Group List',
-                  subtitle: 'Home / Masters / Group List',
+                child: FinancialYearRouteHeader(
+                  title: 'Financial Year List',
+                  subtitle: 'Home / Masters / Financial Year List',
                   onAddPressed: () {
-                    // Open add group dialog
-                    _showAddGroupDialog(context, groupListController);
+                    // Open add financial year dialog or navigate to add financial year screen
+                    _showAddFinancialYearDialog(context, financialYearListController);
                   },
                 ),
               ),
@@ -56,29 +56,29 @@ class GroupListMobileScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: SearchFilterCard(
-                  groupListController: groupListController,
+                  financialYearListController: financialYearListController,
                   searchController: searchController,
                 ),
               ),
 
               const SizedBox(height: 16),
 
-              // Group list
-              GetX<GroupListController>(
+              // Financial Year list
+              GetX<FinancialYearListController>(
                 builder: (controller) {
                   if (controller.isLoading.value) {
-                    return const GroupListShimmer();
+                    return const FinancialYearListShimmer();
                   }
 
-                  if (controller.filteredGroups.isEmpty) {
-                    return const EmptyGroupList();
+                  if (controller.filteredFinancialYears.isEmpty) {
+                    return const EmptyFinancialYearList();
                   }
 
                   return Column(
                     children: [
-                      // Group list
-                      GroupList(
-                        groupListController: controller,
+                      // Financial Year list
+                      FinancialYearList(
+                        financialYearListController: controller,
                         cardBackgroundColor: cardBackgroundColor,
                         textColor: textColor,
                         subtleTextColor: subtleTextColor,
@@ -100,10 +100,11 @@ class GroupListMobileScreen extends StatelessWidget {
       ),
     );
   }
-
-  // Show dialog to add a new group
-  void _showAddGroupDialog(BuildContext context, GroupListController controller) {
-    final TextEditingController groupNameController = TextEditingController();
+  
+  // Show dialog to add a new financial year
+  void _showAddFinancialYearDialog(BuildContext context, FinancialYearListController controller) {
+    final TextEditingController startYearController = TextEditingController();
+    final TextEditingController endYearController = TextEditingController();
     
     showDialog(
       context: context,
@@ -118,7 +119,7 @@ class GroupListMobileScreen extends StatelessWidget {
             children: [
               // Dialog header
               Text(
-                'Add Group',
+                'Add Financial Year',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: AppColors.primary,
                   fontWeight: FontWeight.bold,
@@ -128,13 +129,25 @@ class GroupListMobileScreen extends StatelessWidget {
               
               // Form fields
               TextField(
-                controller: groupNameController,
+                controller: startYearController,
                 decoration: InputDecoration(
-                  labelText: 'Group Name',
+                  labelText: 'Start Year',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: endYearController,
+                decoration: InputDecoration(
+                  labelText: 'End Year',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 24),
               
@@ -160,8 +173,12 @@ class GroupListMobileScreen extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      if (groupNameController.text.isNotEmpty) {
-                        // controller.addGroup(groupNameController.text);
+                      if (startYearController.text.isNotEmpty &&
+                          endYearController.text.isNotEmpty) {
+                        // controller.addFinancialYear(
+                        //   startYear: startYearController.text,
+                        //   endYear: endYearController.text,
+                        // );
                         Navigator.pop(context);
                       }
                     },

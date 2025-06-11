@@ -1,8 +1,9 @@
 import 'package:doc_sync/features/masters/controllers/client_list_controller.dart';
 import 'package:doc_sync/features/masters/screens/client_list/widgets/client_list.dart';
+import 'package:doc_sync/features/masters/screens/client_list/widgets/client_route_header.dart';
 import 'package:doc_sync/features/masters/screens/client_list/widgets/pagination_controls.dart';
 import 'package:doc_sync/features/masters/screens/client_list/widgets/search_filter_card.dart';
-import 'package:doc_sync/features/operations/screens/new_task/widgets/route_header.dart';
+import 'package:doc_sync/routes/routes.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -40,9 +41,13 @@ class ClientListMobileScreen extends StatelessWidget {
               // Header
               Padding(
                 padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
-                child: RouteHeader(
+                child: ClientRouteHeader(
                   title: 'Client List',
                   subtitle: 'Home / Masters / Client List',
+                  onAddPressed: () {
+                    // Navigate to the add client screen
+                    Get.toNamed(AppRoutes.addClient);
+                  },
                 ),
               ),
 

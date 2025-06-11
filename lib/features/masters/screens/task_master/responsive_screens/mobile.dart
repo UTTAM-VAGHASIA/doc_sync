@@ -2,7 +2,7 @@ import 'package:doc_sync/features/masters/controllers/task_master_list_controlle
 import 'package:doc_sync/features/masters/screens/task_master/widgets/pagination_controls.dart';
 import 'package:doc_sync/features/masters/screens/task_master/widgets/search_filter_card.dart';
 import 'package:doc_sync/features/masters/screens/task_master/widgets/task_master_list.dart';
-import 'package:doc_sync/features/operations/screens/new_task/widgets/route_header.dart';
+import 'package:doc_sync/features/masters/screens/task_master/widgets/task_master_route_header.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -40,9 +40,13 @@ class TaskMasterMobileScreen extends StatelessWidget {
               // Header
               Padding(
                 padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
-                child: RouteHeader(
+                child: TaskMasterRouteHeader(
                   title: 'Task Master',
                   subtitle: 'Home / Masters / Task Master',
+                  onAddPressed: () {
+                    // Open add task dialog
+                    _showAddTaskDialog(context, taskMasterListController);
+                  },
                 ),
               ),
 
@@ -89,6 +93,81 @@ class TaskMasterMobileScreen extends StatelessWidget {
                     ],
                   );
                 },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  
+  // Show dialog to add a new task
+  void _showAddTaskDialog(BuildContext context, TaskMasterListController controller) {
+    final TextEditingController taskNameController = TextEditingController();
+    
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Container(
+          width: 400,
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Dialog header
+              Text(
+                'Add Task',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 24),
+              
+              // Form fields
+              TextField(
+                controller: taskNameController,
+                decoration: InputDecoration(
+                  labelText: 'Task Name',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              
+              // Action buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(color: AppColors.textSecondary),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (taskNameController.text.isNotEmpty) {
+                        // controller.addTask(taskNameController.text);
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: const Text('Add'),
+                  ),
+                ],
               ),
             ],
           ),

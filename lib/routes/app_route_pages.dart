@@ -1,5 +1,7 @@
+import 'package:doc_sync/bindings/accountant_list_bindings.dart';
 import 'package:doc_sync/bindings/add_client_binding.dart';
 import 'package:doc_sync/bindings/client_list_binding.dart';
+import 'package:doc_sync/bindings/financial_year_list_bindings.dart';
 import 'package:doc_sync/bindings/group_list_binding.dart';
 import 'package:doc_sync/bindings/new_task_bindings.dart';
 import 'package:doc_sync/bindings/created_task_list_binding.dart';
@@ -13,8 +15,10 @@ import 'package:doc_sync/features/authentication/screens/login/login.dart';
 import 'package:doc_sync/features/authentication/screens/reset_password/reset_password.dart';
 import 'package:doc_sync/features/authentication/screens/splash_screen/splash_screen.dart';
 import 'package:doc_sync/bindings/dashboard_bindings.dart';
+import 'package:doc_sync/features/masters/screens/accountant_list/accountant_list.dart';
 import 'package:doc_sync/features/masters/screens/add_client_screen/add_client.dart';
 import 'package:doc_sync/features/masters/screens/client_list/client_list.dart';
+import 'package:doc_sync/features/masters/screens/financial_year_list/financial_year_list.dart';
 import 'package:doc_sync/features/masters/screens/group_list/group_list.dart';
 import 'package:doc_sync/features/masters/screens/sub_task_master/sub_task_master.dart';
 import 'package:doc_sync/features/masters/screens/task_master/task_master.dart';
@@ -100,13 +104,13 @@ class AppRoutePages {
     ),
     GetPage(
       name: AppRoutes.accountant,
-      page: () => PlaceholderScreen(title: 'Accountant'),
-      middlewares: [RouteMiddleWare()],
+      page: () => AccountantListScreen(),
+      binding: AccountantListBindings(),
     ),
     GetPage(
       name: AppRoutes.financialYear,
-      page: () => PlaceholderScreen(title: 'Financial Year'),
-      middlewares: [RouteMiddleWare()],
+      page: () => FinancialYearListScreen(),
+      binding: FinancialYearListBindings(),
     ),
     GetPage(
       name: AppRoutes.userLog,
