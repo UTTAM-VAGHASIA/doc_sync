@@ -178,7 +178,7 @@ class TaskExpansionCardState extends State<TaskExpansionCard>
                           color: Colors.blue,
                           onTap: () {
                             // Show task detail sheet
-                            TaskSheetUtils.showTaskDetailSheet(context, widget.task);
+                            // TaskSheetUtils.showTaskDetailSheet(context, widget.task);
                           },
                         ),
                         const SizedBox(width: 8),
@@ -187,7 +187,7 @@ class TaskExpansionCardState extends State<TaskExpansionCard>
                           icon: Icons.check_circle_outline,
                           color: Colors.green,
                           onTap: () {
-                            TaskSheetUtils.showApproveConfirmation(context, widget.task);
+                            // TaskSheetUtils.showApproveConfirmation(context, widget.task);
                           },
                         ),
                       ],
