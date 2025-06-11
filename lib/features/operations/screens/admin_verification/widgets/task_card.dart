@@ -182,7 +182,7 @@ class TaskExpansionCardState extends State<TaskExpansionCard>
                           },
                         ),
                         const SizedBox(width: 8),
-                        _buildActionButton(
+                        if(widget.task.taskStatus == AdminTaskStatus.completed) _buildActionButton(
                           label: 'Approve',
                           icon: Icons.check_circle_outline,
                           color: Colors.green,

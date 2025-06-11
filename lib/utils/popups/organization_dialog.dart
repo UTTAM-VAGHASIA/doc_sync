@@ -53,7 +53,7 @@ class _OrganizationDialogState extends State<OrganizationDialog> {
     if (value == null || value.trim().isEmpty) {
       return 'Organization name is required';
     }
-    if (value.contains(' ')) {
+    if (value.trim().contains(' ')) {
       return 'Organization name cannot contain spaces';
     }
     return null;
@@ -62,7 +62,7 @@ class _OrganizationDialogState extends State<OrganizationDialog> {
   // Function to save organization
   Future<void> saveOrganization() async {
     if (formKey.currentState!.validate()) {
-      final newOrganization = textController.text.trim();
+      final newOrganization = textController.text.trim().toLowerCase();
 
       isLoading.value = true;
 

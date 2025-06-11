@@ -6,8 +6,14 @@ All notable changes to this project will be documented in this file.
 
 ## Added
 
+- Task Creations can now be edited and deleted.
+- Advanced Filter Options for all screens.
+- 
+
 ## Fixed
 
+- Organization text logic improved.
+- Fixed Organization Name validation.
 - Fixed Pagination UI.
 - Fixed Filter options UI.
 

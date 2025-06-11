@@ -1,6 +1,15 @@
+import 'dart:convert';
+
+import 'package:doc_sync/features/operations/controllers/created_task_list_controller.dart';
 import 'package:doc_sync/features/operations/models/task_model.dart';
+import 'package:doc_sync/features/operations/screens/created_task_list/widgets/edit_task_modal_sheet.dart';
 import 'package:doc_sync/utils/constants/colors.dart';
+import 'package:doc_sync/utils/helpers/network_manager.dart';
+import 'package:doc_sync/utils/helpers/retry_queue_manager.dart';
+import 'package:doc_sync/utils/http/http_client.dart';
+import 'package:doc_sync/utils/popups/loaders.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class TaskExpansionCard extends StatefulWidget {
   final Task task;
@@ -167,8 +176,8 @@ class TaskExpansionCardState extends State<TaskExpansionCard> with SingleTickerP
                           label: 'Edit',
                           icon: Icons.edit_outlined,
                           color: Colors.green,
-                          onTap: () {
-                            // Edit functionality will be implemented later
+                          onTap: () async {
+                            await _showEditTaskBottomSheet(context);
                           },
                         ),
                         SizedBox(width: 16),
@@ -177,7 +186,7 @@ class TaskExpansionCardState extends State<TaskExpansionCard> with SingleTickerP
                           icon: Icons.delete_outline,
                           color: Colors.red,
                           onTap: () {
-                            // Delete functionality will be implemented later
+                            _showDeleteConfirmation(context);
                           },
                         ),
                       ],
@@ -286,6 +295,16 @@ class TaskExpansionCardState extends State<TaskExpansionCard> with SingleTickerP
           ),
         ],
       ),
+    );
+  }
+  
+  Future<void> _showEditTaskBottomSheet(BuildContext context) async {
+    await showModalBottomSheet(
+      context: context,
+      showDragHandle: false,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => EditTaskBottomSheet(task: widget.task),
     );
   }
   
@@ -438,5 +457,171 @@ class TaskExpansionCardState extends State<TaskExpansionCard> with SingleTickerP
         const SizedBox(height: 8),
       ],
     );
+  }
+
+  // Delete confirmation dialog
+  void _showDeleteConfirmation(BuildContext context) {
+    Get.defaultDialog(
+      title: "", // Empty title to match the style
+      titlePadding: EdgeInsets.zero,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      backgroundColor: AppColors.white,
+      radius: 20,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Icon header
+          Icon(Icons.delete_forever, size: 60, color: Colors.red.shade600),
+          const SizedBox(height: 10),
+          
+          // Title
+          Text(
+            "Delete Task",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 8),
+          
+          // Task name
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              widget.task.taskName,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: AppColors.primary,
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          
+          // Warning message
+          Text(
+            "This action cannot be undone. All information associated with this task will be permanently deleted.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 24),
+          
+          // Action buttons
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Cancel button
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => Get.back(),
+                  style: ElevatedButton.styleFrom(
+                    side: BorderSide(width: 0),
+                    elevation: 6,
+                    foregroundColor: Colors.grey[700],
+                    backgroundColor: Colors.grey[200],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  child: const Text("Cancel"),
+                ),
+              ),
+              const SizedBox(width: 16),
+              
+              // Delete button
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Get.back(); // Close dialog
+                    _deleteTask(); // Delete the task
+                  },
+                  style: ElevatedButton.styleFrom(
+                    elevation: 6,
+                    side: BorderSide(width: 0),
+                    foregroundColor: AppColors.white,
+                    backgroundColor: Colors.red.shade600,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  child: const Text("Delete"),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+  
+  // Handle task deletion
+  Future<void> _deleteTask() async {
+    try {
+      // Check network connection
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) {
+        RetryQueueManager.instance.addJob(() => _deleteTask());
+        AppLoaders.customToast(
+          message: 'Offline. Will retry when back online.',
+        );
+        return;
+      }
+      
+      // Prepare API request payload
+      final payload = {
+        'id': widget.task.srNo,
+      };
+      
+      // Log request for debugging
+      print('[API REQUEST] delete_task_creation payload: ${jsonEncode(payload)}');
+      
+      // Make API request
+      final data = await AppHttpHelper().sendMultipartRequest(
+        'delete_task_creation',
+        method: 'POST',
+        fields: {'data': jsonEncode(payload)},
+      );
+      
+      // Log response for debugging
+      print('[API RESPONSE] delete_task_creation: $data');
+      
+      // Handle API response
+      if (data['success'] == true) {
+        // Show success message
+        AppLoaders.successSnackBar(
+          title: 'Success',
+          message: data['message'] ?? 'Task deleted successfully',
+        );
+        
+        // Refresh task list if available
+        if (Get.isRegistered<TaskListController>()) {
+          final taskListController = Get.find<TaskListController>();
+          taskListController.fetchTasks();
+        }
+      } else {
+        // Show error message
+        AppLoaders.errorSnackBar(
+          title: 'Error',
+          message: data['message'] ?? 'Failed to delete task',
+        );
+      }
+    } catch (e) {
+      // Show error message
+      AppLoaders.errorSnackBar(
+        title: 'Error',
+        message: 'An error occurred: ${e.toString()}',
+      );
+    }
   }
 }

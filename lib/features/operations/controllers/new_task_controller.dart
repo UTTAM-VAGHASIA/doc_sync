@@ -1069,14 +1069,14 @@ class NewTaskController extends GetxController {
       payload['alloted_date'] = _formatDate(allottedDate.value);
       payload['expected_end_date'] = _formatDate(expectedEndDate.value);
       print(
-        '[API REQUEST] add_new_taskcreation payload: ${jsonEncode(payload)}',
+        '[API REQUEST] add_task_creation payload: ${jsonEncode(payload)}',
       );
       final data = await AppHttpHelper().sendMultipartRequest(
-        'add_new_taskcreation',
+        'add_task_creation',
         method: 'POST',
         fields: {'data': jsonEncode(payload)},
       );
-      print('[API RESPONSE] add_new_taskcreation: $data');
+      print('[API RESPONSE] add_task_creation: $data');
       if (data['success'] == true) {
         AppLoaders.successSnackBar(
           title: 'Success',
